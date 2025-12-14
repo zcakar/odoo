@@ -41,6 +41,10 @@ tsconfig.json
 package-lock.json
 package.json
 .husky
+tmp_cbor/
+pgdata/
+odoo.log
+odoo-serve.log
 
 # various virtualenv
 /bin/
