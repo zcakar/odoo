@@ -70,6 +70,11 @@ custom klasör eklendiğinde bu path'i güncellemelisiniz.
 - Komutlarda gereksiz anlatım yok; açıklamalar blok dışında kısa ve net olsun.
 - Her komutun hangi ortamda çalışacağı net yazılmalı (örn. “Lokal shell”, “Production sunucusu”, “QA VM”); farklı ortamlar için ayrı bloklar kullan.
 
+### 5. Production venv & OnlyOffice Playbook
+- Production’da venv’i **stash’leme/untracked olarak gizleme** (`git stash -u`) – venv repo dışına taşımayı (örn. `/opt/odoo/venv`) veya stashesiz çalışmayı tercih et.
+- Production komutları daima venv Python/pip ile: `sudo -u odoo ./venv/bin/python ./odoo-bin ...`, `sudo -u odoo ./venv/bin/pip install ...`; sistem Python/pip kullanma.
+- OnlyOffice sürümlemede snapshot’lar `oo_is_snapshot=True` ile işaretlenir ve ana listede gizlidir; tarihçe butonu için metadata (`res_model`, `res_id`, `oo_attachment_version`) eksiksiz gönderildiğini kontrol et.
+
 ---
 
 ## 📋 Zorunlu Görevler

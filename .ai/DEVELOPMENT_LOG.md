@@ -104,6 +104,35 @@ The attachment store didn't expose res_model/res_id by default; the custom domai
 
 **Tags:** `odoo-19`, `onlyoffice`, `frontend`, `bugfix`
 
+### [2025-12-16] - Production pitfalls: venv stash + OnlyOffice snapshot visibility
+
+**Status:** ✅ Resolved
+
+**Context:**
+During production pull, `git stash -u` removed the venv, causing missing `pyjwt/passlib` and OnlyOffice 500. Snapshot copies also appeared in the main attachment list.
+
+**Problem:**
+- Venv removal led to missing dependencies and 500 errors.
+- Snapshot attachments lacked a hide flag, so multiple cards (v1/v2) appeared.
+
+**Root Cause:**
+- Stashing untracked files (including venv).
+- No `oo_is_snapshot` marker; mail AttachmentList rendered all copies.
+
+**Solution:**
+- Recreate venv, install requirements/pyjwt; enforce using `./venv/bin/python`/`pip` on server.
+- Added `oo_is_snapshot`/`oo_origin_attachment_id`; hide snapshots from main list, accessible via history.
+
+**Prevention:**
+- On production, avoid `git stash -u`; keep venv outside repo (e.g., `/opt/odoo/venv`) or never stash it.
+- Always run Odoo commands with venv Python; verify `pyjwt` present.
+
+**Related Files:**
+- `custom_addons/onlyoffice_odoo/models/ir_attachment.py`
+- `custom_addons/onlyoffice_odoo/static/src/components/attachment_card_onlyoffice/attachment_card_onlyoffice.xml`
+
+**Tags:** `odoo-19`, `onlyoffice`, `venv`, `production`, `ui`
+
 ### [2025-12-16] - Attachment Activity Logs + Co-editing Verified
 
 **Status:** ✅ Resolved

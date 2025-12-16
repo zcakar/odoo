@@ -612,9 +612,18 @@ metadata:
   created: "2025-12-16"
   last_updated: "2025-12-16"
   maintained_by: "Project Team"
-  version: "1.3.5"
+  version: "1.3.6"
 
   changelog:
+    - date: "2025-12-16"
+      version: "1.3.6"
+      change: "Production venv caution + OnlyOffice snapshot hiding"
+      details:
+        - "Documented production venv handling (no stash -u; use venv python/pip) and hid OnlyOffice snapshot attachments from the main list via oo_is_snapshot."
+        - "Guideline update to prevent repeat outages and keep single latest attachment visible."
+      status: "COMPLETED"
+      author: "Codex"
+      session_log: ""
     - date: "2025-12-16"
       version: "1.3.5"
       change: "OnlyOffice version history domain guard"
