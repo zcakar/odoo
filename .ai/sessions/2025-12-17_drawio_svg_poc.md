@@ -52,5 +52,10 @@ OnlyOffice draw.io eklentisinde PNG yerine SVG + embedXml ile doküman içine ve
   - PDF export’ta vektörel kalite kontrol (400% zoom).  
   - PNG fallback çalışıyor mu (embedXml kapalı senaryo).
 
+## Uygulama Adımları (başlatıldı)
+- Yeni plugin iskeleti oluşturuldu: `onlyoffice-drawio-help/custom_drawio_svg_plugin/` (config.json, index.html, scripts/plugin.js). GUID: `asc.{D8C2E2F5-5C49-4C7B-92E5-6C4A7B5E9F10}`.
+- plugin.js: embed.diagrams.net iframe; save/export SVG + embedXml, MIME `image/svg+xml`, mxfile metadata ekleme, seçili SVG’den mxfile çıkarıp yeniden açma; PNG fallback bayrakla açılabilir (varsayılan kapalı).
+- Icon placeholders: `resources/img/icon.png`, `icon@2x.png` (helloworld örneğinden kopyalandı).
+
 ## Notlar
 - Help içeriği mevcut olduğundan eklenti destekleniyor; dosya sistemi yolunun farklı bir cache/marketplace konumunda olması muhtemel.

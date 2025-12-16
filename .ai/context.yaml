@@ -377,6 +377,14 @@ custom_modules:
           - "Reopen SVG → editable diagram"
           - "PDF export shows vector quality (400% zoom)"
           - "Optional PNG fallback validation"
+        implementation_status:
+          scaffolding:
+            path: "/home/embed/Dev/ODOO/onlyoffice-drawio-help/custom_drawio_svg_plugin"
+            guid: "asc.{D8C2E2F5-5C49-4C7B-92E5-6C4A7B5E9F10}"
+            notes:
+              - "plugin.js opens embed.diagrams.net iframe, exports SVG + embedXml, sets MIME image/svg+xml, stores mxfile via metadata/tag, reopens by extracting mxfile from SVG/tag."
+              - "Icons placeholder copied from helloworld example."
+              - "PNG fallback flag present but disabled by default."
       next_steps:
         - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
         - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."
