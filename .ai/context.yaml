@@ -359,6 +359,7 @@ custom_modules:
         - "Document Server container currently lacks draw.io plugin directory; install from Plugin Manager/marketplace to materialize under sdkjs-plugins or cache."
         - "2025-12-17 container scan: onlyoffice-documentserver has default plugins (Photo Editor, YouTube, OCR, Translator, AI, Mendeley, Thesaurus, Highlight code, Zotero, Speech, Speech input); no draw.io manifest. drawoffice-nginx container restarting; no draw.io activity in nginx logs."
         - "User reports draw.io installed via Plugin Manager and visible in ribbon; actual plugin files not yet located in scanned container paths—verify which VM/container hosts the installed plugin and capture its GUID/path."
+        - "Repeated scans (find/grep for draw.io/diagrams.net) in /var/www/onlyoffice/documentserver and /var/lib/onlyoffice/documentserver still empty; marketplace dir lacks draw.io package. Hypothesis: different DS/VM or alternative mount. Fallback: build/publish own plugin from docspace-plugins-master/draw.io or jgraph/drawio via marketplace guide."
       next_steps:
         - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
         - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."
