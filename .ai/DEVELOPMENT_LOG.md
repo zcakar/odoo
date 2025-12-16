@@ -50,6 +50,36 @@ What did we learn? How to avoid this in the future?
 
 ## 📝 Log Entries
 
+### [2025-12-16] - OnlyOffice version snapshot + attachment history button
+
+**Status:** ✅ Resolved
+
+**Context:**
+OnlyOffice edits on tasks/documents needed a clear latest version on the attachment card, with earlier versions retained (up to 10) and a quick way to open version history.
+
+**Problem:**
+- OnlyOffice callback overwrote the same attachment without keeping previous versions.
+- No UI indicator of the current OnlyOffice version, and no quick link to see older versions.
+
+**Root Cause:**
+Version counter existed but no snapshot of prior content was created; UI did not expose version metadata or a history entry point.
+
+**Solution:**
+- Snapshot current attachment before saving a new OnlyOffice version, increment the version counter, and rename latest as `(vN)`; keep only the latest 10 versions.
+- Expose `oo_attachment_version` to the mail attachment store so the frontend can render version info.
+- Add a badge + history button on attachment cards that opens `ir.attachment` filtered to the same record/name.
+
+**Learning:**
+Keep a pre-save copy before overwriting OnlyOffice edits to preserve history; surface minimal metadata (version) to the client to avoid ambiguity for users.
+
+**Related Files:**
+- `custom_addons/onlyoffice_odoo/controllers/controllers.py`
+- `custom_addons/onlyoffice_odoo/models/ir_attachment.py`
+- `custom_addons/onlyoffice_odoo/static/src/models/attachment_card_onlyoffice.js`
+- `custom_addons/onlyoffice_odoo/static/src/components/attachment_card_onlyoffice/attachment_card_onlyoffice.xml`
+
+**Tags:** `odoo-19`, `onlyoffice`, `versioning`, `ui`
+
 ### [2025-12-16] - Attachment Activity Logs + Co-editing Verified
 
 **Status:** ✅ Resolved

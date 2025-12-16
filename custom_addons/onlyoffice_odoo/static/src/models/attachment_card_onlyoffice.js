@@ -32,8 +32,51 @@ patch(AttachmentList.prototype, {
   },
   // eslint-disable-next-line sort-keys
   onlyofficeCanOpen(attachment) {
-    const format = formats.find((f) => f.name === attachment.extension.toLowerCase())
+    const extension = (attachment.extension || "").toLowerCase()
+    const format = formats.find((f) => f.name === extension)
     return format && format.actions && (format.actions.includes("view") || format.actions.includes("edit"))
+  },
+  onlyofficeVersionLabel(attachment) {
+    const version = this._getAttachmentVersion(attachment)
+    return version ? `v${version}` : ""
+  },
+  _stripVersionSuffix(name) {
+    if (!name) {
+      return ""
+    }
+    const regex = /(.*)\s+\(v\d+\)$/
+    const match = name.replace(/\.[^/.]+$/, "").match(regex)
+    return match ? match[1] : name.replace(/\.[^/.]+$/, "")
+  },
+  _getAttachmentVersion(attachment) {
+    if (attachment.oo_attachment_version) {
+      return attachment.oo_attachment_version
+    }
+    if (!attachment.name) {
+      return null
+    }
+    const match = attachment.name.match(/\(v(\d+)\)/i)
+    return match && match[1] ? parseInt(match[1], 10) : null
+  },
+  openVersionHistory(attachment) {
+    const baseName = this._stripVersionSuffix(attachment.name)
+    const domain = [
+      ["res_model", "=", attachment.res_model],
+      ["res_id", "=", attachment.res_id],
+      ["oo_attachment_version", "!=", false],
+      ["name", "ilike", baseName],
+    ]
+    this.actionService.doAction({
+      name: _t("Attachment Versions"),
+      type: "ir.actions.act_window",
+      res_model: "ir.attachment",
+      views: [
+        [false, "list"],
+        [false, "form"],
+      ],
+      domain,
+      target: "current",
+    })
   },
   async openOnlyoffice(attachment) {
     const demo = JSON.parse(await this.orm.call("onlyoffice.odoo", "get_demo"))

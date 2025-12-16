@@ -612,9 +612,19 @@ metadata:
   created: "2025-12-16"
   last_updated: "2025-12-16"
   maintained_by: "Project Team"
-  version: "1.3.3"
+  version: "1.3.4"
 
   changelog:
+    - date: "2025-12-16"
+      version: "1.3.4"
+      change: "OnlyOffice version snapshots + history link on attachments"
+      details:
+        - "Snapshot previous attachment before saving from OnlyOffice, even for same user edits; latest attachment is renamed with vN and version counter increments."
+        - "Keep last 10 versions per attachment name/res_id and prune older ones automatically."
+        - "Expose version badge and history button on attachment cards linking to filtered ir.attachment list."
+      status: "COMPLETED"
+      author: "Codex"
+      session_log: ""
     - date: "2025-12-16"
       version: "1.3.3"
       change: "Retention: keep only last 10 OnlyOffice attachment versions"

@@ -5,14 +5,31 @@
 <templates xml:space="preserve">
     <t t-inherit="mail.AttachmentList" t-inherit-mode="extension" owl="1">
     <xpath expr="//div[hasclass('o-mail-AttachmentButtons')]" position="inside">
-      <button
-        t-if="onlyofficeCanOpen(attachment)"
-        t-on-click.stop="() => this.openOnlyoffice(attachment)"
-        class="btn bg-500 w-100 h-100 o-p-1_5 d-flex ms-2 justify-content-center align-items-center shadow-sm"
-        title="Edit in ONLYOFFICE"
-      >
-        <i class="fa fa-pencil o-text-white" role="img" aria-label="Edit in ONLYOFFICE"/>
-      </button>
+      <div class="d-flex align-items-center gap-2 w-100 ms-2">
+        <span
+          t-if="onlyofficeVersionLabel(attachment)"
+          class="badge rounded-pill bg-secondary fw-semibold o-text-white"
+          title="ONLYOFFICE version"
+        >
+          <t t-esc="onlyofficeVersionLabel(attachment)" />
+        </span>
+        <button
+          t-if="onlyofficeCanOpen(attachment)"
+          t-on-click.stop="() => this.openOnlyoffice(attachment)"
+          class="btn bg-500 flex-grow-1 o-p-1_5 d-flex justify-content-center align-items-center shadow-sm"
+          title="Edit in ONLYOFFICE"
+        >
+          <i class="fa fa-pencil o-text-white" role="img" aria-label="Edit in ONLYOFFICE"/>
+        </button>
+        <button
+          t-if="onlyofficeVersionLabel(attachment)"
+          t-on-click.stop="() => this.openVersionHistory(attachment)"
+          class="btn btn-outline-secondary o-p-1_5 d-flex justify-content-center align-items-center"
+          title="View attachment versions"
+        >
+          <i class="fa fa-history" role="img" aria-label="View attachment versions"/>
+        </button>
+      </div>
     </xpath>
   </t>
 </templates>

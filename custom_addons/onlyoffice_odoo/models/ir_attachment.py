@@ -1,7 +1,10 @@
+import logging
 import os
 import re
 
 from odoo import _, api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class IrAttachment(models.Model):
@@ -41,6 +44,28 @@ class IrAttachment(models.Model):
         match = re.match(r"^(.*)\s+\(v\d+\)$", base)
         return (match.group(1) if match else base, ext)
 
+    def _versioned_name(self, version):
+        """Build a user-friendly versioned filename for the given version."""
+        self.ensure_one()
+        base_name, ext = self._strip_version_suffix(self.name)
+        return f"{base_name} (v{version}){ext}"
+
+    def _snapshot_onlyoffice_version(self):
+        """Create an attachment copy representing the current version."""
+        for attachment in self:
+            version = attachment.oo_attachment_version or 1
+            try:
+                attachment.copy(
+                    {
+                        "name": attachment._versioned_name(version),
+                        "oo_attachment_version": version,
+                    }
+                )
+            except Exception as exc:  # pragma: no cover - should never block saves
+                _logger.warning(
+                    "Failed to snapshot OnlyOffice version for attachment %s: %s", attachment.id, exc
+                )
+
     def _prune_old_versions(self, limit=10):
         """Keep only the latest `limit` OnlyOffice versions for the same record/name."""
         for attachment in self:
@@ -69,6 +94,13 @@ class IrAttachment(models.Model):
             )
             if to_unlink:
                 to_unlink.unlink()
+
+    def _to_store_defaults(self, target):
+        """Expose OnlyOffice version to the mail attachment store for UI use."""
+        fields_to_store = super()._to_store_defaults(target)
+        if "oo_attachment_version" not in fields_to_store:
+            fields_to_store.append("oo_attachment_version")
+        return fields_to_store
 
     def create(self, vals):
         vals_list = vals if isinstance(vals, list) else [vals]

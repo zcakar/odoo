@@ -239,42 +239,41 @@ class Onlyoffice_Connector(http.Controller):
             _logger.info("POST /onlyoffice/editor/callback/%s - status: %s", attachment_id, status)
 
             if (status == 2) | (status == 3):  # mustsave, corrupted
+                attachment_version = attachment.oo_attachment_version or 1
+                # Keep a snapshot of the current version before overwriting.
+                attachment.sudo()._snapshot_onlyoffice_version()
                 file_url = url_utils.replace_public_url_to_internal(request.env, body.get("url"))
                 datas = onlyoffice_urlopen(file_url).read()
+                new_name = attachment._versioned_name(attachment_version + 1)
                 if attachment.res_model == "documents.document":
                     datas = base64.encodebytes(datas)
                     document = request.env["documents.document"].browse(int(attachment.res_id))
                     document.with_user(user).write(
                         {
-                            "name": attachment.name,
+                            "name": new_name,
                             "datas": datas,
                             "mimetype": guess_type(file_url)[0],
                         }
                     )
 
-                    attachment_version = attachment.oo_attachment_version
-                    attachment.write({"oo_attachment_version": attachment_version + 1})
-                    document.sudo().message_post(body=_("Document edited by %(user)s", user=user.name))
-
-                    previous_attachments = (
-                        request.env["ir.attachment"]
-                        .sudo()
-                        .search(
-                            [
-                                ("res_model", "=", "documents.document"),
-                                ("res_id", "=", document.id),
-                                ("oo_attachment_version", "=", attachment_version),
-                            ],
-                            limit=1,
-                        )
+                    attachment.write(
+                        {
+                            "oo_attachment_version": attachment_version + 1,
+                            "name": new_name,
+                        }
                     )
-                    name = attachment.name
-                    filename, ext = os.path.splitext(attachment.name)
-                    name = f"{filename} ({attachment_version}){ext}"
-                    previous_attachments.sudo().write({"name": name})
-                    attachment.sudo()._prune_old_versions(limit=10)
+                    document.sudo().message_post(body=_("Document edited by %(user)s", user=user.name))
                 else:
-                    attachment.write({"raw": datas, "mimetype": guess_type(file_url)[0]})
+                    attachment.write(
+                        {
+                            "raw": datas,
+                            "mimetype": guess_type(file_url)[0],
+                            "oo_attachment_version": attachment_version + 1,
+                            "name": new_name,
+                        }
+                    )
+
+                attachment.sudo()._prune_old_versions(limit=10)
 
                 _logger.info("POST /onlyoffice/editor/callback/%s - file saved successfully", attachment_id)
 
