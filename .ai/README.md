@@ -29,6 +29,26 @@ Ana proje bağlam dosyası. Makine-okunur (YAML) ve insan-okunur format.
 - Troubleshooting kılavuzu
 - AI asistan yönergeleri
 
+### `AI_AGENT_GUIDELINES.md`
+AI ajanları için **sürekli dokümantasyon protokolü**.
+
+**Amaç:**
+- Her session'da yapılanları KAYDET
+- Önemli kararları BELGELE
+- Context kaybını ÖNLE
+- Gelecekteki AI ajanlarına REHBER ol
+
+**Zorunlu Kurallar:**
+- Session başında: context.yaml OKU
+- İşlem sonrası: Önemli adımları KAYDET
+- Session bitiminde: context.yaml GÜNCELLE + version BUMP
+
+### `NEW_CHAT_TEMPLATE.md`
+Yeni AI sohbeti başlatırken kullanılacak şablon.
+
+### `ONLYOFFICE_PRODUCTION_CHECKLIST.md`
+OnlyOffice modülünün production'a deploy edilmesi için adım adım checklist.
+
 ## 🚀 Nasıl Kullanılır?
 
 ### Her Yeni AI Sohbetinin Başında:
