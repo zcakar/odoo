@@ -59,6 +59,13 @@ patch(AttachmentList.prototype, {
     return match && match[1] ? parseInt(match[1], 10) : null
   },
   openVersionHistory(attachment) {
+    if (!attachment.res_model || !attachment.res_id) {
+      this.notification.add(
+        _t("Version history is unavailable because this attachment is not linked to a record."),
+        { type: "warning" }
+      )
+      return
+    }
     const baseName = this._stripVersionSuffix(attachment.name)
     const domain = [
       ["res_model", "=", attachment.res_model],

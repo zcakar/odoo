@@ -98,8 +98,9 @@ class IrAttachment(models.Model):
     def _to_store_defaults(self, target):
         """Expose OnlyOffice version to the mail attachment store for UI use."""
         fields_to_store = super()._to_store_defaults(target)
-        if "oo_attachment_version" not in fields_to_store:
-            fields_to_store.append("oo_attachment_version")
+        for field in ("oo_attachment_version", "res_model", "res_id"):
+            if field not in fields_to_store:
+                fields_to_store.append(field)
         return fields_to_store
 
     def create(self, vals):
