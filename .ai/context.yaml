@@ -385,6 +385,12 @@ custom_modules:
               - "plugin.js opens embed.diagrams.net iframe, exports SVG + embedXml, sets MIME image/svg+xml, stores mxfile via metadata/tag, reopens by extracting mxfile from SVG/tag."
               - "Icons placeholder copied from helloworld example."
               - "PNG fallback flag present but disabled by default."
+          deployment:
+            dev_container:
+              location: "/var/www/onlyoffice/documentserver/sdkjs-plugins/custom_drawio_svg_plugin"
+              owner: "ds:ds"
+              restart: "docker restart onlyoffice-documentserver"
+              ui_status: "Pending verification in Plugin Manager/editor"
       next_steps:
         - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
         - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."
