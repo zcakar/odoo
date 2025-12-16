@@ -621,7 +621,7 @@ metadata:
       details:
         - "Expose res_model/res_id to the attachment store and guard version history action to avoid invalid domain errors."
         - "Prevents Owl client crash when attachment metadata is incomplete."
-      status: "IN PROGRESS"
+      status: "COMPLETED"
       author: "Codex"
       session_log: ""
     - date: "2025-12-16"

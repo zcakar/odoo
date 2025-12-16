@@ -16,6 +16,18 @@ class IrAttachment(models.Model):
         copy=False,
         help="Lightweight version counter used by OnlyOffice callbacks.",
     )
+    oo_is_snapshot = fields.Boolean(
+        string="OnlyOffice Snapshot",
+        default=False,
+        copy=False,
+        help="True for historical OnlyOffice copies that should be hidden from the main attachment list.",
+    )
+    oo_origin_attachment_id = fields.Many2one(
+        "ir.attachment",
+        string="OnlyOffice Origin",
+        copy=False,
+        help="Points to the live attachment this snapshot was created from.",
+    )
 
     def init(self):
         # Initialize existing records once; safe to re-run on module update.
@@ -59,6 +71,8 @@ class IrAttachment(models.Model):
                     {
                         "name": attachment._versioned_name(version),
                         "oo_attachment_version": version,
+                        "oo_is_snapshot": True,
+                        "oo_origin_attachment_id": attachment.id,
                     }
                 )
             except Exception as exc:  # pragma: no cover - should never block saves
@@ -98,7 +112,7 @@ class IrAttachment(models.Model):
     def _to_store_defaults(self, target):
         """Expose OnlyOffice version to the mail attachment store for UI use."""
         fields_to_store = super()._to_store_defaults(target)
-        for field in ("oo_attachment_version", "res_model", "res_id"):
+        for field in ("oo_attachment_version", "res_model", "res_id", "oo_is_snapshot"):
             if field not in fields_to_store:
                 fields_to_store.append(field)
         return fields_to_store

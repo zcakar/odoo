@@ -82,7 +82,7 @@ Keep a pre-save copy before overwriting OnlyOffice edits to preserve history; su
 
 ### [2025-12-16] - Fix OnlyOffice version history domain crash (frontend)
 
-**Status:** 🔄 In Progress
+**Status:** ✅ Resolved
 
 **Context:**
 Opening version history could crash the Owl client with an invalid domain when attachment data lacked res_model/res_id in the JS store.
@@ -93,9 +93,10 @@ Domain built with empty res_model/res_id caused `InvalidDomainError` on the clie
 **Root Cause:**
 The attachment store didn't expose res_model/res_id by default; the custom domain construction assumed they existed.
 
-**Solution (pending deploy):**
+**Solution:**
 - Expose `res_model` and `res_id` via `_to_store_defaults`.
 - Guard the version history button in JS to warn and bail when record linkage is missing.
+- Add `oo_is_snapshot` flag and hide snapshot attachments from the main list (OnlyOffice versions visible via history button only).
 
 **Related Files:**
 - `custom_addons/onlyoffice_odoo/models/ir_attachment.py`
