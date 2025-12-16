@@ -29,6 +29,23 @@ Ana proje bağlam dosyası. Makine-okunur (YAML) ve insan-okunur format.
 - Troubleshooting kılavuzu
 - AI asistan yönergeleri
 
+### `DEPLOYMENT_AND_USAGE.md` ⭐ YENİ
+**Basit, açık devreye alma ve kullanım kılavuzu** - Herkes için!
+
+**Amaç:**
+- Adım adım deployment talimatları (development + production)
+- Kullanım kılavuzu (nasıl kullanılır, doküman düzenleme, vb.)
+- Troubleshooting (yaygın sorunlar ve çözümler)
+- Güvenlik checklist
+- Bakım programı
+
+**Ne Zaman Güncellemeli:**
+- Deployment adımları değişti
+- Konfigürasyon değişti
+- Yeni sorun çözüldü
+- Yazılım güncellendi
+- AI agents **OTOMATIK** günceller
+
 ### `PROJECT_ARCHITECTURE.md` ⭐
 **Projenin kalbi** - Sistem mimarisi, teknoloji stack, design decisions.
 
