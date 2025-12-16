@@ -5,7 +5,7 @@
 # across different chat sessions. Always reference this file at the start of
 # new conversations to maintain project continuity.
 #
-# Last Updated: 2025-12-16
+# Last Updated: 2025-12-17
 # ============================================================================
 
 project:
@@ -350,6 +350,18 @@ custom_modules:
       static: true
       i18n: true
       utils: true
+    drawio_plugin_research:
+      sources_downloaded:
+        sdkjs_examples: "/home/embed/Dev/ODOO/sdkjs-plugins-master"
+        docspace_plugin: "/home/embed/Dev/ODOO/docspace-plugins-master/draw.io"
+      notes:
+        - "DocSpace draw.io plugin v1.2.0 uses embed.diagrams.net iframe (?proto=json&embed=1) with xml/xmlpng formats for .drawio/.png; seeds a blank mxfile and saves/exports via DocSpace REST endpoints."
+        - "Document Server container currently lacks draw.io plugin directory; install from Plugin Manager/marketplace to materialize under sdkjs-plugins or cache."
+        - "2025-12-17 container scan: onlyoffice-documentserver has default plugins (Photo Editor, YouTube, OCR, Translator, AI, Mendeley, Thesaurus, Highlight code, Zotero, Speech, Speech input); no draw.io manifest. drawoffice-nginx container restarting; no draw.io activity in nginx logs."
+        - "User reports draw.io installed via Plugin Manager and visible in ribbon; actual plugin files not yet located in scanned container paths—verify which VM/container hosts the installed plugin and capture its GUID/path."
+      next_steps:
+        - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
+        - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."
 
 # ----------------------------------------------------------------------------
 # DEVELOPMENT RULES & CONVENTIONS
@@ -610,11 +622,21 @@ quick_reference:
 # ----------------------------------------------------------------------------
 metadata:
   created: "2025-12-16"
-  last_updated: "2025-12-16"
+  last_updated: "2025-12-17"
   maintained_by: "Project Team"
-  version: "1.3.6"
+  version: "1.3.7"
 
   changelog:
+    - date: "2025-12-17"
+      version: "1.3.7"
+      change: "Draw.io plugin sources collected for OnlyOffice SVG work"
+      details:
+        - "Downloaded upstream plugin sources: sdkjs-plugins examples and DocSpace draw.io plugin v1.2.0 (embed.diagrams.net, xml/xmlpng formats, blank mxfile seed)."
+        - "Noted Document Server container still lacks draw.io plugin directory; install via Plugin Manager expected to create sdkjs-plugins entry."
+        - "Queued next steps: discovery script in container, port SVG export (format=svg, embedXml=true, image/svg+xml) after sources located."
+      status: "IN PROGRESS"
+      author: "Codex"
+      session_log: ".ai/sessions/2025-12-17_drawio_svg_poc.md"
     - date: "2025-12-16"
       version: "1.3.6"
       change: "Production venv caution + OnlyOffice snapshot hiding"

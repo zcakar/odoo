@@ -549,6 +549,33 @@ Backup point after enabling HTTPS for OnlyOffice and increasing upload limits. U
 
 ---
 
+### [2025-12-17] - OnlyOffice Draw.io Plugin Discovery & SVG Plan
+
+**Status:** ✅ Documented
+
+**Context:**
+OnlyOffice Document Server ships without draw.io by default; plugin is installed from the in-editor Marketplace. We need SVG export (with embedded mxfile) to improve diagram quality/PDF output and reduce file size. Claude’s prep package lives at `/home/embed/Dev/ODOO/onlyoffice-drawio-help`.
+
+**Findings:**
+- Plugin bundles live under `/var/www/onlyoffice/documentserver/sdkjs-plugins/` inside the container; marketplace and multiple GUID-named dirs present (see `drawio_plugin_analysis.txt`).
+- Discovery script available: `onlyoffice-drawio-help/find_drawio_plugin.sh` → writes `drawio_plugin_analysis.txt`.
+- Implementation guidance and code samples: `implementation_guide.md`, `plugin_modified_svg.js`, `png_vs_svg_comparison_testing.md`, `drawio_svg_analysis.md`, `executive_summary_recommendations.md`.
+- Target change set: export format `png → svg`, `embedXml true`, MIME `image/svg+xml`, store mxfile in SVG metadata, ensure edit flow extracts mxfile from SVG with PNG fallback.
+- Current container state: draw.io plugin binaries are **not present** under `sdkjs-plugins` (only default plugins listed in `config.json` dumps); no files found via `find ... '*drawio*'` or string search. Draw.io must be installed via Plugin Manager first to materialize its GUID directory under `sdkjs-plugins` or marketplace cache.
+- Upstream sources located: DocSpace plugin `docspace-plugins-master/draw.io` (v1.2.0, uses `@onlyoffice/docspace-plugin-sdk@^2.0.0`) embeds `https://embed.diagrams.net?proto=json&embed=1` and handles `.drawio` + `.png` via formats `xml`/`xmlpng`; new files seeded from a blank `mxfile` and saves/export use DocSpace REST endpoints. sdkjs example pack under `sdkjs-plugins-master/` contains no draw.io implementation.
+- 2025-12-17 discovery run (docker exec): `onlyoffice-documentserver` container healthy, `sdkjs-plugins` hosts default plugins (Photo Editor, YouTube, OCR, Translator, AI, Mendeley, Thesaurus, Highlight code, Zotero, Speech, Speech input); no draw.io manifest or directory present. `drawoffice-nginx` container is in restart loop. Nginx logs show no draw.io activity.
+- 2025-12-17 user confirmation: draw.io Plugin Manager install completed in the local OnlyOffice UI (button visible on ribbon, test insertion done). Container scans still show no draw.io files, implying either a different VM/container hosts the installed plugin or persistence lives outside the scanned paths—need to locate the actual plugin directory before SVG patching.
+
+**Action Items (next steps):**
+1) Run discovery script against the live Document Server container to confirm plugin path and manifest.  
+2) Backup container, then apply `plugin_modified_svg.js` changes to the draw.io plugin entry (expected path under sdkjs-plugins).  
+3) Clear caches, restart container, and execute SVG vs PNG test plan (DOCX unzip check for `image*.svg`, PDF zoom at 400%).  
+4) Update `.ai/context.yaml` once deployed (plugin path, change summary, backup image/tag), add session log.
+
+**Tags:** `onlyoffice`, `drawio`, `plugin`, `svg`, `quality`, `documentation`
+
+---
+
 ## 🔍 Quick Reference: Common Issues
 
 ### Issue: Module Not Found
@@ -592,6 +619,6 @@ Backup point after enabling HTTPS for OnlyOffice and increasing upload limits. U
 
 ---
 
-**Last Updated:** 2025-12-16
+**Last Updated:** 2025-12-17
 **Maintained By:** AI Agent + Project Team
 **Version:** 1.0.0
