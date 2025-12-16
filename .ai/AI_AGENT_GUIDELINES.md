@@ -68,6 +68,7 @@ custom klasör eklendiğinde bu path'i güncellemelisiniz.
 - Çalışma dizinini belirt: ör. `cd /home/embed/Dev/ODOO/odoo && git pull origin 19.0`.
 - Git işlemleri (özellikle `git pull`) daima depo kökünde (`/home/embed/Dev/ODOO/odoo`) çalıştırılmalı; yanlış dizin riskine karşı komutu bu yolla ver.
 - Komutlarda gereksiz anlatım yok; açıklamalar blok dışında kısa ve net olsun.
+- Her komutun hangi ortamda çalışacağı net yazılmalı (örn. “Lokal shell”, “Production sunucusu”, “QA VM”); farklı ortamlar için ayrı bloklar kullan.
 
 ---
 
