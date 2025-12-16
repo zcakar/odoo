@@ -71,12 +71,41 @@ AI ajanı yeni bir sohbet başlatıldığında **MUTLAKA**:
 
 ```markdown
 1. .ai/context.yaml dosyasını OKU
-2. Mevcut context'i ANLA
-3. Kullanıcıya kısa özet VER:
+2. .ai/DEPLOYMENT_AND_USAGE.md'yi OKU (deployment/usage işi varsa)
+3. Mevcut context'i ANLA
+4. Kullanıcıya kısa özet VER:
    - Proje durumu nedir?
    - Son yapılan işlemler neler?
    - Bu session'ın amacı ne?
 ```
+
+**ÖZEL NOT:** `DEPLOYMENT_AND_USAGE.md` Dosyası
+
+**AMAÇ:** Basit, açık, herkes tarafından anlaşılabilir deployment ve kullanım kılavuzu.
+
+**ZORUNLU GÜNCELLEME DURUMLARI:**
+- ✅ Deployment adımları değiştiğinde
+- ✅ Konfigürasyon değiştiğinde
+- ✅ Yeni sorun çözüldüğünde (troubleshooting bölümü)
+- ✅ Yazılım güncellendiğinde (Odoo, OnlyOffice, etc.)
+- ✅ Güvenlik best practice'leri değiştiğinde
+- ✅ Kullanıcı yeni özellik kullanmaya başladığında
+
+**GÜNCELLEME PROTOKOLÜ:**
+```markdown
+1. Dosyayı güncelle
+2. "Last Updated" tarihini güncelle
+3. "Update History" tablosuna entry ekle
+4. Git commit + push
+5. Kullanıcıyı bilgilendir
+```
+
+**Format Kuralları:**
+- ✅ Basit dil (teknik olmayan kişiler anlayabilmeli)
+- ✅ Adım adım talimatlar
+- ✅ Kod blokları netçe formatlı
+- ✅ Troubleshooting section güncel
+- ✅ Screenshot referansları (gelecekte eklenebilir)
 
 **Örnek:**
 ```

@@ -53,17 +53,26 @@ This file contains:
 **Purpose:** Complete project state - your "memory"
 **When:** Every new session, FIRST thing
 
-### 2. PROJECT_ARCHITECTURE.md
+### 2. DEPLOYMENT_AND_USAGE.md ⭐ NEW
+**File:** `.ai/DEPLOYMENT_AND_USAGE.md`
+**Purpose:** Simple deployment and usage guide for EVERYONE
+**When:**
+- Before deploying to new environment
+- When user asks "how do I..."
+- When troubleshooting deployment issues
+- **MUST UPDATE** when deployment/usage changes
+
+### 3. PROJECT_ARCHITECTURE.md
 **File:** `.ai/PROJECT_ARCHITECTURE.md`
 **Purpose:** System architecture, tech stack, design decisions
 **When:** Before making architectural changes
 
-### 3. DEVELOPMENT_LOG.md
+### 4. DEVELOPMENT_LOG.md
 **File:** `.ai/DEVELOPMENT_LOG.md`
 **Purpose:** Known issues, solutions, learnings
 **When:** Before debugging, to avoid repeating work
 
-### 4. AI_AGENT_GUIDELINES.md
+### 5. AI_AGENT_GUIDELINES.md
 **File:** `.ai/AI_AGENT_GUIDELINES.md`
 **Purpose:** Rules for AI agents (documentation, education, code quality)
 **When:** Every session - defines your behavior
