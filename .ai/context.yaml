@@ -1,0 +1,636 @@
+# ============================================================================
+# ODOO PROJECT CONTEXT - AI Memory File
+# ============================================================================
+# This file provides persistent context for AI assistants (Claude, Codex, etc.)
+# across different chat sessions. Always reference this file at the start of
+# new conversations to maintain project continuity.
+#
+# Last Updated: 2025-12-16
+# ============================================================================
+
+project:
+  name: "Odoo Community Edition - SMB Implementation"
+  type: "ERP System"
+  version: "19.0"
+  edition: "Community"
+  status: "Active Development"
+
+# ----------------------------------------------------------------------------
+# ENVIRONMENT & INFRASTRUCTURE
+# ----------------------------------------------------------------------------
+environment:
+  os:
+    distribution: "Ubuntu"
+    version: "22.04.5 LTS"
+    codename: "Jammy Jellyfish"
+
+  runtime:
+    python:
+      version: "3.10.12"
+      path: "/usr/bin/python3"
+      virtual_env: ".venv"
+
+  database:
+    engine: "PostgreSQL"
+    version: "16"  # Inferred from pgdata structure
+    connection:
+      host: "/tmp"  # Unix socket
+      port: 5433
+      user: "odoo"
+      name: "odoo_smb"
+      password: "CONFIGURED_IN_ODOO_CONF"  # See odoo.conf (not in version control)
+
+  web_server:
+    type: "Odoo Built-in"
+    port: 8069
+    interface: "0.0.0.0"  # Production uses 127.0.0.1
+    reverse_proxy: "Nginx (recommended)"
+    ssl: "Let's Encrypt (production)"
+
+# ----------------------------------------------------------------------------
+# PROJECT STRUCTURE
+# ----------------------------------------------------------------------------
+paths:
+  root: "/home/embed/Dev/ODOO/odoo"
+
+  core:
+    odoo: "odoo/"
+    binary: "odoo-bin"
+    core_addons: "addons/"
+
+  custom:
+    addons: "custom_addons/"
+    modules:
+      - "onlyoffice_odoo"  # Office document editor integration
+
+  config:
+    main: "odoo.conf"
+    smb: "odoo.conf.smb"  # SMB-specific configuration
+    example: "odoo.conf.example"
+
+  logs:
+    main: "odoo.log"
+
+  data:
+    postgresql: "pgdata/"
+
+# ----------------------------------------------------------------------------
+# CONFIGURATION
+# ----------------------------------------------------------------------------
+configuration:
+  addons_path:
+    - "odoo/addons"
+    - "custom_addons"
+
+  interfaces:
+    development: "0.0.0.0:8069"  # All interfaces
+    production: "127.0.0.1:8069"  # Localhost only (behind Nginx)
+
+  logging:
+    destination: "odoo.log"
+    level: "info"  # Default
+
+# ----------------------------------------------------------------------------
+# GIT & VERSION CONTROL
+# ----------------------------------------------------------------------------
+git:
+  current_branch: "19.0"
+  default_branch: "19.0"
+
+  remotes:
+    origin:
+      url: "https://github.com/zcakar/odoo"
+      purpose: "Personal fork"
+    upstream:
+      url: "https://github.com/odoo/odoo.git"
+      purpose: "Official Odoo repository"
+
+  recent_commits:
+    - hash: "e2afe488036"
+      message: "Add OnlyOffice module with Odoo 19.0 compatibility fixes"
+    - hash: "59f783df2ff"
+      message: "Use odoo_smb database name"
+    - hash: "6de4495a1f8"
+      message: "Update odoo.conf.smb for odoo-smb db"
+
+# ----------------------------------------------------------------------------
+# CUSTOM MODULES
+# ----------------------------------------------------------------------------
+custom_modules:
+  onlyoffice_odoo:
+    name: "ONLYOFFICE"
+    version: "5.3.0"
+    category: "Productivity"
+    description: "Edit and collaborate on office files within Odoo Documents"
+    author: "ONLYOFFICE"
+    license: "LGPL-3"
+    source: "https://github.com/ONLYOFFICE/onlyoffice_odoo"
+    branch_used: "18.0"  # No 19.0 branch available, patched manually
+
+    dependencies:
+      odoo_modules:
+        - "base"
+        - "mail"
+      python_packages:
+        - "pyjwt"  # Install: pip install pyjwt
+
+    features:
+      - "Text documents editing (.docx, .doc, .odt)"
+      - "Spreadsheet editing (.xlsx, .xls, .ods)"
+      - "Presentation editing (.pptx, .ppt, .odp)"
+      - "Real-time co-editing (Fast & Strict modes)"
+      - "Track Changes"
+      - "Comments & built-in chat"
+      - "Version history"
+      - "Direct editing from Odoo attachments"
+
+    compatibility:
+      odoo_version: "19.0"
+      original_target: "18.0"
+      status: "Patched for Odoo 19.0 compatibility"
+
+      patches_required:
+        - file: "views/res_config_settings_views.xml"
+          line: 117
+          change: "target='inline' → target='current'"
+          reason: "Odoo 19.0 removed 'inline' target support for ir.actions.act_window"
+
+        - file: "views/attachment_card_onlyoffice.xml"
+          xpath_old: "//div[hasclass('o-mail-AttachmentCard-aside')]"
+          xpath_new: "//div[hasclass('o-mail-AttachmentButtons')]"
+          reason: "Odoo 19.0 changed mail attachment card structure"
+
+        - file: "controllers/controllers.py"
+          line: 179
+          method_old: "attachment.validate_access(access_token)"
+          method_new: "attachment._can_return_content(access_token=access_token)"
+          reason: "Odoo 19.0 replaced validate_access() with _can_return_content()"
+
+    onlyoffice_document_server:
+      component: "OnlyOffice Document Server"
+      version: "9.2.0"
+      deployment: "Docker container"
+
+      docker:
+        image: "onlyoffice/documentserver"
+        container_name: "onlyoffice-documentserver"
+        ports:
+          host: 8080
+          container: 80
+        command: |
+          docker run -i -t -d -p 8080:80 --restart=always \
+            --name onlyoffice-documentserver \
+            onlyoffice/documentserver
+
+        management:
+          start: "docker start onlyoffice-documentserver"
+          stop: "docker stop onlyoffice-documentserver"
+          restart: "docker restart onlyoffice-documentserver"
+          logs: "docker logs onlyoffice-documentserver"
+          shell: "docker exec -it onlyoffice-documentserver /bin/bash"
+
+      jwt_authentication:
+        enabled: true  # Enabled by default since v7.2
+        secret_location: "/etc/onlyoffice/documentserver/local.json"
+        get_secret: |
+          docker exec onlyoffice-documentserver cat /etc/onlyoffice/documentserver/local.json | grep -A 2 '"secret"'
+        secret_example: "0aSIXJAuvK63VGej1QZQsTmJpMRnVIXd"
+        header: "Authorization"
+
+      healthcheck:
+        endpoint: "/healthcheck"
+        expected_response: "true"
+        test_command: "curl http://localhost:8080/healthcheck"
+
+    odoo_configuration:
+      settings_location: "Settings → ONLYOFFICE"
+
+      required_fields:
+        doc_server_public_url:
+          label: "ONLYOFFICE Docs address"
+          development_value: "http://192.168.181.130:8080/"
+          production_value: "https://onlyoffice.yourdomain.com/"
+          notes: "OnlyOffice Document Server URL (must be accessible from Odoo)"
+
+        doc_server_secret:
+          label: "ONLYOFFICE Docs secret key"
+          value: "GET_FROM_DOCKER_CONTAINER"
+          notes: "JWT secret from OnlyOffice container"
+
+        jwt_header:
+          label: "JWT Header"
+          value: "Authorization"
+          notes: "HTTP header for JWT token"
+
+        doc_server_odoo_url:
+          label: "ONLYOFFICE Docs address for internal requests from the server"
+          development_value: "http://192.168.181.130:8069/"
+          production_value: "https://yourodoo.com/"
+          notes: "Odoo's URL for OnlyOffice callbacks (file downloads, saves)"
+
+        doc_server_inner_url:
+          label: "Server address for internal requests from ONLYOFFICE Docs"
+          value: "LEAVE_EMPTY_OR_SAME_AS_PUBLIC_URL"
+          notes: "Optional: Alternative OnlyOffice URL for Odoo's internal requests"
+
+    network_requirements:
+      odoo_to_onlyoffice:
+        direction: "Odoo → OnlyOffice Document Server"
+        protocol: "HTTP/HTTPS"
+        purpose: "Editor initialization, file conversion requests"
+        url_used: "doc_server_public_url"
+
+      onlyoffice_to_odoo:
+        direction: "OnlyOffice Document Server → Odoo"
+        protocol: "HTTP/HTTPS"
+        purpose: "File downloads, save callbacks"
+        url_used: "doc_server_odoo_url"
+
+      critical_config:
+        http_interface:
+          parameter: "http_interface in odoo.conf"
+          development: "0.0.0.0"  # Required for Docker container access
+          production: "0.0.0.0 (if behind Nginx) or 127.0.0.1 (if OnlyOffice on same host)"
+          warning: "127.0.0.1 blocks Docker container from accessing Odoo!"
+
+    installation_steps:
+      development:
+        - step: "Clone OnlyOffice module"
+          command: "git clone --depth 1 --branch 18.0 https://github.com/ONLYOFFICE/onlyoffice_odoo.git /tmp/onlyoffice_odoo"
+
+        - step: "Copy to custom_addons"
+          command: "cp -r /tmp/onlyoffice_odoo/onlyoffice_odoo custom_addons/"
+
+        - step: "Install Python dependencies"
+          command: "pip install pyjwt"
+
+        - step: "Update odoo.conf"
+          change: "addons_path = odoo/addons,custom_addons"
+
+        - step: "Apply Odoo 19.0 compatibility patches"
+          files:
+            - "views/res_config_settings_views.xml (line 117)"
+            - "views/attachment_card_onlyoffice.xml (xpath)"
+            - "controllers/controllers.py (line 179)"
+
+        - step: "Install OnlyOffice Document Server (Docker)"
+          command: "docker run -i -t -d -p 8080:80 --restart=always --name onlyoffice-documentserver onlyoffice/documentserver"
+
+        - step: "Get JWT secret from container"
+          command: "docker exec onlyoffice-documentserver cat /etc/onlyoffice/documentserver/local.json | grep -A 2 '\"secret\"'"
+
+        - step: "Update Odoo http_interface"
+          change: "http_interface = 0.0.0.0 in odoo.conf"
+
+        - step: "Install module in Odoo"
+          command: "./odoo-bin -c odoo.conf -d odoo_smb -i onlyoffice_odoo --stop-after-init"
+
+        - step: "Configure in Odoo UI"
+          location: "Settings → ONLYOFFICE"
+          fields: "Fill all required fields (see odoo_configuration section)"
+
+        - step: "Test functionality"
+          action: "Upload a .docx file → Click edit icon → OnlyOffice editor should open"
+
+      production:
+        prerequisites:
+          - "OnlyOffice Document Server deployed (Docker or standalone)"
+          - "Domain/subdomain configured (e.g., onlyoffice.yourdomain.com)"
+          - "SSL certificate installed"
+          - "Firewall rules: Odoo ↔ OnlyOffice communication allowed"
+
+        steps:
+          - "Copy custom_addons/onlyoffice_odoo to production server"
+          - "Apply all Odoo 19.0 compatibility patches"
+          - "Install pyjwt in production venv"
+          - "Update production odoo.conf: addons_path"
+          - "Configure http_interface appropriately"
+          - "Install module: ./odoo-bin -i onlyoffice_odoo"
+          - "Restart Odoo service"
+          - "Configure HTTPS URLs in Odoo settings"
+          - "Test with mixed content warnings disabled"
+
+    troubleshooting:
+      "ONLYOFFICE cannot be reached":
+        causes:
+          - "OnlyOffice container not running"
+          - "Wrong URL in settings"
+          - "Network connectivity issue"
+          - "Firewall blocking communication"
+        solutions:
+          - "docker ps | grep onlyoffice (check container status)"
+          - "curl http://ONLYOFFICE_URL/healthcheck (should return 'true')"
+          - "Check http_interface in odoo.conf (must allow OnlyOffice to connect back)"
+          - "Verify URL is accessible from Odoo server"
+
+      "Authorization error":
+        cause: "JWT secret mismatch or missing"
+        solution: "Get secret from container and enter in Odoo settings"
+        command: "docker exec onlyoffice-documentserver cat /etc/onlyoffice/documentserver/local.json | grep -A 2 '\"secret\"'"
+
+      "Error while downloading the document file":
+        cause: "OnlyOffice cannot reach Odoo (callback URL wrong)"
+        solution: "Set 'ONLYOFFICE Docs address for internal requests from the server' to accessible Odoo URL"
+        note: "Do NOT use localhost if OnlyOffice is in Docker - use host IP or domain"
+
+      "500 Internal Server Error when opening editor":
+        cause: "Odoo 19.0 compatibility issue (controllers.py)"
+        solution: "Replace validate_access() with _can_return_content()"
+        file: "controllers/controllers.py line ~179"
+
+      "Edit button not appearing on attachments":
+        cause: "Odoo 19.0 mail attachment card structure changed"
+        solution: "Update XPath in attachment_card_onlyoffice.xml"
+        change: "o-mail-AttachmentCard-aside → o-mail-AttachmentButtons"
+
+    structure:
+      controllers: true
+      models: true
+      views: true
+      static: true
+      i18n: true
+      utils: true
+
+# ----------------------------------------------------------------------------
+# DEVELOPMENT RULES & CONVENTIONS
+# ----------------------------------------------------------------------------
+development:
+  standards:
+    code_language: "English"
+    comments: "English"
+    documentation: "English"
+
+  odoo_conventions:
+    module_structure: "Standard Odoo addon structure"
+    naming: "Follow Odoo naming conventions"
+    manifest: "Required __manifest__.py"
+
+  architecture:
+    approach: "Modular addons"
+    customization: "No direct core modification"
+    enterprise: "NOT ALLOWED - Community Edition only"
+
+  git_workflow:
+    commit_messages: "Clear, descriptive English"
+    branch_strategy: "Feature branches from 19.0"
+
+  security:
+    passwords: "Never commit production credentials"
+    config_files: "Use .example templates"
+    env_variables: "Prefer environment-specific configs"
+
+# ----------------------------------------------------------------------------
+# TECHNICAL CONSTRAINTS
+# ----------------------------------------------------------------------------
+constraints:
+  odoo_version: "19.0 Community"
+  python_version: ">=3.10"
+  postgresql_version: ">=12"
+
+  forbidden:
+    - "Odoo Enterprise modules"
+    - "Direct core file modifications"
+    - "Hardcoded credentials in version control"
+
+  required:
+    - "All custom modules must be in custom_addons/"
+    - "Manifest file for each module"
+    - "English documentation"
+
+# ----------------------------------------------------------------------------
+# DEPLOYMENT & OPERATIONS
+# ----------------------------------------------------------------------------
+deployment:
+  method: "systemd service"
+  service_name: "odoo.service"
+  user: "odoo"  # Recommended production user
+
+  startup:
+    command: "./odoo-bin -c odoo.conf"
+    config: "odoo.conf or odoo.conf.smb"
+
+  maintenance:
+    updates: "Via git pull from upstream"
+    backups: "PostgreSQL dumps + filestore"
+    monitoring: "odoo.log"
+
+# ----------------------------------------------------------------------------
+# COMMON OPERATIONS
+# ----------------------------------------------------------------------------
+operations:
+  start_odoo:
+    dev: "python3 odoo-bin -c odoo.conf"
+    production: "systemctl start odoo"
+
+  install_module:
+    command: "python3 odoo-bin -c odoo.conf -i module_name"
+    update: "python3 odoo-bin -c odoo.conf -u module_name"
+
+  database:
+    create: "python3 odoo-bin -c odoo.conf -d db_name"
+    backup: "pg_dump odoo_smb > backup.sql"
+    restore: "psql odoo_smb < backup.sql"
+
+  development:
+    debug_mode: "Add --dev=all flag"
+    shell: "python3 odoo-bin shell -c odoo.conf"
+
+# ----------------------------------------------------------------------------
+# KNOWN ISSUES & DECISIONS
+# ----------------------------------------------------------------------------
+decisions:
+  database_naming:
+    decision: "Use odoo_smb (underscore) not odoo-smb (hyphen)"
+    reason: "PostgreSQL compatibility and convention"
+    commit: "59f783df2ff"
+
+  onlyoffice_integration:
+    decision: "Custom module in custom_addons/ with manual Odoo 19.0 patches"
+    reason: "Official module targets Odoo 18.0, required compatibility patches for 19.0"
+    commit: "e2afe488036"
+
+    key_decisions:
+      - "Use official OnlyOffice repo branch 18.0 as base"
+      - "Apply manual patches for Odoo 19.0 API changes"
+      - "Deploy OnlyOffice Document Server via Docker"
+      - "Use JWT authentication (enabled by default in OnlyOffice v7.2+)"
+      - "Change http_interface to 0.0.0.0 for Docker container communication"
+
+    why_docker:
+      reason: "Easiest deployment method with built-in updates"
+      alternatives: "Standalone installation (more complex), SaaS version (paid)"
+
+    why_patches_needed:
+      - "Odoo 19.0 removed 'inline' target for ir.actions.act_window"
+      - "Odoo 19.0 changed mail attachment card DOM structure"
+      - "Odoo 19.0 replaced validate_access() with _can_return_content()"
+
+  interface_binding:
+    development: "0.0.0.0 (all interfaces)"
+    production: "0.0.0.0 (if behind Nginx reverse proxy)"
+    critical_note: "Must be 0.0.0.0 for OnlyOffice Docker container to callback to Odoo"
+    security: "Always use Nginx reverse proxy with SSL in production"
+
+  network_architecture:
+    decision: "Bidirectional communication: Odoo ↔ OnlyOffice"
+    odoo_to_onlyoffice: "Editor initialization, file conversion"
+    onlyoffice_to_odoo: "File downloads, save callbacks"
+    localhost_issue: "localhost from Docker container != localhost from host system"
+    solution: "Use host IP (192.168.x.x) in development, domain in production"
+
+# ----------------------------------------------------------------------------
+# DEPENDENCIES & PACKAGES
+# ----------------------------------------------------------------------------
+dependencies:
+  system:
+    - "postgresql-16"
+    - "python3.10"
+    - "python3-pip"
+    - "python3-venv"
+    - "docker (for OnlyOffice Document Server)"
+    - "nginx (production)"
+    - "certbot (SSL)"
+
+  python:
+    requirements_file: "requirements.txt"
+    virtual_env: ".venv"
+
+    key_packages:
+      - "pyjwt (OnlyOffice)"
+      - "psycopg2"
+      - "Babel"
+      - "Pillow"
+      # See requirements.txt for full list
+
+# ----------------------------------------------------------------------------
+# TROUBLESHOOTING GUIDE
+# ----------------------------------------------------------------------------
+troubleshooting:
+  module_not_loading:
+    check:
+      - "Module in correct addons path"
+      - "__manifest__.py exists and valid"
+      - "Dependencies installed"
+      - "Module installed: python3 odoo-bin -i module_name"
+
+  database_connection_failed:
+    check:
+      - "PostgreSQL running: systemctl status postgresql"
+      - "Port 5433 accessible"
+      - "Database exists: psql -l"
+      - "Credentials in odoo.conf correct"
+
+  permission_denied:
+    check:
+      - "File ownership: chown -R odoo:odoo /path"
+      - "Directory permissions: 755 for dirs, 644 for files"
+      - "PostgreSQL user privileges"
+
+# ----------------------------------------------------------------------------
+# AI ASSISTANT GUIDELINES
+# ----------------------------------------------------------------------------
+ai_guidelines:
+  context_loading:
+    - "ALWAYS read this file at the start of new sessions"
+    - "Reference specific sections when relevant"
+    - "Ask for clarification if context seems outdated"
+
+  code_generation:
+    - "Follow Odoo addon structure strictly"
+    - "Use English for all code and comments"
+    - "No Enterprise module dependencies"
+    - "Test compatibility with Odoo 19.0"
+
+  file_operations:
+    - "Custom modules ONLY in custom_addons/"
+    - "Never modify odoo/ core files directly"
+    - "Use odoo.conf for configuration"
+
+  security:
+    - "Never expose passwords in responses"
+    - "Remind to use environment-specific configs"
+    - "Flag any security concerns immediately"
+
+  session_continuity:
+    when_starting_new_chat:
+      - "Load context from .ai/context.yaml"
+      - "Understand project structure"
+      - "Know current state and decisions"
+
+    when_unsure:
+      - "Check this context file first"
+      - "Verify against git history"
+      - "Ask user for current status if needed"
+
+# ----------------------------------------------------------------------------
+# QUICK REFERENCE
+# ----------------------------------------------------------------------------
+quick_reference:
+  start_development:
+    - "cd /home/embed/Dev/ODOO/odoo"
+    - "source .venv/bin/activate"
+    - "python3 odoo-bin -c odoo.conf --dev=all"
+
+  access_odoo:
+    url: "http://localhost:8069"
+    database: "odoo_smb"
+    admin: "Configured in Settings > Users"
+
+  add_new_module:
+    - "Create in custom_addons/"
+    - "Follow Odoo structure"
+    - "Update addons_path if needed"
+    - "Install: python3 odoo-bin -i module_name -c odoo.conf"
+
+  update_existing_module:
+    - "Make code changes"
+    - "Update: python3 odoo-bin -u module_name -c odoo.conf"
+    - "Or update from Odoo UI: Apps > Module > Upgrade"
+
+  onlyoffice_setup:
+    docker_commands:
+      start_container: "docker start onlyoffice-documentserver"
+      stop_container: "docker stop onlyoffice-documentserver"
+      check_health: "curl http://localhost:8080/healthcheck"
+      get_jwt_secret: "docker exec onlyoffice-documentserver cat /etc/onlyoffice/documentserver/local.json | grep -A 2 '\"secret\"'"
+      view_logs: "docker logs onlyoffice-documentserver | tail -50"
+
+    odoo_commands:
+      install_module: "./odoo-bin -c odoo.conf -d odoo_smb -i onlyoffice_odoo --stop-after-init"
+      update_module: "./odoo-bin -c odoo.conf -d odoo_smb -u onlyoffice_odoo --stop-after-init"
+      check_config: "Settings → ONLYOFFICE (in Odoo UI)"
+
+    troubleshooting:
+      connection_test: "curl http://192.168.181.130:8080/healthcheck  # Should return 'true'"
+      odoo_accessible: "curl http://192.168.181.130:8069/web  # Should return HTML"
+      check_odoo_port: "ss -tlnp | grep :8069  # Should show 0.0.0.0:8069"
+
+# ----------------------------------------------------------------------------
+# METADATA
+# ----------------------------------------------------------------------------
+metadata:
+  created: "2025-12-16"
+  last_updated: "2025-12-16"
+  maintained_by: "Project Team"
+  version: "1.1.0"
+
+  changelog:
+    - date: "2025-12-16"
+      version: "1.1.0"
+      change: "OnlyOffice integration documentation added"
+      details:
+        - "Complete OnlyOffice module configuration details"
+        - "Odoo 19.0 compatibility patches documented"
+        - "Docker container setup and JWT authentication"
+        - "Network requirements and troubleshooting guide"
+        - "Development and production deployment steps"
+      author: "Claude Code"
+
+    - date: "2025-12-16"
+      version: "1.0.0"
+      change: "Initial context file creation"
+      author: "Claude Code"
+
+# ============================================================================
+# END OF CONTEXT FILE
+# ============================================================================
