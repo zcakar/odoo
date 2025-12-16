@@ -337,6 +337,34 @@ When using certbot's Nginx installer, start from a valid HTTP config; let certbo
 
 ---
 
+### [2025-12-16] - File Upload Fails with "File too large" (8.9 MB)
+
+**Status:** ✅ Resolved
+
+**Context:**
+Uploading `PowerPoint-Object-In-Docs-MS365-20251208.docx` (~8.9 MB) in Odoo UI raised "File too large".
+
+**Problem:**
+Nginx reverse proxy for `smb-hkt.com` lacked `client_max_body_size`, so the default (1 MB) caused HTTP 413, surfaced to the frontend as "File too large".
+
+**Root Cause:**
+Main Odoo vhost `/etc/nginx/sites-enabled/smb-hkt` had no upload size override; OnlyOffice vhost had 100M, but main site didn't.
+
+**Solution:**
+- Set `client_max_body_size 100M;` in `/etc/nginx/sites-enabled/smb-hkt`.
+- Validate and reload Nginx: `nginx -t && systemctl reload nginx`.
+- Result: uploads up to 100 MB now accepted.
+
+**Learning:**
+Configure `client_max_body_size` on all relevant vhosts (Odoo + OnlyOffice). Default Nginx 1 MB is too small for documents.
+
+**Related Files:**
+- `/etc/nginx/sites-enabled/smb-hkt` (server block)
+
+**Tags:** `nginx`, `upload`, `odoo`, `production`
+
+---
+
 ## 🔍 Quick Reference: Common Issues
 
 ### Issue: Module Not Found
