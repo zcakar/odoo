@@ -29,6 +29,27 @@ Ana proje bağlam dosyası. Makine-okunur (YAML) ve insan-okunur format.
 - Troubleshooting kılavuzu
 - AI asistan yönergeleri
 
+### `PROJECT_ARCHITECTURE.md` ⭐
+**Projenin kalbi** - Sistem mimarisi, teknoloji stack, design decisions.
+
+**İçerik:**
+- 🎯 Proje amacı ve hedefleri
+- 🏗️ Sistem mimarisi (diyagramlar ile)
+- 📁 Detaylı klasör yapısı açıklamaları
+- 🔄 Veri akışı (user request, document edit flow)
+- 🔧 Teknoloji stack (Backend, Frontend, Infrastructure)
+- 🔐 Güvenlik mimarisi
+- 🎨 Önemli design decisions (WHY behind choices)
+- 🐛 Known limitations ve workarounds
+- 📈 Scalability considerations
+- 📝 Değişiklik logu
+
+**Ne Zaman Güncellenme li:**
+- Yeni modül eklendi
+- Mimari değişti
+- Teknoloji upgrade edildi
+- Design decision alındı
+
 ### `AI_AGENT_GUIDELINES.md`
 AI ajanları için **sürekli dokümantasyon protokolü** ve **eğitici rol kuralları**.
 
@@ -42,6 +63,34 @@ AI ajanları için **sürekli dokümantasyon protokolü** ve **eğitici rol kura
 - İşlem yaparken: EĞİTİCİ açıklamalar yap
 - İşlem sonrası: Önemli adımları KAYDET
 - Session bitiminde: context.yaml GÜNCELLE + version BUMP
+
+### `DEVELOPMENT_LOG.md`
+**Sorun izleme ve öğrenme sistemi** - Karşılaşılan tüm bug'lar, çözümler ve öğrenmeler.
+
+**İçerik:**
+- Detaylı issue entries (Problem → Root Cause → Solution → Learning)
+- Tag sistemi (odoo-19, docker, production, etc.)
+- Quick reference: Common issues
+- İstatistikler (Resolved, In Progress, Blocked)
+
+**Ne Zaman Entry Ekle:**
+- Bug çözdün
+- Workaround buldun
+- Teknik karar aldın
+- Best practice keşfettin
+
+### `sessions/` Directory
+**Her session'ın detaylı kronolojik logu**
+
+**Dosya Formatı:** `YYYY-MM-DD_session_name.md`
+
+**İçerik:**
+- Session hedefi ve durumu
+- Tamamlanan tasks (checkboxes)
+- Karşılaşılan issues
+- Alınan kararlar
+- Öğrenmeler (technical + process)
+- Progress summary
 
 ### `TEMPLATE_USAGE.md`
 Bu `.ai/` klasörünü **diğer projelerde template olarak kullanma** kılavuzu.
