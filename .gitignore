@@ -55,3 +55,5 @@ odoo-serve.log
 /man/
 /share/
 /src/
+postgresql.log
+addons/onlyoffice/
