@@ -61,6 +61,14 @@ custom klasör eklendiğinde bu path'i güncellemelisiniz.
 - Function/variable names: **ENGLISH**
 - Documentation: **ENGLISH**
 
+### 4. Command Delivery Protocol
+> **Kullanıcıya verdiğin komutlar her zaman kopyala-çalıştır formatında olmalı.**
+
+- Komutları sıralı, kopyalanabilir bloklar halinde ver (```` ```bash ... ``` ````).
+- Çalışma dizinini belirt: ör. `cd /home/embed/Dev/ODOO/odoo && git pull origin 19.0`.
+- Git işlemleri (özellikle `git pull`) daima depo kökünde (`/home/embed/Dev/ODOO/odoo`) çalıştırılmalı; yanlış dizin riskine karşı komutu bu yolla ver.
+- Komutlarda gereksiz anlatım yok; açıklamalar blok dışında kısa ve net olsun.
+
 ---
 
 ## 📋 Zorunlu Görevler
