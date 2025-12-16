@@ -365,6 +365,26 @@ Configure `client_max_body_size` on all relevant vhosts (Odoo + OnlyOffice). Def
 
 ---
 
+### [2025-12-16] - Production Snapshot Created (Hetzner)
+
+**Status:** ✅ Recorded
+
+**Context:**
+Hetzner console shows a snapshot taken for production host `ubuntu-8gb-nbg1-1` (91.99.22.41).
+
+**Details:**
+- Snapshot name: `ubuntu-8gb-nbg1-1-1765908042-odoo-ce-onlyoffice-preprod-2025-12-16-2100`
+- Created: 2025-12-16 (console shows “less than a minute ago” at capture time)
+- Provider: Hetzner (CPX32)
+- Screenshot reference: Hetzner Console → Servers → ubuntu-8gb-nbg1-1 → Snapshots (ID `341540964`)
+
+**Purpose / Note:**
+Backup point after enabling HTTPS for OnlyOffice and increasing upload limits. Useful restore point before further changes.
+
+**Tags:** `snapshot`, `backup`, `hetzner`, `production`
+
+---
+
 ## 🔍 Quick Reference: Common Issues
 
 ### Issue: Module Not Found
