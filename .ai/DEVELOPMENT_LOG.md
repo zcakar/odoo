@@ -50,6 +50,33 @@ What did we learn? How to avoid this in the future?
 
 ## 📝 Log Entries
 
+### [2025-12-16] - Attachment Activity Logs + Co-editing Verified
+
+**Status:** ✅ Resolved
+
+**Context:**
+Added chatter visibility for attachment lifecycle (add/update/delete) and validated OnlyOffice co-editing in Odoo task screen.
+
+**Problem:**
+Users could not see file add/update/delete events directly in the chatter; needed confirmation that co-editing works with the current setup.
+
+**Root Cause:**
+No logging hooks on `ir.attachment`; co-editing had not been exercised end-to-end after OnlyOffice deployment.
+
+**Solution:**
+- Extended `ir.attachment` in `custom_addons/onlyoffice_odoo` to post chatter notes on create/write/unlink.
+- Deployed and upgraded module on production, then validated in a task: attachment add/update logs appear in chatter; two users edited the same document simultaneously in OnlyOffice (Fast mode) successfully.
+
+**Learning:**
+- Chatter hooks give immediate visibility without touching core code.
+- Co-editing works out of the box once OnlyOffice and JWT are correctly configured; no extra flags needed in Odoo.
+
+**Related Files:**
+- `custom_addons/onlyoffice_odoo/models/ir_attachment.py`
+- `.ai/context.yaml` (metadata/changelog updated)
+
+**Tags:** `odoo-19`, `onlyoffice`, `chatter`, `co-editing`
+
 ### [2025-12-16] - Odoo 19.0 OnlyOffice Module Compatibility Patches
 
 **Status:** ✅ Resolved
