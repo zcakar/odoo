@@ -361,6 +361,22 @@ custom_modules:
         - "User reports draw.io installed via Plugin Manager and visible in ribbon; actual plugin files not yet located in scanned container paths—verify which VM/container hosts the installed plugin and capture its GUID/path."
         - "Repeated scans (find/grep for draw.io/diagrams.net) in /var/www/onlyoffice/documentserver and /var/lib/onlyoffice/documentserver still empty; marketplace dir lacks draw.io package. Hypothesis: different DS/VM or alternative mount. Fallback: build/publish own plugin from docspace-plugins-master/draw.io or jgraph/drawio via marketplace guide."
         - "Marketplace sources tracked: https://github.com/ONLYOFFICE/onlyoffice.github.io/tree/master and Plugin Manager store assets under /store; related discussion: https://github.com/ONLYOFFICE/onlyoffice.github.io/issues/356."
+      roadmap:
+        goal: "Custom draw.io plugin with SVG + embedXml, preserving current UX"
+        base_sources:
+          - "/home/embed/Dev/ODOO/docspace-plugins-master/draw.io (v1.2.0, webpack + docspace plugin SDK)"
+          - "Upstream reference: https://github.com/jgraph/drawio"
+        behavior:
+          - "Launch via plugin button → embed.diagrams.net iframe"
+          - "Save as SVG (image/svg+xml) with embedXml=true so mxfile is stored inside SVG"
+          - "Re-open by extracting mxfile from SVG; .drawio remains supported"
+        deployment:
+          - "Identify correct Document Server (odoo.conf ONLYOFFICE URL) and install under sdkjs-plugins/{GUID} with config.json; restart container"
+        tests:
+          - "DOCX unzip → word/media/image*.svg contains mxfile"
+          - "Reopen SVG → editable diagram"
+          - "PDF export shows vector quality (400% zoom)"
+          - "Optional PNG fallback validation"
       next_steps:
         - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
         - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."

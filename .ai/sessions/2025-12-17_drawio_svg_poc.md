@@ -34,5 +34,23 @@ OnlyOffice draw.io eklentisinde PNG yerine SVG + embedXml ile doküman içine ve
 - Drawoffice konteyneri stabil hale gelirse içinde `/usr/share/nginx/html` veya benzeri yolda draw.io plugin/assetlerini aramak; gerekirse yeniden başlatma sebebini loglardan görmek.
 - Eğer doğru DS erişilemiyorsa: Marketplace rehberini izleyerek (`onlyoffice.com/blog/2022/10/how-to-publish-your-own-plugin-in-onlyoffice-marketplace`) `docspace-plugins-master/draw.io` veya `jgraph/drawio` tabanlı özelleştirilmiş plugin’i elle derleyip `sdkjs-plugins` altına yerleştirmek.
 
+## Yol Haritası (Özel draw.io plugini, SVG + embedXml)
+- Hedef davranış: Plugin Manager’daki draw.io UX’ini koru; tıklanınca embed.diagrams.net iframe’i açılır, kaydettiğinde dokümana SVG (image/svg+xml) olarak mxfile gömülü şekilde yazar; tekrar tıklayınca SVG içindeki mxfile’dan diyagramı açıp düzenlenebilir.
+- Kaynak tabanı: `docspace-plugins-master/draw.io` (v1.2.0) + gerekiyorsa `jgraph/drawio` upstream (render/format referansı). Build: webpack + `@onlyoffice/docspace-plugin-sdk`.
+- Teknik değişiklikler:
+  1) Export/save: `format: 'svg'`, `embedXml: true`, MIME `image/svg+xml`; PNG fallback opsiyonel.  
+  2) Insert pipeline: SVG’yi ODF/DOCX içine eklerken mxfile meta saklanacak (draw.io varsayılan embedXml bunu sağlıyor).  
+  3) Open flow: `.svg` dosyasını okurken mxfile’ı çıkarıp editöre `format: 'xml'` ile ver; `.drawio` uzantısı aynı kalabilir.  
+  4) UI/UX: Mevcut modallar/iframe ayarlarını koru; kayıt butonu ve autosave çalışmalı.
+- Dağıtım:
+  - Doğru Document Server’ı netleştir (odoo.conf → ONLYOFFICE URL).  
+  - Plugin paketini `sdkjs-plugins/{GUID}` altına kopyala, `config.json` ile kayıt et; gerekirse marketplace cache yerine manuel yükle.  
+  - Container restart + cache temizliği (plugins cache) sonrası doğrula.
+- Test planı:
+  - Yeni diyagram oluştur, kaydet → DOCX unzip: `word/media/image*.svg` içinde mxfile var mı?  
+  - SVG’yi yeniden aç → içerik edit edilebilir mi?  
+  - PDF export’ta vektörel kalite kontrol (400% zoom).  
+  - PNG fallback çalışıyor mu (embedXml kapalı senaryo).
+
 ## Notlar
 - Help içeriği mevcut olduğundan eklenti destekleniyor; dosya sistemi yolunun farklı bir cache/marketplace konumunda olması muhtemel.
