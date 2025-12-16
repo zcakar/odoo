@@ -67,7 +67,7 @@ else
 fi
 echo ""
 
-# Step 3: Create Nginx configuration
+# Step 3: Create Nginx configuration (HTTP only; certbot will add HTTPS)
 echo "Step 3: Creating Nginx configuration..."
 cat > /etc/nginx/sites-available/onlyoffice << 'EOF'
 # OnlyOffice Document Server - Reverse Proxy Configuration
@@ -75,7 +75,7 @@ upstream onlyoffice {
     server 127.0.0.1:8080;
 }
 
-# HTTP to HTTPS redirect
+# HTTP server (certbot will add HTTPS + redirect)
 server {
     listen 80;
     listen [::]:80;
@@ -86,35 +86,7 @@ server {
         root /var/www/html;
     }
 
-    # Redirect all other HTTP to HTTPS
-    location / {
-        return 301 https://$server_name$request_uri;
-    }
-}
-
-# HTTPS server
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name onlyoffice.smb-hkt.com;
-
-    # SSL configuration (will be auto-configured by certbot)
-    # ssl_certificate /etc/letsencrypt/live/onlyoffice.smb-hkt.com/fullchain.pem;
-    # ssl_certificate_key /etc/letsencrypt/live/onlyoffice.smb-hkt.com/privkey.pem;
-
-    # Security headers
-    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-Frame-Options "SAMEORIGIN" always;
-
-    # Logs
-    access_log /var/log/nginx/onlyoffice-access.log;
-    error_log /var/log/nginx/onlyoffice-error.log;
-
-    # Max upload size
-    client_max_body_size 100M;
-
-    # Proxy settings
+    # Proxy to OnlyOffice
     location / {
         proxy_pass http://onlyoffice;
         proxy_http_version 1.1;

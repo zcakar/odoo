@@ -309,6 +309,34 @@ access_onlyoffice_odoo,access_onlyoffice_odoo,model_onlyoffice_odoo,base.group_u
 
 ---
 
+### [2025-12-16] - Certbot Fails When Nginx Has SSL Block Without Certificates
+
+**Status:** ✅ Resolved
+
+**Context:**
+Running `scripts/onlyoffice-subdomain-setup.sh` on production host to publish `onlyoffice.smb-hkt.com` via Nginx and obtain a Let's Encrypt certificate.
+
+**Problem:**
+`nginx -t` failed with `no "ssl_certificate" is defined for the "listen ... ssl" directive` because the generated config contained an HTTPS server block before certificates existed.
+
+**Root Cause:**
+Nginx requires certificate paths whenever `listen ... ssl` is present. The script emitted an HTTPS server without cert paths, so config validation failed before certbot could run and populate them.
+
+**Solution:**
+- Generate an HTTP-only reverse proxy config first (no `listen ... ssl` block).
+- Let `certbot --nginx` inject the HTTPS server, certificate paths, and redirects after validation.
+- Updated `scripts/onlyoffice-subdomain-setup.sh` accordingly; rerun the script to regenerate `/etc/nginx/sites-available/onlyoffice` before invoking certbot.
+
+**Learning:**
+When using certbot's Nginx installer, start from a valid HTTP config; let certbot own the HTTPS server stanza and certificate references.
+
+**Related Files:**
+- `scripts/onlyoffice-subdomain-setup.sh`
+
+**Tags:** `deployment`, `nginx`, `certbot`, `onlyoffice`, `production`
+
+---
+
 ## 🔍 Quick Reference: Common Issues
 
 ### Issue: Module Not Found
