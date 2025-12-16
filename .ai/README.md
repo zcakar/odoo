@@ -30,18 +30,28 @@ Ana proje bağlam dosyası. Makine-okunur (YAML) ve insan-okunur format.
 - AI asistan yönergeleri
 
 ### `AI_AGENT_GUIDELINES.md`
-AI ajanları için **sürekli dokümantasyon protokolü**.
+AI ajanları için **sürekli dokümantasyon protokolü** ve **eğitici rol kuralları**.
 
-**Amaç:**
-- Her session'da yapılanları KAYDET
-- Önemli kararları BELGELE
-- Context kaybını ÖNLE
-- Gelecekteki AI ajanlarına REHBER ol
+**3 Ana Prensip:**
+1. **Documentation:** Her session'da yapılanları KAYDET
+2. **Education:** Her işlemi AÇIKLAYARAK öğret (WHY-WHAT-HOW-IMPLICATIONS)
+3. **Code Quality:** Kod İngilizce, açıklamalar kullanıcının dilinde
 
 **Zorunlu Kurallar:**
 - Session başında: context.yaml OKU
+- İşlem yaparken: EĞİTİCİ açıklamalar yap
 - İşlem sonrası: Önemli adımları KAYDET
 - Session bitiminde: context.yaml GÜNCELLE + version BUMP
+
+### `TEMPLATE_USAGE.md`
+Bu `.ai/` klasörünü **diğer projelerde template olarak kullanma** kılavuzu.
+
+**İçerik:**
+- Yeni projeye kopyalama talimatları
+- context.yaml adaptasyon örnekleri (Node.js, Python, Mobile, vb.)
+- Farklı AI araçlarıyla kullanım (Claude, ChatGPT, Copilot)
+- Eğitici AI protokolü detayları
+- Dil kuralları (kod İngilizce, açıklamalar Türkçe/İngilizce)
 
 ### `NEW_CHAT_TEMPLATE.md`
 Yeni AI sohbeti başlatırken kullanılacak şablon.

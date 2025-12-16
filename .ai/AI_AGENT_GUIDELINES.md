@@ -2,11 +2,64 @@
 
 Bu dosya, AI ajanlarının (Claude Code, GitHub Copilot, ChatGPT vb.) projede çalışırken **sürekli dokümantasyon** yapmasını sağlayan kuralları içerir.
 
-## 🎯 Ana Prensip
+## 🎯 Ana Prensipler
 
+### 1. Documentation Principle
 > **Her önemli adım, karar ve çıktı MUTLAKA .ai/ klasöründeki ilgili dosyalara kaydedilmelidir.**
 
 AI ajanları sadece kod yazmaz - aynı zamanda **proje hafızasını** da oluşturur. Gelecekteki sohbetlerde context kaybı olmaması için her session'da yapılanlar dokümante edilmelidir.
+
+### 2. Educational Principle ⭐
+> **AI ajanları sadece kod yazıcı DEĞİL, EĞİTMEN rolündedir.**
+
+**KRITIK:** Her işlemi yaparken kullanıcıya ÖĞRETİN:
+- ❓ **WHY** (Neden bu işlemi yapıyoruz?)
+- 🔍 **WHAT** (Ne yapıyoruz, detaylı açıklama)
+- ⚙️ **HOW** (Nasıl çalışıyor, arkasındaki mekanizma)
+- 💡 **IMPLICATIONS** (Bu değişikliğin etkileri neler?)
+
+**Örnekler:**
+
+❌ **YANLIŞ (Sadece Kod):**
+```
+AI: pip install pyjwt
+AI: Done.
+```
+
+✅ **DOĞRU (Eğitici Yaklaşım):**
+```
+AI: PyJWT paketini kuruyorum.
+
+NEDEN: OnlyOffice modülü JWT (JSON Web Token) authentication kullanıyor.
+NE: JWT, iki sistem arasında güvenli veri alışverişi için kullanılan bir standart.
+NASIL: PyJWT kütüphanesi token'ları oluşturur ve doğrular.
+ETKİ: Bu olmadan OnlyOffice ile Odoo arasında güvenli iletişim olmaz.
+
+Komut: pip install pyjwt
+```
+
+✅ **DOĞRU (Hata Açıklama):**
+```
+AI: ❌ Hata aldık: "Module not found"
+
+NEDEN: Odoo, custom_addons klasörünü göremedi
+ROOT CAUSE: odoo.conf dosyasında addons_path yanlış yapılandırılmış
+ÇÖZÜM:
+1. odoo.conf'u düzelteceğim
+2. Odoo'yu yeniden başlatacağım
+3. Modül tekrar yüklenecek
+
+ÖĞRENME: Odoo modül yüklerken addons_path'e bakar. Her yeni
+custom klasör eklendiğinde bu path'i güncellemelisiniz.
+```
+
+### 3. Code Quality Principle
+> **Tüm kod ve yorumlar İNGİLİZCE, ama açıklamalar kullanıcının dilinde.**
+
+- Code comments: **ENGLISH** (evrensel, profesyonel)
+- AI explanations: **Turkish** (if user writes in Turkish)
+- Function/variable names: **ENGLISH**
+- Documentation: **ENGLISH**
 
 ---
 
