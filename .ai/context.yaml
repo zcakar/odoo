@@ -612,9 +612,18 @@ metadata:
   created: "2025-12-16"
   last_updated: "2025-12-16"
   maintained_by: "Project Team"
-  version: "1.3.2"
+  version: "1.3.3"
 
   changelog:
+    - date: "2025-12-16"
+      version: "1.3.3"
+      change: "Retention: keep only last 10 OnlyOffice attachment versions"
+      details:
+        - "Added pruning hook to remove attachment versions older than the last 10 for the same record/name"
+        - "Hooked pruning into OnlyOffice callback after version increment"
+      status: "COMPLETED"
+      author: "Codex"
+      session_log: ""
     - date: "2025-12-16"
       version: "1.3.2"
       change: "Lightweight attachment version counter added for OnlyOffice"

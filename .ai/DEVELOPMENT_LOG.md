@@ -104,6 +104,33 @@ Field not defined in `ir.attachment`; existing records had no default.
 
 **Tags:** `odoo-19`, `onlyoffice`, `versioning`
 
+### [2025-12-16] - Prune OnlyOffice Versions to Last 10 Copies
+
+**Status:** ✅ Resolved
+
+**Context:**
+Needed lightweight retention: keep only the latest 10 versions per attachment to avoid storage bloat.
+
+**Problem:**
+OnlyOffice saves full copies; frequent edits would grow storage linearly.
+
+**Root Cause:**
+No retention policy for OnlyOffice-generated attachment versions.
+
+**Solution:**
+- Added `_prune_old_versions(limit=10)` on `ir.attachment` to delete older versions (same record/name) beyond the last 10.
+- Invoked pruning from the OnlyOffice callback after incrementing `oo_attachment_version`.
+
+**Learning:**
+- Simple retention cap prevents unbounded growth while keeping recent history.
+- Matching by base filename and extension avoids deleting unrelated attachments on the same record.
+
+**Related Files:**
+- `custom_addons/onlyoffice_odoo/models/ir_attachment.py`
+- `custom_addons/onlyoffice_odoo/controllers/controllers.py`
+
+**Tags:** `odoo-19`, `onlyoffice`, `versioning`, `retention`
+
 ### [2025-12-16] - Odoo 19.0 OnlyOffice Module Compatibility Patches
 
 **Status:** ✅ Resolved

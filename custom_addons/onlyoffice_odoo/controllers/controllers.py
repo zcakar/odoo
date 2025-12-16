@@ -272,6 +272,7 @@ class Onlyoffice_Connector(http.Controller):
                     filename, ext = os.path.splitext(attachment.name)
                     name = f"{filename} ({attachment_version}){ext}"
                     previous_attachments.sudo().write({"name": name})
+                    attachment.sudo()._prune_old_versions(limit=10)
                 else:
                     attachment.write({"raw": datas, "mimetype": guess_type(file_url)[0]})
 

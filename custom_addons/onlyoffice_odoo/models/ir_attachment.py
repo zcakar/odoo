@@ -1,3 +1,6 @@
+import os
+import re
+
 from odoo import _, api, fields, models
 
 
@@ -30,6 +33,42 @@ class IrAttachment(models.Model):
             except Exception:
                 # Never block attachment operations because of chatter errors.
                 continue
+
+    @api.model
+    def _strip_version_suffix(self, name):
+        """Return base filename without ' (vN)' suffix before extension."""
+        base, ext = os.path.splitext(name or "")
+        match = re.match(r"^(.*)\s+\(v\d+\)$", base)
+        return (match.group(1) if match else base, ext)
+
+    def _prune_old_versions(self, limit=10):
+        """Keep only the latest `limit` OnlyOffice versions for the same record/name."""
+        for attachment in self:
+            if not attachment.oo_attachment_version:
+                continue
+            min_keep = attachment.oo_attachment_version - limit + 1
+            if min_keep <= 0:
+                continue
+
+            base_name, ext = self._strip_version_suffix(attachment.name)
+            candidates = (
+                self.sudo()
+                .search(
+                    [
+                        ("res_model", "=", attachment.res_model),
+                        ("res_id", "=", attachment.res_id),
+                        ("id", "!=", attachment.id),
+                        ("oo_attachment_version", "<", min_keep),
+                    ]
+                )
+            )
+
+            to_unlink = candidates.filtered(
+                lambda att: self._strip_version_suffix(att.name)[0] == base_name
+                and os.path.splitext(att.name or "")[1] == ext
+            )
+            if to_unlink:
+                to_unlink.unlink()
 
     def create(self, vals):
         vals_list = vals if isinstance(vals, list) else [vals]
