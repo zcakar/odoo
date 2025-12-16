@@ -177,6 +177,84 @@ metadata:
         - "path/to/file2.xml"
 ```
 
+### 4️⃣ Git Version Control (Zorunlu!)
+
+**ÖNEMLI:** .ai/ klasöründeki değişiklikler de version kontrolünde olmalı!
+
+#### Git Commit Kuralları
+
+**Ne Zaman Commit Yapılmalı:**
+- ✅ Session sonunda (tüm değişiklikler birlikte)
+- ✅ Önemli milestone tamamlandığında (major feature, deployment, etc.)
+- ✅ context.yaml version bump yapıldığında
+- ✅ Yeni dokümantasyon dosyası eklendiğinde
+- ✅ Kritik bug fix sonrasında
+
+**Commit Mesajı Formatı:**
+```bash
+git commit -m "Short description
+
+Detailed explanation:
+- Change 1
+- Change 2
+
+Files modified:
+- .ai/context.yaml (v1.2.0 → v1.3.0)
+- .ai/DEVELOPMENT_LOG.md (added issue #5)
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+#### Git Push Kuralları
+
+**KRITIK:** Her commit sonrası **MUTLAKA GitHub'a push et!**
+
+```bash
+# Commit sonrası
+git push origin 19.0  # veya current branch
+```
+
+**NEDEN:**
+- Backup için (local disk failure koruması)
+- Ekip paylaşımı için
+- Deployment için (production pull yapar)
+- History tracking için
+
+**Workflow:**
+```
+1. Değişiklik yap (.ai/ dosyaları dahil)
+2. git add .ai/
+3. git commit -m "descriptive message"
+4. git push origin 19.0  ← UNUTMA!
+5. Kullanıcıya bildir: "Changes pushed to GitHub"
+```
+
+#### .ai/ Klasörü için Özel Kurallar
+
+**Commit Sıklığı:**
+- Her session sonunda push
+- Önemli dokümantasyon güncellemelerinde push
+- Version bump'larda push
+
+**Push Kontrolü:**
+```bash
+# Push gerekli mi kontrol et
+git status
+# Eğer "Your branch is ahead" görünüyorsa → PUSH YAP!
+```
+
+**Commit Grupları:**
+```bash
+# İyi: İlgili değişiklikleri birlikte commit et
+git add .ai/context.yaml .ai/DEVELOPMENT_LOG.md
+git commit -m "Update context and log issue #3"
+git push origin 19.0
+
+# Kötü: Her dosya için ayrı commit (gereksiz noise)
+```
+
 ---
 
 ## 🔄 Sürekli Dokümantasyon Workflow
