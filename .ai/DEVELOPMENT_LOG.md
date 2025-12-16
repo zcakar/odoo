@@ -77,6 +77,33 @@ No logging hooks on `ir.attachment`; co-editing had not been exercised end-to-en
 
 **Tags:** `odoo-19`, `onlyoffice`, `chatter`, `co-editing`
 
+### [2025-12-16] - Lightweight Attachment Version Counter for OnlyOffice
+
+**Status:** ✅ Resolved
+
+**Context:**
+OnlyOffice callback already attempted to increment `oo_attachment_version` but the field did not exist. Needed a minimal, storage-friendly version marker.
+
+**Problem:**
+Version increments would fail or be `False` because `oo_attachment_version` was missing, blocking reliable version labeling.
+
+**Root Cause:**
+Field not defined in `ir.attachment`; existing records had no default.
+
+**Solution:**
+- Added integer field `oo_attachment_version` (default 1, copy=False) on `ir.attachment`.
+- Added init SQL to backfill NULLs to 1 for existing attachments.
+- Ensured create sets a default when payload omits the field.
+
+**Learning:**
+- A simple counter is enough for OnlyOffice callbacks to label prior versions without heavy storage.
+- Backfilling NULLs avoids TypeError on first increment.
+
+**Related Files:**
+- `custom_addons/onlyoffice_odoo/models/ir_attachment.py`
+
+**Tags:** `odoo-19`, `onlyoffice`, `versioning`
+
 ### [2025-12-16] - Odoo 19.0 OnlyOffice Module Compatibility Patches
 
 **Status:** ✅ Resolved

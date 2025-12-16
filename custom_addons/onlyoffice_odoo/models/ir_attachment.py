@@ -1,8 +1,21 @@
-from odoo import _, models
+from odoo import _, api, fields, models
 
 
 class IrAttachment(models.Model):
     _inherit = "ir.attachment"
+
+    oo_attachment_version = fields.Integer(
+        string="OnlyOffice Version",
+        default=1,
+        copy=False,
+        help="Lightweight version counter used by OnlyOffice callbacks.",
+    )
+
+    def init(self):
+        # Initialize existing records once; safe to re-run on module update.
+        self.env.cr.execute(
+            "UPDATE ir_attachment SET oo_attachment_version = 1 WHERE oo_attachment_version IS NULL"
+        )
 
     def _log_attachment_event(self, message):
         """Post a chatter note on the related record if it supports it."""
@@ -20,6 +33,8 @@ class IrAttachment(models.Model):
 
     def create(self, vals):
         vals_list = vals if isinstance(vals, list) else [vals]
+        for payload in vals_list:
+            payload.setdefault("oo_attachment_version", 1)
         records = super().create(vals_list if len(vals_list) > 1 else vals_list[0])
         for attachment in records:
             message = _("Attachment added: %s") % attachment.name
