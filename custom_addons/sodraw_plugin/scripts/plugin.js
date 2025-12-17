@@ -75,13 +75,28 @@
                 originalDocHeight = oResult.height;
                 log("Stored original document dimensions for re-edit: " + originalDocWidth + "x" + originalDocHeight);
 
-                // Try to find stored mxfile for this image
+                // Try to find stored mxfile and dimensions for this image
                 var imageHash = hashString(oResult.src.substring(0, 1000));
-                var storedXml = localStorage.getItem(SODRAW_STORAGE_PREFIX + imageHash);
+                var storedData = localStorage.getItem(SODRAW_STORAGE_PREFIX + imageHash);
 
-                if (storedXml) {
-                    log("Found stored mxfile for this image");
-                    currentXml = storedXml;
+                if (storedData) {
+                    try {
+                        var parsed = JSON.parse(storedData);
+                        if (parsed.xml) {
+                            log("Found stored mxfile for this image");
+                            currentXml = parsed.xml;
+                            // Also restore dimensions from localStorage as backup
+                            if (parsed.width && parsed.height) {
+                                originalDocWidth = parsed.width;
+                                originalDocHeight = parsed.height;
+                                log("Restored dimensions from localStorage: " + originalDocWidth + "x" + originalDocHeight);
+                            }
+                        }
+                    } catch (e) {
+                        // Old format (just XML string), use it directly
+                        log("Found stored mxfile (old format)");
+                        currentXml = storedData;
+                    }
                 } else {
                     log("No stored mxfile found, starting fresh");
                 }
@@ -295,13 +310,18 @@
                 log("NEW: Calculated dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " at " + EXPORT_SCALE + "x)");
             }
 
-            // Store mxfile XML for re-editing (keyed by image hash)
+            // Store mxfile XML AND dimensions for re-editing (keyed by image hash)
             var imageHash = hashString(imageUrl.substring(0, 1000));
             try {
-                localStorage.setItem(SODRAW_STORAGE_PREFIX + imageHash, currentXml);
-                log("Stored mxfile with hash: " + imageHash);
+                var dataToStore = JSON.stringify({
+                    xml: currentXml,
+                    width: width,
+                    height: height
+                });
+                localStorage.setItem(SODRAW_STORAGE_PREFIX + imageHash, dataToStore);
+                log("Stored mxfile and dimensions (" + width + "x" + height + ") with hash: " + imageHash);
             } catch (e) {
-                logError("Failed to store mxfile in localStorage", e);
+                logError("Failed to store data in localStorage", e);
             }
 
             // Use PutImageDataToSelection API (same as Photo Editor - most reliable method)
