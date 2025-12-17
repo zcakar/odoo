@@ -7,9 +7,12 @@
      *
      * Key features:
      * - Uses PutImageDataToSelection API (like Photo Editor) for reliable insertion
-     * - PNG format with 4x scale for maximum quality
+     * - PNG format with 10x scale for maximum quality
      * - Stores mxfile XML in localStorage for re-editing capability
      * - To re-edit: select the image, then click SODRAW plugin
+     *
+     * IMPORTANT: On re-edit, we MUST preserve the original document dimensions
+     * The high-quality PNG (10x scale) is for pixel density, NOT for display size
      */
 
     var DEBUG = true;
@@ -17,12 +20,16 @@
     var currentXml = null;
     var waitingForExport = false;
 
-    // Export scale factor (10x for maximum quality)
+    // Export scale factor (10x for maximum quality - this is pixel density, not display size)
     var EXPORT_SCALE = 10;
 
     // Store original document dimensions for re-edit (to preserve size)
+    // These are the dimensions shown in the document, NOT the PNG pixel dimensions
     var originalDocWidth = null;
     var originalDocHeight = null;
+
+    // Flag to track if we're editing an existing image
+    var isReEdit = false;
 
     // Marker to identify SODRAW images (stored in local storage keyed by image hash)
     var SODRAW_STORAGE_PREFIX = "sodraw_mxfile_";
@@ -67,15 +74,19 @@
         window.Asc.plugin.executeMethod("GetImageDataFromSelection", [], function(oResult) {
             log("GetImageDataFromSelection result:", oResult);
 
-            if (oResult && oResult.src) {
+            if (oResult && oResult.src && oResult.width > 0 && oResult.height > 0) {
                 log("Found existing image: " + oResult.width + "x" + oResult.height);
 
+                // This is a RE-EDIT scenario
+                isReEdit = true;
+
                 // CRITICAL: Store original document dimensions to preserve size on re-edit
+                // These dimensions come directly from the document - they are AUTHORITATIVE
                 originalDocWidth = oResult.width;
                 originalDocHeight = oResult.height;
-                log("Stored original document dimensions for re-edit: " + originalDocWidth + "x" + originalDocHeight);
+                log("RE-EDIT MODE: Will preserve document dimensions: " + originalDocWidth + "x" + originalDocHeight);
 
-                // Try to find stored mxfile and dimensions for this image
+                // Try to find stored mxfile for this image (for diagram XML, NOT dimensions)
                 var imageHash = hashString(oResult.src.substring(0, 1000));
                 var storedData = localStorage.getItem(SODRAW_STORAGE_PREFIX + imageHash);
 
@@ -85,12 +96,8 @@
                         if (parsed.xml) {
                             log("Found stored mxfile for this image");
                             currentXml = parsed.xml;
-                            // Also restore dimensions from localStorage as backup
-                            if (parsed.width && parsed.height) {
-                                originalDocWidth = parsed.width;
-                                originalDocHeight = parsed.height;
-                                log("Restored dimensions from localStorage: " + originalDocWidth + "x" + originalDocHeight);
-                            }
+                            // NOTE: We intentionally do NOT override dimensions from localStorage
+                            // The document dimensions (oResult.width/height) are authoritative
                         }
                     } catch (e) {
                         // Old format (just XML string), use it directly
@@ -98,8 +105,11 @@
                         currentXml = storedData;
                     }
                 } else {
-                    log("No stored mxfile found, starting fresh");
+                    log("No stored mxfile found - will start with blank diagram but preserve image size");
                 }
+            } else {
+                log("No existing image selected - NEW diagram mode");
+                isReEdit = false;
             }
 
             // Load draw.io editor
@@ -283,6 +293,8 @@
 
     function insertImageIntoDocument(imageData, format) {
         log("Inserting " + format + " into document...");
+        log("isReEdit: " + isReEdit);
+        log("originalDocWidth: " + originalDocWidth + ", originalDocHeight: " + originalDocHeight);
 
         // Build proper data URL
         var imageUrl;
@@ -295,22 +307,28 @@
         // Get image dimensions from the data URL
         var img = new Image();
         img.onload = function() {
+            log("PNG loaded - actual pixel dimensions: " + img.width + "x" + img.height);
+
             var width, height;
 
-            // CRITICAL: If re-editing, preserve original document dimensions
-            if (originalDocWidth && originalDocHeight) {
+            // CRITICAL: If re-editing, preserve original document dimensions EXACTLY
+            // The PNG is high-resolution (10x scale) but document display size must stay the same
+            if (isReEdit && originalDocWidth > 0 && originalDocHeight > 0) {
                 // Re-edit: Use the EXACT same dimensions as the original image in document
+                // DO NOT divide by scale - these are already the correct display dimensions
                 width = originalDocWidth;
                 height = originalDocHeight;
-                log("RE-EDIT: Using original document dimensions: " + width + "x" + height);
+                log("RE-EDIT: Preserving EXACT document dimensions: " + width + "x" + height);
             } else {
-                // New image: Calculate from export (divide by scale to get draw.io size)
+                // New image: Calculate display size from export
+                // The PNG is EXPORT_SCALE times larger than intended display size
                 width = Math.round(img.width / EXPORT_SCALE);
                 height = Math.round(img.height / EXPORT_SCALE);
-                log("NEW: Calculated dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " at " + EXPORT_SCALE + "x)");
+                log("NEW: Calculated display dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " PNG at " + EXPORT_SCALE + "x scale)");
             }
 
-            // Store mxfile XML AND dimensions for re-editing (keyed by image hash)
+            // Store mxfile XML for re-editing (keyed by NEW image hash)
+            // Also store dimensions as backup, but oResult.width is authoritative on re-edit
             var imageHash = hashString(imageUrl.substring(0, 1000));
             try {
                 var dataToStore = JSON.stringify({
@@ -319,19 +337,20 @@
                     height: height
                 });
                 localStorage.setItem(SODRAW_STORAGE_PREFIX + imageHash, dataToStore);
-                log("Stored mxfile and dimensions (" + width + "x" + height + ") with hash: " + imageHash);
+                log("Stored mxfile with hash: " + imageHash + " (backup dimensions: " + width + "x" + height + ")");
             } catch (e) {
                 logError("Failed to store data in localStorage", e);
             }
 
             // Use PutImageDataToSelection API (same as Photo Editor - most reliable method)
+            // width/height here are DISPLAY dimensions, not PNG pixel dimensions
             var oImageData = {
                 "src": imageUrl,
                 "width": width,
                 "height": height
             };
 
-            log("Calling PutImageDataToSelection...");
+            log("Calling PutImageDataToSelection with display size: " + width + "x" + height);
             window.Asc.plugin.executeMethod("PutImageDataToSelection", [oImageData], function(result) {
                 log("PutImageDataToSelection result:", result);
                 closePlugin();
@@ -340,14 +359,18 @@
 
         img.onerror = function() {
             logError("Failed to load image for dimension calculation");
-            // Fallback: use default dimensions
+
+            // Fallback: try to use original dimensions if available
+            var width = (isReEdit && originalDocWidth > 0) ? originalDocWidth : 600;
+            var height = (isReEdit && originalDocHeight > 0) ? originalDocHeight : 400;
+
             var oImageData = {
                 "src": imageUrl,
-                "width": 600,
-                "height": 400
+                "width": width,
+                "height": height
             };
 
-            log("Using fallback dimensions, calling PutImageDataToSelection...");
+            log("Using fallback dimensions: " + width + "x" + height);
             window.Asc.plugin.executeMethod("PutImageDataToSelection", [oImageData], function(result) {
                 log("PutImageDataToSelection result:", result);
                 closePlugin();
