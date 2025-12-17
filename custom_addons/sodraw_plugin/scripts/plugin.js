@@ -17,8 +17,8 @@
     var currentXml = null;
     var waitingForExport = false;
 
-    // Export scale factor (8x for maximum quality)
-    var EXPORT_SCALE = 8;
+    // Export scale factor (2x for good quality while preserving draw.io display size)
+    var EXPORT_SCALE = 2;
 
     // Marker to identify SODRAW images (stored in local storage keyed by image hash)
     var SODRAW_STORAGE_PREFIX = "sodraw_mxfile_";
@@ -271,18 +271,12 @@
         // Get image dimensions from the data URL
         var img = new Image();
         img.onload = function() {
-            // Use export dimensions directly (high-res PNG ensures quality when zoomed)
-            var width = img.width;
-            var height = img.height;
+            // Divide by EXPORT_SCALE to get original draw.io display size
+            // This preserves the size as it appears in draw.io editor
+            var width = Math.round(img.width / EXPORT_SCALE);
+            var height = Math.round(img.height / EXPORT_SCALE);
 
-            // Scale down if too large (max 800px width for document display)
-            if (width > 800) {
-                var ratio = 800 / width;
-                width = 800;
-                height = Math.round(height * ratio);
-            }
-
-            log("Image dimensions: " + width + "x" + height);
+            log("Image dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " at " + EXPORT_SCALE + "x)");
 
             // Store mxfile XML for re-editing (keyed by image hash)
             var imageHash = hashString(imageUrl.substring(0, 1000));
