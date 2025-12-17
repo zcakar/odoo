@@ -63,6 +63,8 @@ OnlyOffice draw.io eklentisinde PNG yerine SVG + embedXml ile doküman içine ve
 - DS JWT secret güncel değer: `lFUrActuDzq33glWBORvoHt0x2USGz9d` (local.json’dan alındı). Odoo parametrelerinde AoK.../XNT... yerine bu değer kullanılmalı.
 - Popup fix: `window.open` sonrası pop-up engellenirse uyarı veriyor; plugin modal otomatik kapatılıyor (`executeCommand('close')`) ki boş modal kalmasın. Plugin yeniden deploy edildi.
 - Varsayılan boş diyagram: `EMPTY_MXFILE` tanımlandı; existing XML yoksa embed'e bu gönderiliyor ki editör boş bir tuvalle açılsın. Plugin yeniden deploy + restart edildi.
+- DS JWT secret tekrar değişti: `UZ4lqE9wJxqoHcdsk9DgacGZHvoJ6HRK` (son okunan local.json). Odoo’daki `onlyoffice_connector.*jwt_secret` alanları buna çekilmeli.
+- Mevcut durum: Drawio-SVG popup açılıyor ve boş tuval geliyor; modal otomatik kapanıyor. Ancak chrome konsolda `all-frames.js:15 Could not establish connection. Receiving end does not exist.` uyarısı var; embed editör açılıyor fakat postMessage kanalı stabil değil, kapanış sonrası kaydet akışı henüz doğrulanmadı. Çift tık/var olan SVG edit akışı devre dışı (hook kapalı).
 
 ## Notlar
 - Help içeriği mevcut olduğundan eklenti destekleniyor; dosya sistemi yolunun farklı bir cache/marketplace konumunda olması muhtemel.

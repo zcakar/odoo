@@ -399,7 +399,7 @@ custom_modules:
                 - "Empty mxfile sent when no existing XML so editor opens with a blank canvas."
                 - "Popup mode closes plugin container automatically; warns user if pop-ups blocked."
       document_server_secret:
-        current: "lFUrActuDzq33glWBORvoHt0x2USGz9d"
+        current: "UZ4lqE9wJxqoHcdsk9DgacGZHvoJ6HRK"
         source: "/etc/onlyoffice/documentserver/local.json"
         note: "Must match Odoo onlyoffice_connector.*jwt_secret parameters"
       next_steps:

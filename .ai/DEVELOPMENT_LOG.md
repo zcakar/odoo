@@ -569,6 +569,7 @@ OnlyOffice Document Server ships without draw.io by default; plugin is installed
 - Marketplace references logged: public marketplace repo `onlyoffice.github.io` (https://github.com/ONLYOFFICE/onlyoffice.github.io/tree/master) and Plugin Manager store assets under `/store`; related discussion: https://github.com/ONLYOFFICE/onlyoffice.github.io/issues/356.
 - Custom plugin scaffold built and deployed to dev Document Server: `onlyoffice-drawio-help/custom_drawio_svg_plugin` (GUID `asc.{D8C2E2F5-5C49-4C7B-92E5-6C4A7B5E9F10}`) copied to `/var/www/onlyoffice/documentserver/sdkjs-plugins/custom_drawio_svg_plugin`, ownership set to `ds:ds`, Document Server restarted. UI verification pending.
 - DS JWT secret rotated multiple times during troubleshooting; current value: `lFUrActuDzq33glWBORvoHt0x2USGz9d` (from `/etc/onlyoffice/documentserver/local.json`). Odoo params must match to avoid “cannot be reached” / “token not correctly formed”. Internal DS→Odoo URL set to `http://192.168.181.130:8069/` since container can't resolve host.docker.internal.
+- DS JWT secret changed again; latest: `UZ4lqE9wJxqoHcdsk9DgacGZHvoJ6HRK`. Update Odoo `onlyoffice_connector.*jwt_secret` accordingly.
 
 **Action Items (next steps):**
 1) Run discovery script against the live Document Server container to confirm plugin path and manifest.  
