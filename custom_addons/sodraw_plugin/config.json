@@ -4,16 +4,17 @@
     "tr": "SODRAW"
   },
   "guid": "asc.{ZZZZZ-DRAWIO-SVG-PLUGIN-0001}",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "baseUrl": "",
+  "minVersion": "8.0.0",
   "cspDomains": [
     "https://embed.diagrams.net"
   ],
   "variations": [
     {
-      "description": "Draw.io diagram editor with SVG export for SODO",
+      "description": "Draw.io diagram editor with SVG export for SODO - Vector graphics with infinite zoom quality",
       "descriptionLocale": {
-        "tr": "SODO için SVG dışa aktarımlı Draw.io diyagram editörü"
+        "tr": "SODO için SVG vektörel dışa aktarımlı Draw.io diyagram editörü - Sonsuz zoom kalitesi"
       },
       "url": "index.html",
       "icons": [
@@ -38,6 +39,27 @@
         }
       ],
       "size": [10000, 10000]
+    },
+    {
+      "description": "SODRAW Background - Context menu integration",
+      "descriptionLocale": {
+        "tr": "SODRAW Arka Plan - Sağ tık menü entegrasyonu"
+      },
+      "url": "index_background.html",
+      "icons": [
+        "resources/img/icon.png",
+        "resources/img/icon@2x.png"
+      ],
+      "isViewer": false,
+      "EditorsSupport": ["word", "cell", "slide"],
+      "isVisual": false,
+      "isModal": false,
+      "isInsideMode": false,
+      "type": "background",
+      "initDataType": "none",
+      "initData": "",
+      "events": ["onContextMenuShow", "onContextMenuClick"],
+      "buttons": []
     }
   ]
 }

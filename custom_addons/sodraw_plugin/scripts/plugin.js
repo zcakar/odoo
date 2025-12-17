@@ -3,13 +3,13 @@
 
     /**
      * SODRAW Plugin for OnlyOffice
-     * Inserts draw.io diagrams as PNG with embedded mxfile XML for re-editing
+     * Inserts draw.io diagrams as SVG with embedded mxfile XML for re-editing
      *
      * Key features:
-     * - Uses PutImageDataToSelection API (like Photo Editor) for reliable insertion
-     * - Stores mxfile XML in localStorage for re-editing capability
-     * - To re-edit: select the image, then click SODRAW plugin
-     * - 4x scale PNG export for maximum quality
+     * - SVG format for infinite zoom quality (vector graphics)
+     * - mxfile XML embedded in SVG for re-editing
+     * - Uses PutImageDataToSelection API for reliable insertion
+     * - Context menu integration for "Edit with SODRAW" on right-click
      */
 
     var DEBUG = true;
@@ -17,8 +17,8 @@
     var currentXml = null;
     var waitingForExport = false;
 
-    // Marker to identify SODRAW images (stored in local storage keyed by image hash)
-    var SODRAW_STORAGE_PREFIX = "sodraw_mxfile_";
+    // SODRAW marker - used to identify SODRAW images
+    var SODRAW_MARKER = "sodraw-diagram";
 
     // Empty diagram template
     var BLANK_DIAGRAM = '<mxfile host="embed.diagrams.net" modified="' + new Date().toISOString() + '">' +
@@ -63,15 +63,13 @@
             if (oResult && oResult.src) {
                 log("Found existing image: " + oResult.width + "x" + oResult.height);
 
-                // Try to find stored mxfile for this image
-                var imageHash = hashString(oResult.src.substring(0, 1000));
-                var storedXml = localStorage.getItem(SODRAW_STORAGE_PREFIX + imageHash);
-
-                if (storedXml) {
-                    log("Found stored mxfile for this image");
-                    currentXml = storedXml;
+                // Try to extract mxfile from SVG data
+                var extractedXml = extractMxfileFromSrc(oResult.src);
+                if (extractedXml) {
+                    log("Extracted mxfile from SVG!");
+                    currentXml = extractedXml;
                 } else {
-                    log("No stored mxfile found, starting fresh");
+                    log("No mxfile found in image, starting fresh");
                 }
             }
 
@@ -88,17 +86,72 @@
         }
     };
 
-    // ========== UTILITY FUNCTIONS ==========
+    // ========== MXFILE EXTRACTION FROM SVG ==========
 
-    // Simple hash function for image identification
-    function hashString(str) {
-        var hash = 0;
-        for (var i = 0; i < str.length; i++) {
-            var char = str.charCodeAt(i);
-            hash = ((hash << 5) - hash) + char;
-            hash = hash & hash;
+    function extractMxfileFromSrc(src) {
+        // Check if it's a data URL
+        if (!src || src.indexOf("data:image/svg+xml") === -1) {
+            log("Not an SVG data URL");
+            return null;
         }
-        return Math.abs(hash).toString(36);
+
+        try {
+            var svgContent;
+
+            // Decode the SVG content
+            if (src.indexOf("base64,") !== -1) {
+                // Base64 encoded
+                var base64 = src.split("base64,")[1];
+                svgContent = atob(base64);
+            } else {
+                // URL encoded
+                var encoded = src.split(",")[1];
+                svgContent = decodeURIComponent(encoded);
+            }
+
+            log("SVG content length: " + svgContent.length);
+
+            // Method 1: Look for content attribute (draw.io standard)
+            var contentMatch = svgContent.match(/content="([^"]+)"/);
+            if (contentMatch) {
+                var decoded = decodeURIComponent(contentMatch[1]);
+                if (decoded.indexOf("<mxfile") !== -1) {
+                    log("Found mxfile in content attribute");
+                    return decoded;
+                }
+            }
+
+            // Method 2: Look for mxfile directly in SVG
+            var mxfileMatch = svgContent.match(/<mxfile[^>]*>[\s\S]*?<\/mxfile>/);
+            if (mxfileMatch) {
+                log("Found mxfile directly in SVG");
+                return mxfileMatch[0];
+            }
+
+            // Method 3: Check for SODRAW marker and look for embedded data
+            if (svgContent.indexOf(SODRAW_MARKER) !== -1) {
+                // Look for data in a special element or comment
+                var dataMatch = svgContent.match(/<!--MXFILE:([\s\S]*?)-->/);
+                if (dataMatch) {
+                    try {
+                        var decoded = atob(dataMatch[1]);
+                        if (decoded.indexOf("<mxfile") !== -1) {
+                            log("Found mxfile in SODRAW comment");
+                            return decoded;
+                        }
+                    } catch (e) {
+                        logError("Failed to decode SODRAW comment", e);
+                    }
+                }
+            }
+
+            log("No mxfile found in SVG");
+            return null;
+
+        } catch (e) {
+            logError("Failed to extract mxfile from SVG", e);
+            return null;
+        }
     }
 
     // ========== DRAW.IO EDITOR ==========
@@ -212,7 +265,7 @@
     }
 
     function onSave(xml) {
-        log("Save triggered, requesting PNG export...");
+        log("Save triggered, requesting SVG export...");
 
         if (xml) {
             currentXml = xml;
@@ -220,14 +273,12 @@
 
         waitingForExport = true;
 
-        // Request PNG export with high resolution
+        // Request SVG export with embedded XML (vector graphics + re-editable)
         sendToDrawio({
             action: "export",
-            format: "png",
+            format: "svg",
             xml: currentXml,
-            scale: 4,        // 4x resolution for maximum sharpness
-            border: 10,
-            transparent: false,
+            embedXml: true,      // Embed mxfile in SVG for re-editing
             spin: "Exporting..."
         });
     }
@@ -249,77 +300,114 @@
 
         log("Export data length: " + msg.data.length);
 
-        insertImageIntoDocument(msg.data, msg.format);
+        insertSvgIntoDocument(msg.data);
     }
 
     // ========== DOCUMENT INSERTION ==========
 
-    function insertImageIntoDocument(imageData, format) {
-        log("Inserting " + format + " into document...");
+    function insertSvgIntoDocument(svgData) {
+        log("Inserting SVG into document...");
 
-        // Build proper data URL
+        // Build proper data URL for SVG
         var imageUrl;
-        if (imageData.indexOf("data:") === 0) {
-            imageUrl = imageData;
+        if (svgData.indexOf("data:") === 0) {
+            imageUrl = svgData;
         } else {
-            imageUrl = "data:image/png;base64," + imageData;
+            // Raw SVG or base64
+            if (svgData.indexOf("<svg") !== -1) {
+                // Raw SVG - add SODRAW marker and encode
+                var markedSvg = addSodrawMarker(svgData);
+                imageUrl = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(markedSvg)));
+            } else {
+                // Already base64
+                imageUrl = "data:image/svg+xml;base64," + svgData;
+            }
         }
 
-        // Get image dimensions from the data URL
-        var img = new Image();
-        img.onload = function() {
-            var width = img.width;
-            var height = img.height;
+        log("SVG data URL created, length: " + imageUrl.length);
 
-            // Scale down if too large (max 800px width)
-            if (width > 800) {
-                var ratio = 800 / width;
-                width = 800;
-                height = Math.round(height * ratio);
-            }
+        // Parse SVG to get dimensions
+        var dimensions = getSvgDimensions(svgData);
+        var width = dimensions.width || 600;
+        var height = dimensions.height || 400;
 
-            log("Image dimensions: " + width + "x" + height);
+        // Scale if needed (max 800px width for display)
+        if (width > 800) {
+            var ratio = 800 / width;
+            width = 800;
+            height = Math.round(height * ratio);
+        }
 
-            // Store mxfile XML for re-editing (keyed by image hash)
-            var imageHash = hashString(imageUrl.substring(0, 1000));
-            try {
-                localStorage.setItem(SODRAW_STORAGE_PREFIX + imageHash, currentXml);
-                log("Stored mxfile with hash: " + imageHash);
-            } catch (e) {
-                logError("Failed to store mxfile in localStorage", e);
-            }
+        log("SVG dimensions: " + width + "x" + height);
 
-            // Use PutImageDataToSelection API (same as Photo Editor - most reliable method)
-            var oImageData = {
-                "src": imageUrl,
-                "width": width,
-                "height": height
-            };
-
-            log("Calling PutImageDataToSelection...");
-            window.Asc.plugin.executeMethod("PutImageDataToSelection", [oImageData], function(result) {
-                log("PutImageDataToSelection result:", result);
-                closePlugin();
-            });
+        // Use PutImageDataToSelection API
+        var oImageData = {
+            "src": imageUrl,
+            "width": width,
+            "height": height
         };
 
-        img.onerror = function() {
-            logError("Failed to load image for dimension calculation");
-            // Fallback: use default dimensions
-            var oImageData = {
-                "src": imageUrl,
-                "width": 600,
-                "height": 400
-            };
+        log("Calling PutImageDataToSelection...");
+        window.Asc.plugin.executeMethod("PutImageDataToSelection", [oImageData], function(result) {
+            log("PutImageDataToSelection result:", result);
+            closePlugin();
+        });
+    }
 
-            log("Using fallback dimensions, calling PutImageDataToSelection...");
-            window.Asc.plugin.executeMethod("PutImageDataToSelection", [oImageData], function(result) {
-                log("PutImageDataToSelection result:", result);
-                closePlugin();
-            });
-        };
+    function addSodrawMarker(svgContent) {
+        // Add SODRAW marker class to SVG for identification
+        if (svgContent.indexOf(SODRAW_MARKER) === -1) {
+            // Add class to svg element
+            svgContent = svgContent.replace(/<svg/, '<svg class="' + SODRAW_MARKER + '"');
 
-        img.src = imageUrl;
+            // Also add mxfile as a comment for backup (in case content attribute is stripped)
+            if (currentXml) {
+                var encodedXml = btoa(unescape(encodeURIComponent(currentXml)));
+                var comment = "<!--MXFILE:" + encodedXml + "-->";
+                // Insert after opening svg tag
+                var svgTagEnd = svgContent.indexOf(">") + 1;
+                svgContent = svgContent.slice(0, svgTagEnd) + comment + svgContent.slice(svgTagEnd);
+            }
+        }
+        return svgContent;
+    }
+
+    function getSvgDimensions(svgData) {
+        var width = 600, height = 400;
+
+        try {
+            // Try to parse width/height from SVG
+            var widthMatch = svgData.match(/width="([^"]+)"/);
+            var heightMatch = svgData.match(/height="([^"]+)"/);
+
+            if (widthMatch) {
+                var w = parseFloat(widthMatch[1]);
+                if (!isNaN(w)) width = w;
+            }
+            if (heightMatch) {
+                var h = parseFloat(heightMatch[1]);
+                if (!isNaN(h)) height = h;
+            }
+
+            // Also check viewBox
+            var viewBoxMatch = svgData.match(/viewBox="([^"]+)"/);
+            if (viewBoxMatch) {
+                var parts = viewBoxMatch[1].split(/\s+/);
+                if (parts.length >= 4) {
+                    var vbWidth = parseFloat(parts[2]);
+                    var vbHeight = parseFloat(parts[3]);
+                    if (!isNaN(vbWidth) && !isNaN(vbHeight)) {
+                        // Use viewBox dimensions if width/height weren't explicit
+                        if (!widthMatch) width = vbWidth;
+                        if (!heightMatch) height = vbHeight;
+                    }
+                }
+            }
+        } catch (e) {
+            logError("Failed to parse SVG dimensions", e);
+        }
+
+        return { width: width, height: height };
     }
 
     // ========== UTILITIES ==========
