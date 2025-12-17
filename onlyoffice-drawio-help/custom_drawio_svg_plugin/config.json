@@ -10,8 +10,8 @@
       "description": "Draw.io with SVG export (embedded mxfile for re-edit)",
       "url": "index.html",
       "icons": [
-        "resources/img/icon.png",
-        "resources/img/icon@2x.png"
+        "resources/img/icon.svg",
+        "resources/img/icon@2x.svg"
       ],
       "isViewer": false,
       "EditorsSupport": ["word", "cell", "slide"],
