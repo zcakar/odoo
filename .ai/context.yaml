@@ -394,6 +394,7 @@ custom_modules:
               notes:
                 - "Modal now renders iframe instead of popup; cspDomains includes https://embed.diagrams.net."
                 - "Icons swapped to custom SVG (icon.svg, icon@2x.svg) with gradient variant of draw.io palette."
+                - "Plugin name set to Drawio-SVG; translations stubs added to avoid 404; selection hook disabled temporarily."
       next_steps:
         - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
         - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."

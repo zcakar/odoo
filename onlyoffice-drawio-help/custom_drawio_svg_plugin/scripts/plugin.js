@@ -170,39 +170,8 @@
   }
 
   // Hook selection: on selecting an image, allow edit via mxfile
-  window.Asc.plugin.onExternalMouseUp = function () {
-    window.Asc.plugin.callCommand(
-      function () {
-        const doc = Api.GetDocument();
-        return doc.GetSelectedObject();
-      },
-      false,
-      false,
-      function (selectedObject) {
-        if (!selectedObject || selectedObject.GetClassType() !== "drawing") return;
-        const imageType = selectedObject.GetImageType ? selectedObject.GetImageType() : "";
-        const imageUrl = selectedObject.GetImageUrl ? selectedObject.GetImageUrl() : "";
-
-        if (imageType === "image/svg+xml" || (imageUrl && imageUrl.indexOf(".svg") > -1)) {
-          extractMxfileFromSvg(imageUrl, function (mxfile) {
-            if (mxfile) {
-              openDrawioEditor(mxfile);
-            } else {
-              const fallback = selectedObject.GetTag ? selectedObject.GetTag() : null;
-              if (fallback) {
-                openDrawioEditor(fallback);
-              }
-            }
-          });
-        } else if (imageType === "image/png" || (imageUrl && imageUrl.indexOf(".png") > -1)) {
-          const fallback = selectedObject.GetTag ? selectedObject.GetTag() : null;
-          if (fallback) {
-            openDrawioEditor(fallback);
-          }
-        }
-      }
-    );
-  };
+  // Disabled selection hook for now; editing flow can be initiated from toolbar button
+  window.Asc.plugin.onExternalMouseUp = function () {};
 
   function closeEditor() {
     editorWindow = null;
