@@ -1,0 +1,43 @@
+{
+  "name": "SODRAW",
+  "nameLocale": {
+    "tr": "SODRAW"
+  },
+  "guid": "asc.{ZZZZZ-DRAWIO-SVG-PLUGIN-0001}",
+  "version": "1.0.0",
+  "baseUrl": "",
+  "cspDomains": [
+    "https://embed.diagrams.net"
+  ],
+  "variations": [
+    {
+      "description": "Draw.io diagram editor with SVG export for SODO",
+      "descriptionLocale": {
+        "tr": "SODO için SVG dışa aktarımlı Draw.io diyagram editörü"
+      },
+      "url": "index.html",
+      "icons": [
+        "resources/img/icon.png",
+        "resources/img/icon@2x.png"
+      ],
+      "isViewer": false,
+      "EditorsSupport": ["word", "cell", "slide"],
+      "isVisual": true,
+      "isModal": true,
+      "isInsideMode": false,
+      "initDataType": "html",
+      "initData": "",
+      "isUpdateOleOnResize": true,
+      "buttons": [
+        {
+          "text": "Cancel",
+          "primary": false,
+          "textLocale": {
+            "tr": "İptal"
+          }
+        }
+      ],
+      "size": [10000, 10000]
+    }
+  ]
+}
