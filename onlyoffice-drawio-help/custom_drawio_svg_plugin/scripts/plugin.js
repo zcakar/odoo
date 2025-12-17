@@ -253,7 +253,7 @@
     }
 
     function onSave(xml) {
-        log("Save triggered, requesting SVG export...");
+        log("Save triggered, requesting PNG export...");
 
         if (xml) {
             currentXml = xml;
@@ -261,15 +261,14 @@
 
         waitingForExport = true;
 
-        // Request SVG with embedded XML (mxfile)
+        // Request PNG export (more reliable than SVG in OnlyOffice)
         sendToDrawio({
             action: "export",
-            format: "svg",
+            format: "png",
             xml: currentXml,
-            embedXml: true,
-            embedImages: true,
-            scale: 1,
+            scale: 2,        // Higher resolution
             border: 10,
+            transparent: false,
             spin: "Exporting..."
         });
     }
@@ -292,38 +291,42 @@
         log("Export data length: " + msg.data.length);
         log("Export data preview: " + msg.data.substring(0, 100));
 
-        insertSvgIntoDocument(msg.data);
+        insertImageIntoDocument(msg.data, msg.format);
     }
 
     // ========== DOCUMENT INSERTION ==========
 
-    function insertSvgIntoDocument(svgData) {
-        log("Inserting SVG into document...");
+    function insertImageIntoDocument(imageData, format) {
+        log("Inserting " + format + " into document...");
 
-        // msg.data from draw.io is already base64 when format is svg with embedXml
-        // It should be just the base64 string, not a data URL
+        // Build proper data URL based on format
         var imageUrl;
+        var mimeType = format === "png" ? "image/png" : "image/svg+xml";
 
-        if (svgData.indexOf("data:") === 0) {
+        if (imageData.indexOf("data:") === 0) {
             // Already a data URL
-            imageUrl = svgData;
+            imageUrl = imageData;
             log("Using data URL as-is");
         } else {
             // Raw base64, need to add data URL prefix
-            imageUrl = "data:image/svg+xml;base64," + svgData;
-            log("Added data URL prefix to base64");
+            imageUrl = "data:" + mimeType + ";base64," + imageData;
+            log("Added data URL prefix: " + mimeType);
         }
 
         log("Final image URL length: " + imageUrl.length);
+        log("Image URL prefix: " + imageUrl.substring(0, 50));
 
-        // Store data in Asc.scope for use in callCommand
-        Asc.scope.imageUrl = imageUrl;
-        Asc.scope.isEditingExisting = isEditingExisting;
+        // Store data in Asc.scope for use in callCommand (same names as Photo Editor)
+        Asc.scope.dataURL = imageUrl;
 
-        // Estimate dimensions (default to reasonable size)
-        // 180mm x 120mm in EMUs (1 inch = 914400 EMUs, 1 mm = 36000 EMUs)
-        Asc.scope.width = 180 * 36000;  // ~180mm
-        Asc.scope.height = 120 * 36000; // ~120mm
+        // Calculate dimensions in EMUs (same formula as Photo Editor)
+        // Default: 600x400 pixels at 96 DPI
+        var pixelWidth = 600;
+        var pixelHeight = 400;
+        Asc.scope.nEmuWidth = ((pixelWidth / 96) * 914400 + 0.5) >> 0;
+        Asc.scope.nEmuHeight = ((pixelHeight / 96) * 914400 + 0.5) >> 0;
+
+        log("EMU dimensions: " + Asc.scope.nEmuWidth + " x " + Asc.scope.nEmuHeight);
 
         // Use the correct editor type
         var editorType = window.Asc.plugin.info.editorType;
@@ -348,27 +351,34 @@
     function insertIntoWord() {
         log("Inserting into Word document...");
 
+        // Use exact same pattern as Photo Editor plugin
         window.Asc.plugin.callCommand(function() {
             var oDocument = Api.GetDocument();
-            var oImage = Api.CreateImage(Asc.scope.imageUrl, Asc.scope.width, Asc.scope.height);
+            var oParagraph, arrInsertResult = [], oImage;
+
+            // Create image with data URL
+            oImage = Api.CreateImage(Asc.scope.dataURL, Asc.scope.nEmuWidth, Asc.scope.nEmuHeight);
 
             // Check if there's a selected image to replace
             var aSelectedImgs = oDocument.GetSelectedDrawings ? oDocument.GetSelectedDrawings() : [];
             var oSourceImg = aSelectedImgs[0] ? aSelectedImgs[0] : null;
 
-            if (oSourceImg && Asc.scope.isEditingExisting) {
+            if (oSourceImg) {
                 // Replace the selected image
                 oDocument.ReplaceDrawing(oSourceImg, oImage, true);
             } else {
-                // Insert new image
-                var oParagraph = Api.CreateParagraph();
+                // Insert new image (same as Photo Editor)
+                oParagraph = Api.CreateParagraph();
+                arrInsertResult.push(oParagraph);
                 oParagraph.AddDrawing(oImage);
-                oDocument.InsertContent([oParagraph], true);
+                oDocument.InsertContent(arrInsertResult);
             }
-        }, true, false, function(result) {
-            log("callCommand completed, result:", result);
+        }, true);
+
+        // Close plugin after command (Photo Editor style)
+        setTimeout(function() {
             closePlugin();
-        });
+        }, 500);
     }
 
     function insertIntoCell() {
@@ -376,11 +386,12 @@
 
         window.Asc.plugin.callCommand(function() {
             var oWorksheet = Api.GetActiveSheet();
-            oWorksheet.AddImage(Asc.scope.imageUrl, Asc.scope.width, Asc.scope.height);
-        }, true, false, function(result) {
-            log("callCommand completed, result:", result);
+            oWorksheet.ReplaceCurrentImage(Asc.scope.dataURL, Asc.scope.nEmuWidth, Asc.scope.nEmuHeight);
+        }, true);
+
+        setTimeout(function() {
             closePlugin();
-        });
+        }, 500);
     }
 
     function insertIntoSlide() {
@@ -388,13 +399,12 @@
 
         window.Asc.plugin.callCommand(function() {
             var oPresentation = Api.GetPresentation();
-            var oSlide = oPresentation.GetCurrentSlide();
-            var oImage = Api.CreateImage(Asc.scope.imageUrl, Asc.scope.width, Asc.scope.height);
-            oSlide.AddObject(oImage);
-        }, true, false, function(result) {
-            log("callCommand completed, result:", result);
+            oPresentation.ReplaceCurrentImage(Asc.scope.dataURL, Asc.scope.nEmuWidth, Asc.scope.nEmuHeight);
+        }, true);
+
+        setTimeout(function() {
             closePlugin();
-        });
+        }, 500);
     }
 
     // ========== UTILITIES ==========
