@@ -17,8 +17,12 @@
     var currentXml = null;
     var waitingForExport = false;
 
-    // Export scale factor (2x for good quality while preserving draw.io display size)
-    var EXPORT_SCALE = 2;
+    // Export scale factor (10x for maximum quality)
+    var EXPORT_SCALE = 10;
+
+    // Store original document dimensions for re-edit (to preserve size)
+    var originalDocWidth = null;
+    var originalDocHeight = null;
 
     // Marker to identify SODRAW images (stored in local storage keyed by image hash)
     var SODRAW_STORAGE_PREFIX = "sodraw_mxfile_";
@@ -65,6 +69,11 @@
 
             if (oResult && oResult.src) {
                 log("Found existing image: " + oResult.width + "x" + oResult.height);
+
+                // CRITICAL: Store original document dimensions to preserve size on re-edit
+                originalDocWidth = oResult.width;
+                originalDocHeight = oResult.height;
+                log("Stored original document dimensions for re-edit: " + originalDocWidth + "x" + originalDocHeight);
 
                 // Try to find stored mxfile for this image
                 var imageHash = hashString(oResult.src.substring(0, 1000));
@@ -271,12 +280,20 @@
         // Get image dimensions from the data URL
         var img = new Image();
         img.onload = function() {
-            // Divide by EXPORT_SCALE to get original draw.io display size
-            // This preserves the size as it appears in draw.io editor
-            var width = Math.round(img.width / EXPORT_SCALE);
-            var height = Math.round(img.height / EXPORT_SCALE);
+            var width, height;
 
-            log("Image dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " at " + EXPORT_SCALE + "x)");
+            // CRITICAL: If re-editing, preserve original document dimensions
+            if (originalDocWidth && originalDocHeight) {
+                // Re-edit: Use the EXACT same dimensions as the original image in document
+                width = originalDocWidth;
+                height = originalDocHeight;
+                log("RE-EDIT: Using original document dimensions: " + width + "x" + height);
+            } else {
+                // New image: Calculate from export (divide by scale to get draw.io size)
+                width = Math.round(img.width / EXPORT_SCALE);
+                height = Math.round(img.height / EXPORT_SCALE);
+                log("NEW: Calculated dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " at " + EXPORT_SCALE + "x)");
+            }
 
             // Store mxfile XML for re-editing (keyed by image hash)
             var imageHash = hashString(imageUrl.substring(0, 1000));
