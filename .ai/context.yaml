@@ -780,3 +780,27 @@ metadata:
 # ============================================================================
 # END OF CONTEXT FILE
 # ============================================================================
+
+# ----------------------------------------------------------------------------
+# BRANDING RULES
+# ----------------------------------------------------------------------------
+# Product branding and logo policy for the project. This is authoritative
+# guidance for AI agents and contributors: the product name and official
+# logo are recorded here and must be used consistently across docs, UIs,
+# and plugin assets.
+branding:
+  product_name: "SODO"
+  official_logo: "sodoo-logo.svg"
+  logo_location: "/home/embed/Dev/ODOO/odoo/sodoo-logo.svg"
+  secondary_assets:
+    - name: "behind_mark"
+      file: "sodoo-logo-behind.png"
+      location: "/home/embed/Dev/ODOO/odoo/sodoo-logo-behind.png"
+  policy_notes:
+    - "From this point forward, the project's product brand name is 'SODO'."
+    - "The canonical logo file is `sodoo-logo.svg` located at the project's root.
+      Use this SVG for all official branding (UI, README, website, plugin icons).
+      Raster fallbacks (PNG) are acceptable for contexts that require them."
+    - "AI agents must respect branding rules and update `.ai/` session files
+      when new logo assets are added or branding decisions change."
+
