@@ -457,3 +457,6 @@ Session bitiminde:
 **Versiyon:** 1.0.0
 **Hazırlayan:** Claude Code
 **Durum:** ✅ Aktif
+### 5️⃣ Hata/Troubleshoot Kayıt Disiplini
+- Zaman kaybettiren hatalar (ör. URL/secret uyumsuzluğu, erişim engeli, log satırları) mutlaka `.ai/sessions/` ve `DEVELOPMENT_LOG` altında özetlenmeli; alınan yol, kök neden, kalıcı çözüm kaydedilmeli.
+- Aynı tür hatanın tekrarında önceki kayıtları kontrol etmeden deneme yapılmamalı.
