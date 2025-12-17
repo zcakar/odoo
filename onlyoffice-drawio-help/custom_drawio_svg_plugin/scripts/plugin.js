@@ -1,197 +1,415 @@
-(function (window, undefined) {
-  // Global editor window reference
-  let editorWindow = null;
+(function(window, undefined) {
+    "use strict";
 
-  // Config flags
-  const USE_SVG = true;
-  const GENERATE_PNG_FALLBACK = false;
-  const EMPTY_MXFILE = `<mxfile host="embed.diagrams.net" modified="${new Date().toISOString()}" agent="plugin" etag="0" version="20.2.3" type="device">
-    <diagram id="base" name="Page-1">
-      <mxGraphModel dx="1920" dy="1080" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100">
-        <root>
-          <mxCell id="0" />
-          <mxCell id="1" parent="0" />
-        </root>
-      </mxGraphModel>
-    </diagram>
-  </mxfile>`;
+    /**
+     * SODRAW Plugin for OnlyOffice
+     * Inserts draw.io diagrams as SVG with embedded mxfile for re-editing
+     */
 
-  window.Asc.plugin.init = function () {
-    console.log("Draw.io SVG plugin initialized");
-  };
+    var DEBUG = true;
+    var drawioFrame = null;
+    var currentXml = null;
+    var waitingForExport = false;
+    var isEditingExisting = false;
 
-  // Primary button
-  window.Asc.plugin.button = function (id) {
-    if (id === 0) {
-      openDrawioEditor();
+    // Empty diagram template
+    var BLANK_DIAGRAM = '<mxfile host="embed.diagrams.net" modified="' + new Date().toISOString() + '">' +
+        '<diagram id="d1" name="Page-1">' +
+        '<mxGraphModel><root><mxCell id="0"/><mxCell id="1" parent="0"/></root></mxGraphModel>' +
+        '</diagram></mxfile>';
+
+    function log(message, data) {
+        if (DEBUG) {
+            var prefix = "[SODRAW] ";
+            if (data !== undefined) {
+                console.log(prefix + message, data);
+            } else {
+                console.log(prefix + message);
+            }
+        }
     }
-  };
 
-  // Open draw.io (embed.diagrams.net) with optional XML payload
-  function openDrawioEditor(existingXml) {
-    const baseUrl = "https://embed.diagrams.net/";
-    const params = new URLSearchParams({
-      embed: "1",
-      spin: "1",
-      proto: "json",
-      ui: "kennedy",
-    });
-
-    const payloadXml = existingXml || EMPTY_MXFILE;
-    params.append("xml", payloadXml);
-
-    // Use popup to avoid iframe/CSP issues
-    editorWindow = window.open(`${baseUrl}?${params.toString()}`, "drawio-editor", "width=1200,height=800");
-    if (!editorWindow || editorWindow.closed) {
-      alert("Please allow pop-ups to open draw.io editor.");
+    function logError(message, error) {
+        console.error("[SODRAW] " + message, error || "");
     }
-    window.addEventListener("message", handleDrawioMessage);
 
-    // Close plugin container to avoid blank modal behind popup
-    if (window.Asc && window.Asc.plugin && window.Asc.plugin.executeCommand) {
-      window.Asc.plugin.executeCommand("close", "");
-    }
-  }
+    // ========== PLUGIN LIFECYCLE ==========
 
-  // Listen for draw.io postMessages
-  function handleDrawioMessage(event) {
-    if (!event.data || typeof event.data !== "string") return;
-    try {
-      const msg = JSON.parse(event.data);
-      switch (msg.event) {
-        case "init":
-          // Once editor loads, request export on save
-          break;
-        case "save":
-          requestDiagramExport(USE_SVG ? "svg" : "png", USE_SVG);
-          break;
-        case "export":
-          if (USE_SVG) {
-            handleSvgExport(msg.data, msg.xml);
-          } else {
-            handlePngExport(msg.data);
-          }
-          break;
-        default:
-          break;
-      }
-    } catch (err) {
-      console.error("Failed to parse draw.io message", err);
-    }
-  }
+    window.Asc.plugin.init = function(data) {
+        log("=== Plugin Initialized ===");
+        log("Init data type: " + typeof data);
+        log("Init data:", data);
 
-  // Ask draw.io to export current diagram
-  function requestDiagramExport(format, embedXml) {
-    if (!editorWindow) return;
-    const payload = {
-      action: "export",
-      format: format,
-      embedXml: embedXml,
-      embedImages: true,
-      base64: true,
-      scale: 1,
-      border: 0,
+        drawioFrame = document.getElementById("drawio-frame");
+        if (!drawioFrame) {
+            logError("Cannot find iframe element!");
+            return;
+        }
+
+        // Listen for messages from draw.io
+        window.addEventListener("message", onDrawioMessage, false);
+
+        // Check if we have existing diagram data (re-edit scenario)
+        if (data && typeof data === "string" && data.trim().length > 0) {
+            log("Received existing data for re-edit");
+            // Try to extract mxfile from SVG or use as-is if it's XML
+            var extractedXml = extractMxfileFromData(data);
+            if (extractedXml) {
+                currentXml = extractedXml;
+                isEditingExisting = true;
+                log("Extracted mxfile for editing");
+            }
+        }
+
+        // Load draw.io editor
+        loadEditor();
     };
-    if (format === "png") {
-      payload.quality = 90;
-    }
-    editorWindow.postMessage(JSON.stringify(payload), "*");
-  }
 
-  // Insert SVG with embedded mxfile
-  function handleSvgExport(svgBase64, mxfileXml) {
-    console.log("Processing SVG export with embedded mxfile");
-    let svgString = atob(svgBase64);
-
-    if (svgString.indexOf("<metadata") === -1 || svgString.indexOf("mxfile") === -1) {
-      svgString = embedMxfileInSvg(svgString, mxfileXml);
-      svgBase64 = btoa(svgString);
-    }
-
-    window.Asc.plugin.callCommand(
-      function () {
-        const doc = Api.GetDocument();
-        const paragraph = doc.GetElement(0);
-        const image = Api.CreateImage(svgBase64, null, null, true);
-        if (image.SetImageType) {
-          image.SetImageType("image/svg+xml");
+    window.Asc.plugin.button = function(id) {
+        log("Button clicked: " + id);
+        // Cancel button or X button
+        if (id === -1 || id === 0) {
+            closePlugin();
         }
-        if (image.SetTag && mxfileXml) {
-          image.SetTag(mxfileXml);
+    };
+
+    // ========== MXFILE EXTRACTION ==========
+
+    function extractMxfileFromData(data) {
+        // If it's already an mxfile XML
+        if (data.indexOf("<mxfile") !== -1) {
+            log("Data is already mxfile XML");
+            return data;
         }
-        paragraph.AddDrawing(image);
-      },
-      true,
-      true
-    );
 
-    if (!GENERATE_PNG_FALLBACK) {
-      closeEditor();
+        // If it's a data URL (base64 SVG)
+        if (data.indexOf("data:image/svg+xml;base64,") === 0) {
+            try {
+                var base64 = data.replace("data:image/svg+xml;base64,", "");
+                var svgContent = atob(base64);
+                return extractMxfileFromSvg(svgContent);
+            } catch (e) {
+                logError("Failed to decode base64 SVG", e);
+            }
+        }
+
+        // If it's raw SVG
+        if (data.indexOf("<svg") !== -1) {
+            return extractMxfileFromSvg(data);
+        }
+
+        return null;
     }
-  }
 
-  // Legacy PNG insertion (kept for completeness)
-  function handlePngExport(pngBase64) {
-    window.Asc.plugin.callCommand(
-      function () {
-        const doc = Api.GetDocument();
-        const paragraph = doc.GetElement(0);
-        const image = Api.CreateImage(pngBase64, null, null, true);
-        paragraph.AddDrawing(image);
-      },
-      true,
-      true
-    );
-    closeEditor();
-  }
+    function extractMxfileFromSvg(svgContent) {
+        // draw.io embeds mxfile in SVG as "content" attribute or in a special comment/element
+        // Method 1: Look for content attribute with URL-encoded mxfile
+        var contentMatch = svgContent.match(/content="([^"]+)"/);
+        if (contentMatch) {
+            try {
+                var decoded = decodeURIComponent(contentMatch[1]);
+                if (decoded.indexOf("<mxfile") !== -1) {
+                    log("Extracted mxfile from content attribute");
+                    return decoded;
+                }
+            } catch (e) {
+                logError("Failed to decode content attribute", e);
+            }
+        }
 
-  // Embed mxfile block into SVG metadata
-  function embedMxfileInSvg(svgString, mxfileXml) {
-    const closingTagIndex = svgString.lastIndexOf("</svg>");
-    if (closingTagIndex === -1) return svgString;
-    const metadata =
-      "\n  <metadata>\n" +
-      '    <mxfile modified="' +
-      new Date().toISOString() +
-      '">\n' +
-      "      " +
-      mxfileXml +
-      "\n" +
-      "    </mxfile>\n" +
-      "  </metadata>\n";
-    return svgString.slice(0, closingTagIndex) + metadata + svgString.slice(closingTagIndex);
-  }
+        // Method 2: Look for mxfile in a CDATA or comment section
+        var mxfileMatch = svgContent.match(/<mxfile[^>]*>[\s\S]*?<\/mxfile>/);
+        if (mxfileMatch) {
+            log("Extracted mxfile from SVG body");
+            return mxfileMatch[0];
+        }
 
-  // Extract mxfile from selected SVG for editing
-  function extractMxfileFromSvg(svgUrl, callback) {
-    fetch(svgUrl)
-      .then((res) => res.text())
-      .then((svgContent) => {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(svgContent, "image/svg+xml");
-        const node = doc.querySelector("metadata mxfile");
-        if (node) {
-          const data = node.textContent || node.innerHTML;
-          callback(data);
+        // Method 3: Check for data in xlink:href or similar
+        var xlinkMatch = svgContent.match(/xlink:href="data:application\/vnd\.mxfile\+xml;base64,([^"]+)"/);
+        if (xlinkMatch) {
+            try {
+                var decoded = atob(xlinkMatch[1]);
+                if (decoded.indexOf("<mxfile") !== -1) {
+                    log("Extracted mxfile from xlink:href");
+                    return decoded;
+                }
+            } catch (e) {
+                logError("Failed to decode xlink data", e);
+            }
+        }
+
+        log("No mxfile found in SVG");
+        return null;
+    }
+
+    // ========== DRAW.IO EDITOR ==========
+
+    function loadEditor() {
+        log("Loading draw.io editor...");
+
+        if (!currentXml) {
+            currentXml = BLANK_DIAGRAM;
+        }
+
+        var params = new URLSearchParams({
+            embed: "1",
+            proto: "json",
+            spin: "1",
+            ui: "kennedy",
+            modified: "unsavedChanges",
+            noSaveBtn: "0",
+            saveAndExit: "1",
+            noExitBtn: "0"
+        });
+
+        var url = "https://embed.diagrams.net/?" + params.toString();
+        log("Editor URL: " + url);
+
+        drawioFrame.onload = function() {
+            log("Iframe loaded, waiting for init event...");
+            hideLoading();
+        };
+
+        drawioFrame.onerror = function(e) {
+            logError("Iframe load error", e);
+            showError();
+        };
+
+        drawioFrame.src = url;
+    }
+
+    function hideLoading() {
+        var el = document.getElementById("loading");
+        if (el) el.style.display = "none";
+        if (drawioFrame) drawioFrame.style.display = "block";
+    }
+
+    function showError() {
+        var el = document.getElementById("error");
+        if (el) el.style.display = "block";
+        var ld = document.getElementById("loading");
+        if (ld) ld.style.display = "none";
+    }
+
+    // ========== POSTMESSAGE HANDLING ==========
+
+    function onDrawioMessage(evt) {
+        if (evt.origin !== "https://embed.diagrams.net") {
+            return;
+        }
+
+        if (typeof evt.data !== "string") {
+            return;
+        }
+
+        var msg;
+        try {
+            msg = JSON.parse(evt.data);
+        } catch (e) {
+            return; // Not JSON
+        }
+
+        log("Message received: " + msg.event, msg);
+
+        switch (msg.event) {
+            case "init":
+                onEditorReady();
+                break;
+            case "save":
+                onSave(msg.xml);
+                break;
+            case "export":
+                onExport(msg);
+                break;
+            case "exit":
+                closePlugin();
+                break;
+            case "autosave":
+                if (msg.xml) currentXml = msg.xml;
+                break;
+        }
+    }
+
+    function sendToDrawio(message) {
+        if (!drawioFrame || !drawioFrame.contentWindow) {
+            logError("Cannot send - iframe not ready");
+            return false;
+        }
+        var str = JSON.stringify(message);
+        log("Sending to draw.io: " + message.action, message);
+        drawioFrame.contentWindow.postMessage(str, "https://embed.diagrams.net");
+        return true;
+    }
+
+    // ========== EVENT HANDLERS ==========
+
+    function onEditorReady() {
+        log("Editor ready, loading diagram...");
+        sendToDrawio({
+            action: "load",
+            xml: currentXml,
+            autosave: 1
+        });
+    }
+
+    function onSave(xml) {
+        log("Save triggered, requesting SVG export...");
+
+        if (xml) {
+            currentXml = xml;
+        }
+
+        waitingForExport = true;
+
+        // Request SVG with embedded XML (mxfile)
+        sendToDrawio({
+            action: "export",
+            format: "svg",
+            xml: currentXml,
+            embedXml: true,
+            embedImages: true,
+            scale: 1,
+            border: 10,
+            spin: "Exporting..."
+        });
+    }
+
+    function onExport(msg) {
+        log("Export received, format: " + msg.format);
+
+        if (!waitingForExport) {
+            log("Unexpected export, ignoring");
+            return;
+        }
+        waitingForExport = false;
+
+        if (!msg.data) {
+            logError("Export failed - no data!");
+            alert("Export failed. Please try again.");
+            return;
+        }
+
+        log("Export data length: " + msg.data.length);
+        log("Export data preview: " + msg.data.substring(0, 100));
+
+        insertSvgIntoDocument(msg.data);
+    }
+
+    // ========== DOCUMENT INSERTION ==========
+
+    function insertSvgIntoDocument(svgData) {
+        log("Inserting SVG into document...");
+
+        // msg.data from draw.io is already base64 when format is svg with embedXml
+        // It should be just the base64 string, not a data URL
+        var imageUrl;
+
+        if (svgData.indexOf("data:") === 0) {
+            // Already a data URL
+            imageUrl = svgData;
+            log("Using data URL as-is");
         } else {
-          callback(null);
+            // Raw base64, need to add data URL prefix
+            imageUrl = "data:image/svg+xml;base64," + svgData;
+            log("Added data URL prefix to base64");
         }
-      })
-      .catch((err) => {
-        console.error("extractMxfileFromSvg error", err);
-        callback(null);
-      });
-  }
 
-  // Hook selection: on selecting an image, allow edit via mxfile
-  // Disabled selection hook for now; editing flow can be initiated from toolbar button
-  window.Asc.plugin.onExternalMouseUp = function () {};
+        log("Final image URL length: " + imageUrl.length);
 
-  function closeEditor() {
-    if (editorWindow && !editorWindow.closed) {
-      editorWindow.close();
+        // Store data in Asc.scope for use in callCommand
+        Asc.scope.imageUrl = imageUrl;
+        Asc.scope.isEditingExisting = isEditingExisting;
+
+        // Estimate dimensions (default to reasonable size)
+        // 180mm x 120mm in EMUs (1 inch = 914400 EMUs, 1 mm = 36000 EMUs)
+        Asc.scope.width = 180 * 36000;  // ~180mm
+        Asc.scope.height = 120 * 36000; // ~120mm
+
+        // Use the correct editor type
+        var editorType = window.Asc.plugin.info.editorType;
+        log("Editor type: " + editorType);
+
+        switch (editorType) {
+            case "word":
+                insertIntoWord();
+                break;
+            case "cell":
+                insertIntoCell();
+                break;
+            case "slide":
+                insertIntoSlide();
+                break;
+            default:
+                log("Unknown editor type, using word method");
+                insertIntoWord();
+        }
     }
-    editorWindow = null;
-    window.removeEventListener("message", handleDrawioMessage);
-  }
-})(window, undefined);
+
+    function insertIntoWord() {
+        log("Inserting into Word document...");
+
+        window.Asc.plugin.callCommand(function() {
+            var oDocument = Api.GetDocument();
+            var oImage = Api.CreateImage(Asc.scope.imageUrl, Asc.scope.width, Asc.scope.height);
+
+            // Check if there's a selected image to replace
+            var aSelectedImgs = oDocument.GetSelectedDrawings ? oDocument.GetSelectedDrawings() : [];
+            var oSourceImg = aSelectedImgs[0] ? aSelectedImgs[0] : null;
+
+            if (oSourceImg && Asc.scope.isEditingExisting) {
+                // Replace the selected image
+                oDocument.ReplaceDrawing(oSourceImg, oImage, true);
+            } else {
+                // Insert new image
+                var oParagraph = Api.CreateParagraph();
+                oParagraph.AddDrawing(oImage);
+                oDocument.InsertContent([oParagraph], true);
+            }
+        }, true, false, function(result) {
+            log("callCommand completed, result:", result);
+            closePlugin();
+        });
+    }
+
+    function insertIntoCell() {
+        log("Inserting into Spreadsheet...");
+
+        window.Asc.plugin.callCommand(function() {
+            var oWorksheet = Api.GetActiveSheet();
+            oWorksheet.AddImage(Asc.scope.imageUrl, Asc.scope.width, Asc.scope.height);
+        }, true, false, function(result) {
+            log("callCommand completed, result:", result);
+            closePlugin();
+        });
+    }
+
+    function insertIntoSlide() {
+        log("Inserting into Presentation...");
+
+        window.Asc.plugin.callCommand(function() {
+            var oPresentation = Api.GetPresentation();
+            var oSlide = oPresentation.GetCurrentSlide();
+            var oImage = Api.CreateImage(Asc.scope.imageUrl, Asc.scope.width, Asc.scope.height);
+            oSlide.AddObject(oImage);
+        }, true, false, function(result) {
+            log("callCommand completed, result:", result);
+            closePlugin();
+        });
+    }
+
+    // ========== UTILITIES ==========
+
+    function closePlugin() {
+        log("Closing plugin...");
+        window.removeEventListener("message", onDrawioMessage);
+        window.Asc.plugin.executeCommand("close", "");
+    }
+
+    // Required plugin hooks
+    window.Asc.plugin.onExternalMouseUp = function() {};
+
+    window.Asc.plugin.onMethodReturn = function(result) {
+        log("Method return:", result);
+    };
+
+})(window);
