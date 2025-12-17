@@ -5,6 +5,16 @@
   // Config flags
   const USE_SVG = true;
   const GENERATE_PNG_FALLBACK = false;
+  const EMPTY_MXFILE = `<mxfile host="embed.diagrams.net" modified="${new Date().toISOString()}" agent="plugin" etag="0" version="20.2.3" type="device">
+    <diagram id="base" name="Page-1">
+      <mxGraphModel dx="1920" dy="1080" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100">
+        <root>
+          <mxCell id="0" />
+          <mxCell id="1" parent="0" />
+        </root>
+      </mxGraphModel>
+    </diagram>
+  </mxfile>`;
 
   window.Asc.plugin.init = function () {
     console.log("Draw.io SVG plugin initialized");
@@ -27,9 +37,8 @@
       ui: "kennedy",
     });
 
-    if (existingXml) {
-      params.append("xml", existingXml);
-    }
+    const payloadXml = existingXml || EMPTY_MXFILE;
+    params.append("xml", payloadXml);
 
     // Use popup to avoid iframe/CSP issues
     editorWindow = window.open(`${baseUrl}?${params.toString()}`, "drawio-editor", "width=1200,height=800");

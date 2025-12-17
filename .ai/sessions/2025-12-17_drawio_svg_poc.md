@@ -62,6 +62,7 @@ OnlyOffice draw.io eklentisinde PNG yerine SVG + embedXml ile doküman içine ve
 - Konsol hataları için: boş çeviri dosyaları eklendi (`resources/translations/langs.json`, `en_US.json`) ve seçim hook’u (onExternalMouseUp) devre dışı bırakıldı. Plugin yeniden deploy + restart edildi.
 - DS JWT secret güncel değer: `lFUrActuDzq33glWBORvoHt0x2USGz9d` (local.json’dan alındı). Odoo parametrelerinde AoK.../XNT... yerine bu değer kullanılmalı.
 - Popup fix: `window.open` sonrası pop-up engellenirse uyarı veriyor; plugin modal otomatik kapatılıyor (`executeCommand('close')`) ki boş modal kalmasın. Plugin yeniden deploy edildi.
+- Varsayılan boş diyagram: `EMPTY_MXFILE` tanımlandı; existing XML yoksa embed'e bu gönderiliyor ki editör boş bir tuvalle açılsın. Plugin yeniden deploy + restart edildi.
 
 ## Notlar
 - Help içeriği mevcut olduğundan eklenti destekleniyor; dosya sistemi yolunun farklı bir cache/marketplace konumunda olması muhtemel.
