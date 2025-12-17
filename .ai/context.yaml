@@ -391,6 +391,8 @@ custom_modules:
               owner: "ds:ds"
               restart: "docker restart onlyoffice-documentserver"
               ui_status: "Pending verification in Plugin Manager/editor"
+              notes:
+                - "Modal now renders iframe instead of popup; cspDomains includes https://embed.diagrams.net."
       next_steps:
         - "Run discovery script on the live Document Server to capture plugin path/manifest once installed."
         - "Port SVG export (format=svg, embedXml=true, image/svg+xml) to the Document Server plugin after locating sources."

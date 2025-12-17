@@ -57,6 +57,7 @@ OnlyOffice draw.io eklentisinde PNG yerine SVG + embedXml ile doküman içine ve
 - plugin.js: embed.diagrams.net iframe; save/export SVG + embedXml, MIME `image/svg+xml`, mxfile metadata ekleme, seçili SVG’den mxfile çıkarıp yeniden açma; PNG fallback bayrakla açılabilir (varsayılan kapalı).
 - Icon placeholders: `resources/img/icon.png`, `icon@2x.png` (helloworld örneğinden kopyalandı).
 - Dağıtım (dev container): Plugin klasörü DS içine kopyalandı: `/var/www/onlyoffice/documentserver/sdkjs-plugins/custom_drawio_svg_plugin`, owner `ds:ds` olarak düzeltildi, `onlyoffice-documentserver` restart edildi. UI doğrulaması bekleniyor (plugin manager’dan görünür olmalı, yeni GUID ile).
+- Fix: Popup yerine modal içi iframe kullanıldı (iframe `drawio-iframe`), `cspDomains: ["https://embed.diagrams.net"]` eklendi; plugin yeniden kopyalandı ve container restart edildi.
 
 ## Notlar
 - Help içeriği mevcut olduğundan eklenti destekleniyor; dosya sistemi yolunun farklı bir cache/marketplace konumunda olması muhtemel.

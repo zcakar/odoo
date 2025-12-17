@@ -31,7 +31,11 @@
       params.append("xml", existingXml);
     }
 
-    editorWindow = window.open(`${baseUrl}?${params.toString()}`, "drawio-editor");
+    // Create iframe in modal instead of popup
+    ensureIframe();
+    const iframe = document.getElementById("drawio-iframe");
+    iframe.src = `${baseUrl}?${params.toString()}`;
+    editorWindow = iframe.contentWindow;
     window.addEventListener("message", handleDrawioMessage);
   }
 
@@ -201,9 +205,22 @@
   };
 
   function closeEditor() {
-    if (editorWindow && !editorWindow.closed) {
-      editorWindow.close();
-    }
+    editorWindow = null;
     window.removeEventListener("message", handleDrawioMessage);
+    const iframe = document.getElementById("drawio-iframe");
+    if (iframe) {
+      iframe.src = "about:blank";
+    }
+  }
+
+  // Create iframe once to render draw.io inside modal content
+  function ensureIframe() {
+    if (document.getElementById("drawio-iframe")) return;
+    const iframe = document.createElement("iframe");
+    iframe.id = "drawio-iframe";
+    iframe.style.width = "100%";
+    iframe.style.height = "600px";
+    iframe.style.border = "none";
+    document.body.appendChild(iframe);
   }
 })(window, undefined);
