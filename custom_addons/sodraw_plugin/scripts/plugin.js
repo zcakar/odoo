@@ -271,23 +271,18 @@
         // Get image dimensions from the data URL
         var img = new Image();
         img.onload = function() {
-            // Calculate display size from exported PNG
-            // Since we export at EXPORT_SCALE, divide to get reasonable display size
-            var width = Math.round(img.width / EXPORT_SCALE);
-            var height = Math.round(img.height / EXPORT_SCALE);
+            // Use export dimensions directly (high-res PNG ensures quality when zoomed)
+            var width = img.width;
+            var height = img.height;
 
-            // Ensure minimum size
-            if (width < 100) width = 100;
-            if (height < 100) height = 100;
-
-            // Cap maximum size
+            // Scale down if too large (max 800px width for document display)
             if (width > 800) {
                 var ratio = 800 / width;
                 width = 800;
                 height = Math.round(height * ratio);
             }
 
-            log("Display dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " export at " + EXPORT_SCALE + "x)");
+            log("Image dimensions: " + width + "x" + height);
 
             // Store mxfile XML for re-editing (keyed by image hash)
             var imageHash = hashString(imageUrl.substring(0, 1000));
