@@ -17,6 +17,10 @@
     var currentXml = null;
     var waitingForExport = false;
 
+    // Store original image dimensions for re-edit scenario
+    var originalImageWidth = null;
+    var originalImageHeight = null;
+
     // Marker to identify SODRAW images (stored in local storage keyed by image hash)
     var SODRAW_STORAGE_PREFIX = "sodraw_mxfile_";
 
@@ -62,6 +66,11 @@
 
             if (oResult && oResult.src) {
                 log("Found existing image: " + oResult.width + "x" + oResult.height);
+
+                // Store original dimensions to preserve size on re-edit
+                originalImageWidth = oResult.width;
+                originalImageHeight = oResult.height;
+                log("Stored original dimensions: " + originalImageWidth + "x" + originalImageHeight);
 
                 // Try to find stored mxfile for this image
                 var imageHash = hashString(oResult.src.substring(0, 1000));
@@ -225,7 +234,7 @@
             action: "export",
             format: "png",
             xml: currentXml,
-            scale: 4,        // 4x resolution for maximum sharpness
+            scale: 6,        // 6x resolution for maximum sharpness
             border: 10,
             transparent: false,
             spin: "Exporting..."
@@ -268,17 +277,32 @@
         // Get image dimensions from the data URL
         var img = new Image();
         img.onload = function() {
-            var width = img.width;
-            var height = img.height;
+            var width, height;
 
-            // Scale down if too large (max 800px width for display)
-            if (width > 800) {
-                var ratio = 800 / width;
-                width = 800;
-                height = Math.round(height * ratio);
+            // If re-editing an existing image, preserve original document dimensions
+            if (originalImageWidth && originalImageHeight) {
+                width = originalImageWidth;
+                height = originalImageHeight;
+                log("Using original document dimensions: " + width + "x" + height);
+            } else {
+                // New image: calculate from exported PNG, scale down for display
+                // Since we export at 6x scale, divide by 6 to get reasonable display size
+                width = Math.round(img.width / 6);
+                height = Math.round(img.height / 6);
+
+                // Ensure minimum size
+                if (width < 100) width = 100;
+                if (height < 100) height = 100;
+
+                // Cap maximum size for new images
+                if (width > 800) {
+                    var ratio = 800 / width;
+                    width = 800;
+                    height = Math.round(height * ratio);
+                }
+
+                log("Calculated display dimensions: " + width + "x" + height + " (from " + img.width + "x" + img.height + " export)");
             }
-
-            log("Image dimensions: " + width + "x" + height);
 
             // Store mxfile XML for re-editing (keyed by image hash)
             var imageHash = hashString(imageUrl.substring(0, 1000));
