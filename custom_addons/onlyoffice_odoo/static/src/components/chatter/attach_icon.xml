@@ -23,4 +23,20 @@
             </div>
         </t>
     </t>
+
+    <!-- Add +New Doc dropdown inside the attachment box (lower attach button). -->
+    <t t-name="onlyoffice_odoo.mail.Chatter.attachFilesBox" t-extend="mail.Chatter">
+        <t t-jquery=".o-mail-AttachmentBox button.btn.btn-link" t-operation="after">
+            <div class="btn-group ms-2 o-mail-Chatter-newDocBox">
+                <button class="btn btn-link dropdown-toggle px-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" t-att-disabled="isDisabled">
+                    + New Doc
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('docx')">New document</a></li>
+                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('xlsx')">New spreadsheet</a></li>
+                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('pptx')">New presentation</a></li>
+                </ul>
+            </div>
+        </t>
+    </t>
 </templates>
