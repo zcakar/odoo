@@ -193,7 +193,6 @@ class IrAttachment(models.Model):
                 "res_id": res_id,
                 "datas": base64.b64encode(template_bytes),
                 "mimetype": mimetype,
-                "datas_fname": file_name,
             }
         )
         return attachment.id

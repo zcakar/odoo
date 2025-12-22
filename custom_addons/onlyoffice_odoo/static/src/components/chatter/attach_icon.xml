@@ -12,7 +12,7 @@
                 </button>
                 <Dropdown position="'bottom-start'" menuClass="'o-mail-Chatter-newDocDropdown'">
                     <button class="btn btn-link px-1 text-nowrap" t-att-class="{ 'my-2': !props.compactHeight }" t-att-disabled="isDisabled">
-                        <i class="fa fa-plus-circle me-1"/>+ New Doc
+                        <i class="fa fa-plus-circle me-1"/>New Doc
                     </button>
                     <t t-set-slot="content">
                         <DropdownItem onSelected="() => this.onClickCreateNewDoc('docx')">
@@ -35,7 +35,7 @@
         <xpath expr="//div[@class='o-mail-AttachmentBox position-relative']//button[@class='btn btn-link']" position="after">
             <Dropdown position="'bottom-start'" menuClass="'o-mail-Chatter-newDocDropdown ms-2'">
                 <button class="btn btn-link" type="button" t-att-disabled="isDisabled">
-                    <i class="fa fa-plus-circle me-1"/>+ New Doc
+                    <i class="fa fa-plus-circle me-1"/>New Doc
                 </button>
                 <t t-set-slot="content">
                     <DropdownItem onSelected="() => this.onClickCreateNewDoc('docx')">

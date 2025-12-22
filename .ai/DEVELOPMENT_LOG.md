@@ -660,6 +660,22 @@ OnlyOffice chatter attachments panel was collapsed by default; users wanted it e
   - `custom_addons/onlyoffice_odoo/__manifest__.py` - Version bump to 5.3.5, moved XML to assets_backend
 - **Next Steps:** Deploy to production with module upgrade and service restart, test button visibility and functionality.
 
+### [2025-12-22] - Fix New Doc button UX and Odoo 19 compatibility (v5.3.6)
+- **Issue 1:** Button showed "+ New Doc" but user wanted just "New Doc" (remove the + sign)
+- **Issue 2:** Creating new documents failed with "ValueError: Invalid field 'datas_fname' in 'ir.attachment'"
+- **Root Cause:**
+  - UX: Extra "+" in button text
+  - Technical: `datas_fname` field was deprecated and removed in Odoo 19 (replaced by `name` field)
+- **Solution:**
+  - Removed "+ " prefix from both New Doc buttons (topbar and attachment box)
+  - Removed `datas_fname` field from `onlyoffice_create_new` method - `name` field is sufficient in Odoo 19
+- **Files Modified:**
+  - `custom_addons/onlyoffice_odoo/static/src/components/chatter/attach_icon.xml` - Removed "+ " from button text
+  - `custom_addons/onlyoffice_odoo/models/ir_attachment.py` - Removed deprecated `datas_fname` field
+  - `custom_addons/onlyoffice_odoo/__manifest__.py` - Version bump to 5.3.6
+  - `custom_addons/onlyoffice_odoo/static/src/js/chatter_attachment_defaults.js` - Console log version to 5.3.6
+- **Note:** Attachment versioning system (oo_is_snapshot, last 10 versions) is already implemented and working as designed - snapshots are hidden from main list, accessible via version history button.
+
 ---
 
 **Last Updated:** 2025-12-22
