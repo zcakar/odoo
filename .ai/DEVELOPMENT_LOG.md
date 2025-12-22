@@ -637,6 +637,11 @@ OnlyOffice chatter attachments panel was collapsed by default; users wanted it e
 - Ensured QWeb template is in `web.assets_qweb` and reran `-u onlyoffice_odoo` on prod followed by `systemctl restart odoo`.
 - Confirmed in UI: attachment panel opens by default, topbar paperclip icon shows Flaticon image.
 
+### [2025-12-22] - +New Doc (docx/xlsx/pptx) from chatter Files box
+- Added dropdown next to “Attach files” with options New document/spreadsheet/presentation.
+- Uses OnlyOffice bundled templates (`static/assets/document_templates`) via `ir.attachment.onlyoffice_create_new`, creates attachment on the current record, and reloads attachments.
+- Version bump: 5.3.4 (log shows in console). Deployed to prod with module upgrade + service restart.
+
 ---
 
 **Last Updated:** 2025-12-22
