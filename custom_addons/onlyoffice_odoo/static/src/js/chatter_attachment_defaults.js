@@ -1,6 +1,8 @@
 /** Keep the chatter attachment panel expanded by default for better visibility. */
 import { Chatter } from "@mail/chatter/web_portal/chatter";
 import { patch } from "@web/core/utils/patch";
+import { _t } from "@web/core/l10n/translation";
+import { useService } from "@web/core/utils/hooks";
 
 // Version marker for debugging asset loading in console.
 console.info("OnlyOffice chatter UX patch loaded (v5.3.4)");
@@ -17,5 +19,49 @@ patch(Chatter.prototype, {
     setup() {
         superSetup.call(this, ...arguments);
         this.state.isAttachmentBoxOpened = true;
+        this.notification = useService("notification");
+    },
+
+    async onClickCreateNewDoc(ext) {
+        if (!this.props.threadModel || !this.props.threadId) {
+            this.notification.add(_t("No record context found to attach the document."));
+            return;
+        }
+        const defaultNames = {
+            docx: _t("New Document"),
+            xlsx: _t("New Spreadsheet"),
+            pptx: _t("New Presentation"),
+        };
+        const extLower = (ext || "docx").toLowerCase();
+        const defaultName = defaultNames[extLower] || defaultNames.docx;
+        const nameInput = window.prompt(_t("Enter file name"), defaultName);
+        if (!nameInput) {
+            return;
+        }
+        const trimmed = nameInput.trim();
+        if (!trimmed) {
+            this.notification.add(_t("File name is required."));
+            return;
+        }
+        const safeName = trimmed.toLowerCase().endsWith(`.${extLower}`) ? trimmed : `${trimmed}.${extLower}`;
+        try {
+            await this.orm.call("ir.attachment", "onlyoffice_create_new", [], {
+                res_model: this.props.threadModel,
+                res_id: this.props.threadId,
+                file_type: extLower,
+                file_name: safeName,
+            });
+            if (this.store?.fetchStoreData) {
+                await this.store.fetchStoreData("mail.thread", {
+                    thread_model: this.props.threadModel,
+                    thread_id: this.props.threadId,
+                    request_list: ["attachments"],
+                });
+            }
+            this.state.isAttachmentBoxOpened = true;
+        } catch (error) {
+            const message = error?.message || error || _t("Could not create document.");
+            this.notification.add(_t("Failed to create document: %s", message));
+        }
     },
 });

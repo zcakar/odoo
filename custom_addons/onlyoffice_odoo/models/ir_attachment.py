@@ -1,8 +1,11 @@
 import logging
 import os
 import re
+import base64
 
 from odoo import _, api, fields, models
+
+from odoo.addons.onlyoffice_odoo.utils import file_utils
 
 _logger = logging.getLogger(__name__)
 
@@ -159,3 +162,38 @@ class IrAttachment(models.Model):
                 except Exception:
                     continue
         return res
+
+    @api.model
+    def onlyoffice_create_new(self, res_model, res_id, file_type, file_name):
+        """Create a new attachment from OnlyOffice templates and attach to record."""
+        if not res_model or not res_id:
+            raise UserError(_("Missing target record to attach the document."))
+
+        record = self.env[res_model].browse(res_id)
+        record.check_access_rights("write")
+        record.check_access_rule("write")
+
+        ext_map = {"doc": "docx", "document": "docx", "xlsx": "xlsx", "sheet": "xlsx", "pptx": "pptx", "ppt": "pptx"}
+        ext = ext_map.get(file_type, file_type or "docx").lower()
+
+        if not file_name or not file_name.strip():
+            raise UserError(_("File name is required."))
+
+        file_name = file_name.strip()
+        if not file_name.lower().endswith(f".{ext}"):
+            file_name = f"{file_name}.{ext}"
+
+        template_bytes = file_utils.get_default_file_template(self.env.user.lang or "en_US", ext)
+        mimetype = file_utils.get_mime_by_ext(ext) or "application/octet-stream"
+
+        attachment = self.create(
+            {
+                "name": file_name,
+                "res_model": res_model,
+                "res_id": res_id,
+                "datas": base64.b64encode(template_bytes),
+                "mimetype": mimetype,
+                "datas_fname": file_name,
+            }
+        )
+        return attachment.id

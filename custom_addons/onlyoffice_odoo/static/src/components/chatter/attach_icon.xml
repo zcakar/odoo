@@ -6,5 +6,17 @@
                 <img src="/onlyoffice_odoo/static/src/img/attach_clip.png" alt="Attach" width="24" height="24"/>
             </span>
         </t>
+        <t t-jquery="button.o-mail-Chatter-attachFiles" t-operation="after">
+            <div class="btn-group ms-2 o-mail-Chatter-newDoc">
+                <button class="btn btn-link dropdown-toggle px-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" t-att-disabled="isDisabled">
+                    + New Doc
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('docx')">New document</a></li>
+                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('xlsx')">New spreadsheet</a></li>
+                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('pptx')">New presentation</a></li>
+                </ul>
+            </div>
+        </t>
     </t>
 </templates>
