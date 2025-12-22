@@ -641,6 +641,7 @@ OnlyOffice chatter attachments panel was collapsed by default; users wanted it e
 - Added dropdown next to “Attach files” with options New document/spreadsheet/presentation.
 - Uses OnlyOffice bundled templates (`static/assets/document_templates`) via `ir.attachment.onlyoffice_create_new`, creates attachment on the current record, and reloads attachments.
 - Version bump: 5.3.4 (log shows in console). Deployed to prod with module upgrade + service restart.
+- Follow-up: Added dropdown also inside the attachment box (lower “Attach files” button) to ensure visibility in Files panel.
 
 ---
 
