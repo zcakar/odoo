@@ -3,7 +3,7 @@
 **Project Name:** Odoo Community Edition - SMB Implementation
 **Version:** 19.0
 **Purpose:** Full-featured ERP system for small/medium businesses with OnlyOffice document editing integration
-**Last Updated:** 2025-12-16
+**Last Updated:** 2025-12-22
 
 ---
 
@@ -476,6 +476,95 @@ onlyoffice_odoo         -- OnlyOffice configuration (settings)
 
 ---
 
+## 🧭 Edition Gap Tracker (Community vs Enterprise)
+
+Source: [odoo.com/page/editions](https://www.odoo.com/page/editions) (fetched 2025-12-22). Focused on gaps where Community = No / Enterprise = Yes. The third column is our evolving plan for replacements or custom development (update as we add modules).
+
+**General**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Functional support | Not included | Included | In-house support + community resources; purchase partner hours if needed |
+| Version upgrades | Manual/self-service | Included | Maintain our own upgrade playbooks and staging tests |
+| Hosting | Self-host only | Included (Odoo Online/Odoo.sh) | Continue on-prem/VM hosting with Nginx/SSL hardening |
+
+**User Interface**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Mobile apps (Android/iOS) | Not included | Included | Rely on responsive web/PWA; evaluate lightweight mobile shell later |
+
+**Finance**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Accounting (GL, reconciliation, budgets, consolidation, localizations, OCR) | Not included | Included | Evaluate OCA Accounting/localization packs; custom GL + tax reporting as needed |
+| AI invoice automation | Not included | Included | Optional: integrate OCR/AI (Tesseract or external API) for vendor bills |
+| Payroll | Not included | Included | Consider OCA/payroll modules or localized payroll addon |
+| Expense OCR | Not included | Included | Hook expenses to OCR pipeline (same as invoice OCR) |
+| Payslip reimbursement | Not included | Included | Cover via chosen payroll alternative |
+| Documents | Not included | Included | Use OnlyOffice + Odoo attachments; add light DMS flows if required |
+| Spreadsheet | Not included | Included | Use OnlyOffice spreadsheets embedded in Odoo |
+| Sign | Not included | Included | Integrate external e-sign (DocuSign/OnlyOffice Sign) or build minimal signature flow |
+| ESG | Not included | Included | Defer; track future compliance add-ons if requested |
+
+**Sales**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Subscriptions | Not included | Included | Build recurring billing on Sales/Invoices or adopt OCA subscription |
+| Rental | Not included | Included | Custom rental addon (pricing + availability + returns) |
+| Amazon connector | Not included | Included | Use marketplace connector (OCA/third-party) or custom SP-API integration |
+
+**Supply Chain**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Barcode | Not included | Included | Add OCA barcode/mobile picking module; test with hardware scanners |
+| MRP shopfloor/control panel/scheduling | Not included | Included | Custom shopfloor UI + scheduling views over Manufacturing |
+| PLM | Not included | Included | Evaluate OCA/PLM or lightweight engineering change logs with Documents |
+| Quality | Not included | Included | Add OCA quality checks/alerts; simple QC steps in Inventory if urgent |
+
+**Human Resources**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Referrals | Not included | Included | Simple referral workflow inside Recruitment (tags + rewards) |
+| Appraisals | Not included | Included | Custom performance review module (goals, cycles, manager review) |
+
+**Marketing**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Social marketing | Not included | Included | Integrate external schedulers (e.g., Buffer) or custom social posting |
+| Marketing automation | Not included | Included | Use Email/SMS with manual segments; evaluate OCA automation later |
+
+**Services**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Timesheet grid/timer/validation | Not included | Included | Extend Timesheets with grid view + validation rules |
+| Field Service | Not included | Included | Adopt OCA field-service modules or custom dispatch app |
+| Helpdesk | Not included | Included | Deploy OCA helpdesk or custom ticketing on Projects |
+| Planning | Not included | Included | Add scheduling layer to Projects (Gantt/slots) |
+| Appointments | Not included | Included | Calendar-based booking app (community addons/custom) |
+
+**Productivity**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Approvals | Not included | Included | Custom approval flows (server actions + records) |
+| VoIP | Not included | Included | Integrate PBX/softphone (Asterisk/3CX) via SIP connectors |
+| IoT | Not included | Included | Direct device/API integrations; explore open IoT box alternative |
+
+**Customization**
+
+| Feature | Community | Enterprise | SODO plan / alternative |
+|---------|-----------|------------|-------------------------|
+| Studio | Not included | Included | Code-first module development (current approach) |
+
+---
+
 ## 📈 Scalability Considerations
 
 ### Current Capacity
@@ -559,6 +648,13 @@ onlyoffice_odoo         -- OnlyOffice configuration (settings)
 
 ## 📝 Change Log
 
+### Version 1.1.0 - 2025-12-22
+**Added edition gap tracker with replacement plan**
+
+- Captured Community vs Enterprise differences from odoo.com/editions
+- Added third-column roadmap for SODO alternatives/replacements
+- Updated metadata (Last Updated + document version)
+
 ### Version 1.0.0 - 2025-12-16
 **Initial architecture document created**
 
@@ -597,7 +693,7 @@ When to update this document:
 
 ---
 
-**Document Version:** 1.0.0
-**Last Updated:** 2025-12-16
+**Document Version:** 1.1.0
+**Last Updated:** 2025-12-22
 **Maintained By:** Project Team & AI Agents
 **Next Review:** When major architectural change occurs

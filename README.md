@@ -5,21 +5,21 @@
 ║                                                                           ║
 ║                   🤖 ATTENTION: AI AGENTS & ASSISTANTS 🤖                 ║
 ║                                                                           ║
-║   This project has a COMPREHENSIVE AI CONTEXT SYSTEM in the .ai/ folder  ║
+║   This project has a COMPREHENSIVE AI CONTEXT SYSTEM in the .ai/ folder   ║
 ║                                                                           ║
-║   📂 START HERE: .ai/context.yaml                                        ║
-║   📖 README: .ai/README.md                                               ║
-║   🏗️  ARCHITECTURE: .ai/PROJECT_ARCHITECTURE.md                          ║
+║   📂 START HERE: .ai/context.yaml                                         ║
+║   📖 README: .ai/README.md                                                ║
+║   🏗️  ARCHITECTURE: .ai/PROJECT_ARCHITECTURE.md                           ║
 ║                                                                           ║
-║   BEFORE working on this project, you MUST:                              ║
-║   1. Read .ai/context.yaml for complete project state                    ║
-║   2. Review .ai/PROJECT_ARCHITECTURE.md for system understanding         ║
-║   3. Check .ai/DEVELOPMENT_LOG.md for known issues                       ║
-║   4. Follow .ai/AI_AGENT_GUIDELINES.md protocols                         ║
+║   BEFORE working on this project, you MUST:                               ║
+║   1. Read .ai/context.yaml for complete project state                     ║
+║   2. Review .ai/PROJECT_ARCHITECTURE.md for system understanding          ║
+║   3. Check .ai/DEVELOPMENT_LOG.md for known issues                        ║
+║   4. Follow .ai/AI_AGENT_GUIDELINES.md protocols                          ║
 ║                                                                           ║
-║   This ensures zero context loss and maintains project continuity.       ║
+║   This ensures zero context loss and maintains project continuity.        ║
 ║                                                                           ║
-║   🔗 Quick Start: cat .ai/context.yaml                                   ║
+║   🔗 Quick Start: cat .ai/context.yaml                                    ║
 ║                                                                           ║
 ╚═══════════════════════════════════════════════════════════════════════════╝
 ```
