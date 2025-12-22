@@ -20,6 +20,8 @@ patch(Chatter.prototype, {
         superSetup.call(this, ...arguments);
         this.state.isAttachmentBoxOpened = true;
         this.notification = useService("notification");
+        // Expose handler for template dropdown (used in QWeb)
+        this.onClickCreateNewDoc = this.onClickCreateNewDoc.bind(this);
     },
 
     async onClickCreateNewDoc(ext) {
