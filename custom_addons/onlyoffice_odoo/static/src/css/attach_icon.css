@@ -11,3 +11,13 @@
     height: 24px;
     display: block;
 }
+
+/* Also replace the small paperclip icon (attachment counter) in the chatter top bar. */
+.o-mail-Chatter i.fa-paperclip {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    background: url("/onlyoffice_odoo/static/src/img/attach_clip.png") center center / contain no-repeat;
+    font-size: 0;
+    vertical-align: middle;
+}

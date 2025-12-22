@@ -3,7 +3,7 @@ import { Chatter } from "@mail/chatter/web_portal/chatter";
 import { patch } from "@web/core/utils/patch";
 
 // Version marker for debugging asset loading in console.
-console.info("OnlyOffice chatter UX patch loaded (v5.3.3)");
+console.info("OnlyOffice chatter UX patch loaded (v5.3.4)");
 
 Chatter.defaultProps = {
     ...Chatter.defaultProps,
