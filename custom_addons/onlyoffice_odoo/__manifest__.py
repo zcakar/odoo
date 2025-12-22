@@ -34,5 +34,8 @@
             "onlyoffice_odoo/static/src/views/**/*",
             "onlyoffice_odoo/static/src/css/*",
         ],
+        "web.assets_qweb": [
+            "onlyoffice_odoo/static/src/components/chatter/attach_icon.xml",
+        ],
     },
 }
