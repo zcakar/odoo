@@ -75,6 +75,11 @@ custom klasör eklendiğinde bu path'i güncellemelisiniz.
 - Production komutları daima venv Python/pip ile: `sudo -u odoo ./venv/bin/python ./odoo-bin ...`, `sudo -u odoo ./venv/bin/pip install ...`; sistem Python/pip kullanma.
 - OnlyOffice sürümlemede snapshot’lar `oo_is_snapshot=True` ile işaretlenir ve ana listede gizlidir; tarihçe butonu için metadata (`res_model`, `res_id`, `oo_attachment_version`) eksiksiz gönderildiğini kontrol et.
 
+## 🔒 Doğruluk ve Kaynak Kullanımı
+- Uydurma yapma; emin değilsen açıkça “emin değilim” veya “tahmindir” de.
+- Önce mevcut kaynakları incele: verilen repo dosyaları, dokümanlar, linkler. Kaynak bulamazsan resmi dokümantasyonu temel al.
+- Kaynakta yoksa fonksiyon/endpoint/ayar ismi icat etme; varsayım gerekiyorsa “tahmindir” diye belirt.
+
 ---
 
 ## 📋 Zorunlu Görevler
