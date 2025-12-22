@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+    <t t-name="onlyoffice_odoo.mail.Chatter.attachFiles" t-extend="mail.Chatter.attachFiles">
+        <t t-jquery="i.fa-paperclip" t-operation="replace">
+            <span class="fa-stack fa-lg me-1 o-mail-Chatter-attachFilesIcon">
+                <i class="fa fa-folder-open fa-stack-2x"/>
+                <i class="fa fa-paperclip fa-stack-1x fa-inverse o-mail-Chatter-attachFilesIcon-clip"/>
+            </span>
+        </t>
+    </t>
+</templates>

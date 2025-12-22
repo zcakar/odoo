@@ -28,6 +28,7 @@
     "assets": {
         "web.assets_backend": [
             "onlyoffice_odoo/static/src/actions/*",
+            "onlyoffice_odoo/static/src/js/chatter_attachment_defaults.js",
             "onlyoffice_odoo/static/src/components/*/*.xml",
             "onlyoffice_odoo/static/src/models/*.js",
             "onlyoffice_odoo/static/src/views/**/*",
