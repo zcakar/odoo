@@ -12,6 +12,10 @@
     display: block;
 }
 
+.o-mail-Chatter-attachFilesWrapper .dropdown-menu {
+    min-width: 200px;
+}
+
 /* Also replace the small paperclip icon (attachment counter) in the chatter top bar. */
 .o-mail-Chatter i.fa-paperclip {
     width: 20px;
