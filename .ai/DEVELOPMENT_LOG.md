@@ -643,6 +643,23 @@ OnlyOffice chatter attachments panel was collapsed by default; users wanted it e
 - Version bump: 5.3.4 (log shows in console). Deployed to prod with module upgrade + service restart.
 - Follow-up: Added dropdown also inside the attachment box (lower “Attach files” button) to ensure visibility in Files panel.
 
+### [2025-12-22] - Fix +New Doc button visibility (v5.3.5)
+- **Issue:** Button was not appearing despite code being deployed. Console showed patch loaded but no UI element.
+- **Root Cause:** Template inheritance using `t-jquery` doesn't work reliably in Odoo 19. Bootstrap dropdown with `data-bs-toggle` requires proper Owl component integration.
+- **Solution:**
+  - Replaced `t-jquery` with `xpath` for template inheritance (more reliable in Odoo 19)
+  - Replaced Bootstrap dropdown with Odoo's native `Dropdown` and `DropdownItem` Owl components
+  - Added `Dropdown` and `DropdownItem` imports to `chatter_attachment_defaults.js`
+  - Extended `Chatter.components` to include Dropdown components
+  - Moved XML template from `web.assets_qweb` to `web.assets_backend` (Odoo 19 best practice)
+  - Added `orm` and `store` services to setup for proper data handling
+  - Added icons to dropdown items for better UX (fa-file-word-o, fa-file-excel-o, fa-file-powerpoint-o)
+- **Files Modified:**
+  - `custom_addons/onlyoffice_odoo/static/src/components/chatter/attach_icon.xml` - Template rewrite with xpath and Dropdown components
+  - `custom_addons/onlyoffice_odoo/static/src/js/chatter_attachment_defaults.js` - Added imports and component registration
+  - `custom_addons/onlyoffice_odoo/__manifest__.py` - Version bump to 5.3.5, moved XML to assets_backend
+- **Next Steps:** Deploy to production with module upgrade and service restart, test button visibility and functionality.
+
 ---
 
 **Last Updated:** 2025-12-22

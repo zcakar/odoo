@@ -6,7 +6,7 @@
     "author": "ONLYOFFICE",
     "website": "https://github.com/ONLYOFFICE/onlyoffice_odoo",
     "category": "Productivity",
-    "version": "5.3.4",
+    "version": "5.3.5",
     "depends": ["base", "mail"],
     "external_dependencies": {"python": ["pyjwt"]},
     # always loaded
@@ -29,13 +29,10 @@
         "web.assets_backend": [
             "onlyoffice_odoo/static/src/actions/*",
             "onlyoffice_odoo/static/src/js/chatter_attachment_defaults.js",
-            "onlyoffice_odoo/static/src/components/*/*.xml",
+            "onlyoffice_odoo/static/src/components/chatter/attach_icon.xml",
             "onlyoffice_odoo/static/src/models/*.js",
             "onlyoffice_odoo/static/src/views/**/*",
             "onlyoffice_odoo/static/src/css/*",
-        ],
-        "web.assets_qweb": [
-            "onlyoffice_odoo/static/src/components/chatter/attach_icon.xml",
         ],
     },
 }

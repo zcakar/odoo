@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <templates xml:space="preserve">
-    <t t-name="onlyoffice_odoo.mail.Chatter.attachFiles" t-extend="mail.Chatter.attachFiles">
-        <t t-jquery="button.o-mail-Chatter-attachFiles" t-operation="replace">
+    <t t-name="onlyoffice_odoo.mail.Chatter.attachFiles" t-inherit="mail.Chatter.attachFiles" t-inherit-mode="extension">
+        <xpath expr="//button[@class='o-mail-Chatter-attachFiles btn btn-link text-action px-1 d-flex align-items-center']" position="replace">
             <div class="d-inline-flex align-items-center o-mail-Chatter-attachFilesWrapper">
                 <button class="o-mail-Chatter-attachFiles btn btn-link text-action px-1 d-flex align-items-center" aria-label="Attach files" t-att-class="{ 'my-2': !props.compactHeight }" t-on-click="onClickAddAttachments" t-att-disabled="state.isSearchOpen">
                     <span class="o-mail-Chatter-attachFilesIcon d-inline-flex align-items-center justify-content-center me-1">
@@ -10,33 +10,45 @@
                     <sup t-if="attachments.length > 0" t-esc="attachments.length"/>
                     <i t-if="!state.thread.areAttachmentsLoaded and state.thread.isLoadingAttachments and state.showAttachmentLoading" class="fa fa-circle-o-notch fa-spin" aria-label="Attachment counter loading..."/>
                 </button>
-                <div class="btn-group ms-2 o-mail-Chatter-newDoc">
-                    <button class="btn btn-link dropdown-toggle px-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" t-att-disabled="isDisabled">
-                        + New Doc
+                <Dropdown position="'bottom-start'" menuClass="'o-mail-Chatter-newDocDropdown'">
+                    <button class="btn btn-link px-1 text-nowrap" t-att-class="{ 'my-2': !props.compactHeight }" t-att-disabled="isDisabled">
+                        <i class="fa fa-plus-circle me-1"/>+ New Doc
                     </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('docx')">New document</a></li>
-                        <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('xlsx')">New spreadsheet</a></li>
-                        <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('pptx')">New presentation</a></li>
-                    </ul>
-                </div>
+                    <t t-set-slot="content">
+                        <DropdownItem onSelected="() => this.onClickCreateNewDoc('docx')">
+                            <i class="fa fa-file-word-o me-2"/>New document
+                        </DropdownItem>
+                        <DropdownItem onSelected="() => this.onClickCreateNewDoc('xlsx')">
+                            <i class="fa fa-file-excel-o me-2"/>New spreadsheet
+                        </DropdownItem>
+                        <DropdownItem onSelected="() => this.onClickCreateNewDoc('pptx')">
+                            <i class="fa fa-file-powerpoint-o me-2"/>New presentation
+                        </DropdownItem>
+                    </t>
+                </Dropdown>
             </div>
-        </t>
+        </xpath>
     </t>
 
     <!-- Add +New Doc dropdown inside the attachment box (lower attach button). -->
-    <t t-name="onlyoffice_odoo.mail.Chatter.attachFilesBox" t-extend="mail.Chatter">
-        <t t-jquery=".o-mail-AttachmentBox button.btn.btn-link" t-operation="after">
-            <div class="btn-group ms-2 o-mail-Chatter-newDocBox">
-                <button class="btn btn-link dropdown-toggle px-1" type="button" data-bs-toggle="dropdown" aria-expanded="false" t-att-disabled="isDisabled">
-                    + New Doc
+    <t t-name="onlyoffice_odoo.mail.Chatter.attachFilesBox" t-inherit="mail.Chatter" t-inherit-mode="extension">
+        <xpath expr="//div[@class='o-mail-AttachmentBox position-relative']//button[@class='btn btn-link']" position="after">
+            <Dropdown position="'bottom-start'" menuClass="'o-mail-Chatter-newDocDropdown ms-2'">
+                <button class="btn btn-link" type="button" t-att-disabled="isDisabled">
+                    <i class="fa fa-plus-circle me-1"/>+ New Doc
                 </button>
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('docx')">New document</a></li>
-                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('xlsx')">New spreadsheet</a></li>
-                    <li><a class="dropdown-item" role="menuitem" t-on-click="() => this.onClickCreateNewDoc('pptx')">New presentation</a></li>
-                </ul>
-            </div>
-        </t>
+                <t t-set-slot="content">
+                    <DropdownItem onSelected="() => this.onClickCreateNewDoc('docx')">
+                        <i class="fa fa-file-word-o me-2"/>New document
+                    </DropdownItem>
+                    <DropdownItem onSelected="() => this.onClickCreateNewDoc('xlsx')">
+                        <i class="fa fa-file-excel-o me-2"/>New spreadsheet
+                    </DropdownItem>
+                    <DropdownItem onSelected="() => this.onClickCreateNewDoc('pptx')">
+                        <i class="fa fa-file-powerpoint-o me-2"/>New presentation
+                    </DropdownItem>
+                </t>
+            </Dropdown>
+        </xpath>
     </t>
 </templates>

@@ -3,13 +3,22 @@ import { Chatter } from "@mail/chatter/web_portal/chatter";
 import { patch } from "@web/core/utils/patch";
 import { _t } from "@web/core/l10n/translation";
 import { useService } from "@web/core/utils/hooks";
+import { Dropdown } from "@web/core/dropdown/dropdown";
+import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 // Version marker for debugging asset loading in console.
-console.info("OnlyOffice chatter UX patch loaded (v5.3.4)");
+console.info("OnlyOffice chatter UX patch loaded (v5.3.5)");
 
 Chatter.defaultProps = {
     ...Chatter.defaultProps,
     isAttachmentBoxVisibleInitially: true,
+};
+
+// Add Dropdown components to Chatter
+Chatter.components = {
+    ...Chatter.components,
+    Dropdown,
+    DropdownItem,
 };
 
 // Force the attachment box open at setup to avoid regressions when defaultProps
@@ -20,6 +29,8 @@ patch(Chatter.prototype, {
         superSetup.call(this, ...arguments);
         this.state.isAttachmentBoxOpened = true;
         this.notification = useService("notification");
+        this.orm = useService("orm");
+        this.store = useService("mail.store");
         // Expose handler for template dropdown (used in QWeb)
         this.onClickCreateNewDoc = this.onClickCreateNewDoc.bind(this);
     },
