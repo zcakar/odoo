@@ -1,0 +1,13 @@
+.o-mail-Chatter-attachFilesIcon {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.o-mail-Chatter-attachFilesIcon img {
+    width: 24px;
+    height: 24px;
+    display: block;
+}
