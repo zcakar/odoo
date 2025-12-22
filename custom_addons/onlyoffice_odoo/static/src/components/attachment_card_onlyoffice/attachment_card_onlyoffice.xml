@@ -5,8 +5,8 @@
 <templates xml:space="preserve">
     <t t-inherit="mail.AttachmentList" t-inherit-mode="extension" owl="1">
     <!-- Replace the foreach to use filtered attachments -->
-    <xpath expr="//div[@t-foreach='props.attachments']" position="attributes">
-      <attribute name="t-foreach">filteredAttachments</attribute>
+    <xpath expr="//div[hasclass('d-flex') and hasclass('flex-wrap')]/div[@t-foreach='props.attachments']" position="attributes">
+      <attribute name="t-foreach">this.filteredAttachments</attribute>
     </xpath>
     <xpath expr="//div[hasclass('o-mail-AttachmentButtons')]" position="inside">
       <div class="d-flex align-items-center gap-2 w-100 ms-2">

@@ -7,7 +7,7 @@ import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 // Version marker for debugging asset loading in console.
-console.info("OnlyOffice chatter UX patch loaded (v5.3.10)");
+console.info("OnlyOffice chatter UX patch loaded (v5.3.11-snapshot-filter)");
 
 Chatter.defaultProps = {
     ...Chatter.defaultProps,
@@ -33,6 +33,18 @@ patch(Chatter.prototype, {
         this.store = useService("mail.store");
         // Expose handler for template dropdown (used in QWeb)
         this.onClickCreateNewDoc = this.onClickCreateNewDoc.bind(this);
+    },
+
+    // Filter out snapshot attachments from the badge count
+    get attachments() {
+        const allAttachments = this.state.thread?.attachments ?? [];
+        const filtered = allAttachments.filter(att => !att.oo_is_snapshot);
+        console.log('[OnlyOffice] Chatter.attachments getter called:', {
+            total: allAttachments.length,
+            filtered: filtered.length,
+            snapshots: allAttachments.length - filtered.length
+        });
+        return filtered;
     },
 
     async onClickCreateNewDoc(ext) {
