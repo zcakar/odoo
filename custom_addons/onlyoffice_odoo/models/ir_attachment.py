@@ -37,6 +37,9 @@ class IrAttachment(models.Model):
         self.env.cr.execute(
             "UPDATE ir_attachment SET oo_attachment_version = 1 WHERE oo_attachment_version IS NULL"
         )
+        self.env.cr.execute(
+            "UPDATE ir_attachment SET oo_is_snapshot = FALSE WHERE oo_is_snapshot IS NULL"
+        )
 
     def _log_attachment_event(self, message):
         """Post a chatter note on the related record if it supports it."""

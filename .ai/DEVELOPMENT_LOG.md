@@ -50,6 +50,65 @@ What did we learn? How to avoid this in the future?
 
 ## 📝 Log Entries
 
+## [2025-12-22] - Frontend Model Fields Not Exposed (v5.3.7)
+
+**Status:** ✅ Resolved
+
+**Context:**
+After fixing the "New Doc" button and document creation, the OnlyOffice-specific UI elements (version badge, edit button, version history button) were not showing on newly created documents.
+
+**Problem:**
+- New documents created via `onlyoffice_create_new` were missing:
+  - Version badge (e.g., "v1")
+  - Edit button (pencil icon)
+  - Version history button (clock icon)
+- Only download and delete icons were visible
+- All document versions were showing in the attachment list (snapshots not hidden)
+
+**Root Cause:**
+The backend was correctly setting and exposing `oo_attachment_version`, `oo_is_snapshot`, `res_model`, and `res_id` fields via `_to_store_defaults()`, but the **frontend Attachment model** didn't have these fields defined.
+
+In Odoo 19's OWL framework, even if backend sends data, the frontend model must explicitly declare fields to use them. The `attachment_card_onlyoffice.js` was trying to access `attachment.oo_attachment_version` and `attachment.oo_is_snapshot`, but these properties were undefined because the Attachment model didn't know about them.
+
+**Solution:**
+
+1. **Created `attachment_model_patch.js`:**
+   ```javascript
+   import { Attachment } from "@mail/core/common/attachment_model"
+   import { patch } from "@web/core/utils/patch"
+
+   const attachmentPatch = {
+     oo_attachment_version: undefined,
+     oo_is_snapshot: undefined,
+     oo_origin_attachment_id: undefined,
+   }
+
+   patch(Attachment.prototype, attachmentPatch)
+   ```
+
+2. **Fixed NULL `oo_is_snapshot` values:**
+   - Added SQL update in `init()` method to set NULL values to FALSE
+   - Ran SQL directly: `UPDATE ir_attachment SET oo_is_snapshot = FALSE WHERE oo_is_snapshot IS NULL`
+   - Updated 301 existing attachments
+
+3. **Version bump:** 5.3.6 → 5.3.7
+
+**Learning:**
+- **Always patch frontend models when adding custom fields** - Backend `_to_store_defaults()` is not enough
+- **Follow Odoo's pattern** - Look at how other modules (e.g., `voice_message`) extend the Attachment model
+- **NULL vs FALSE matters** - In `t-if` conditions, NULL is truthy, so `!attachment.oo_is_snapshot` doesn't filter NULL values
+- **Asset loading order** - The model patch must be loaded before components that use it (already handled by `models/*.js` pattern)
+
+**Related Files:**
+- `custom_addons/onlyoffice_odoo/static/src/models/attachment_model_patch.js` (NEW)
+- `custom_addons/onlyoffice_odoo/models/ir_attachment.py` (init method updated)
+- `custom_addons/onlyoffice_odoo/__manifest__.py` (version bump)
+- `custom_addons/onlyoffice_odoo/static/src/js/chatter_attachment_defaults.js` (version marker)
+
+**Tags:** `odoo-19`, `onlyoffice`, `owl`, `frontend-model`, `patch`, `attachment`
+
+---
+
 ### [2025-12-16] - OnlyOffice version snapshot + attachment history button
 
 **Status:** ✅ Resolved
