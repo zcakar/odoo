@@ -624,6 +624,15 @@ OnlyOffice Document Server ships without draw.io by default; plugin is installed
 
 ---
 
-**Last Updated:** 2025-12-17
+### [2025-12-22] - Chatter Attachments Default Open + Folder/Paperclip Icon (deployed)
+OnlyOffice chatter attachments panel was collapsed by default; users wanted it expanded and a clearer attach icon.
+- Added a JS patch to force `isAttachmentBoxVisibleInitially = true` and templated the attach button with a folder+paperclip stacked icon. Registered in `web.assets_backend`.
+- Commits: `docs(ai): restore context after sodraw revert`, `feat(onlyoffice): keep chatter attachments open and update attach icon`.
+- Deployment: Pulled `origin/19.0` on prod (`/opt/odoo/odoo`), ran `sudo -u odoo ./venv/bin/python3 odoo-bin -c /etc/odoo/odoo.conf -d odoo_smb -u onlyoffice_odoo --stop-after-init`, restarted `odoo` service.
+- Status: Service healthy; browser may need cache/asset refresh. Module version unchanged (5.3.0); assets should load via upgrade.
+
+---
+
+**Last Updated:** 2025-12-22
 **Maintained By:** AI Agent + Project Team
-**Version:** 1.0.0
+**Version:** 1.0.1

@@ -12,9 +12,10 @@ Chatter.defaultProps = {
 
 // Force the attachment box open at setup to avoid regressions when defaultProps
 // are bypassed or state is reset during load.
-patch(Chatter.prototype, "onlyoffice_auto_open_attachments", {
+const superSetup = Chatter.prototype.setup;
+patch(Chatter.prototype, {
     setup() {
-        this._super();
+        superSetup.call(this, ...arguments);
         this.state.isAttachmentBoxOpened = true;
     },
 });

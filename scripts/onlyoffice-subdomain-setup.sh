@@ -2,7 +2,7 @@
 #
 # OnlyOffice Subdomain SSL Setup Script
 # Production Server: smb-hkt.com (91.99.22.41)
-# Subdomain: onlyoffice.smb-hkt.com
+# Subdomain: sodooc.smb-hkt.com
 #
 # Usage: Run this script on the production server after DNS is configured
 #
@@ -69,9 +69,9 @@ echo ""
 
 # Step 3: Create Nginx configuration (HTTP only; certbot will add HTTPS)
 echo "Step 3: Creating Nginx configuration..."
-cat > /etc/nginx/sites-available/onlyoffice << 'EOF'
-# OnlyOffice Document Server - Reverse Proxy Configuration
-upstream onlyoffice {
+cat > /etc/nginx/sites-available/sodooc << 'EOF'
+# Sodooc (OnlyOffice) Document Server - Reverse Proxy Configuration
+upstream sodooc {
     server 127.0.0.1:8080;
 }
 
@@ -79,7 +79,7 @@ upstream onlyoffice {
 server {
     listen 80;
     listen [::]:80;
-    server_name onlyoffice.smb-hkt.com;
+    server_name sodooc.smb-hkt.com;
 
     # Let's Encrypt ACME challenge
     location ^~ /.well-known/acme-challenge/ {
@@ -88,7 +88,7 @@ server {
 
     # Proxy to OnlyOffice
     location / {
-        proxy_pass http://onlyoffice;
+        proxy_pass http://sodooc;
         proxy_http_version 1.1;
 
         # Headers
@@ -117,7 +117,7 @@ echo ""
 
 # Step 4: Enable site
 echo "Step 4: Enabling site..."
-ln -sf /etc/nginx/sites-available/onlyoffice /etc/nginx/sites-enabled/onlyoffice
+ln -sf /etc/nginx/sites-available/sodooc /etc/nginx/sites-enabled/sodooc
 print_success "Site enabled"
 echo ""
 
@@ -167,7 +167,7 @@ print_info "  4. Redirect HTTP to HTTPS: 2 (Yes)"
 echo ""
 read -p "Press Enter to continue with SSL certificate installation..."
 
-certbot --nginx -d onlyoffice.smb-hkt.com || {
+certbot --nginx -d sodooc.smb-hkt.com || {
     print_error "SSL certificate installation failed!"
     echo "Please check the error messages above."
     exit 1
@@ -191,9 +191,9 @@ echo ""
 # Step 10: Test HTTPS connection
 echo "Step 10: Testing HTTPS connection..."
 sleep 3
-if curl -sSf https://onlyoffice.smb-hkt.com/healthcheck > /dev/null 2>&1; then
+if curl -sSf https://sodooc.smb-hkt.com/healthcheck > /dev/null 2>&1; then
     print_success "HTTPS connection successful!"
-    print_success "OnlyOffice is accessible at: https://onlyoffice.smb-hkt.com"
+    print_success "Sodooc is accessible at: https://sodooc.smb-hkt.com"
 else
     print_error "HTTPS connection failed!"
     echo "Testing HTTP connection to container..."
@@ -206,13 +206,13 @@ echo "================================"
 echo "           SUMMARY"
 echo "================================"
 echo ""
-print_success "OnlyOffice Subdomain Setup Complete!"
+print_success "Sodooc (OnlyOffice) Subdomain Setup Complete!"
 echo ""
 echo "Next Steps:"
 echo "1. Open Odoo: https://smb-hkt.com"
-echo "2. Go to: Settings → General Settings → ONLYOFFICE"
+echo "2. Go to: Settings → General Settings → Sodooc"
 echo "3. Update these fields:"
-echo "   - ONLYOFFICE Docs address: https://onlyoffice.smb-hkt.com/"
+echo "   - Sodooc Docs address: https://sodooc.smb-hkt.com/"
 echo "   - ONLYOFFICE Docs secret key: G36qo7JjKtYlBCZqOkXOL4NSCwhIIGjh"
 echo "   - JWT Header: Authorization"
 echo "   - ONLYOFFICE Docs address for internal requests: https://smb-hkt.com/"
