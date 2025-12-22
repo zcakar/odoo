@@ -631,6 +631,12 @@ OnlyOffice chatter attachments panel was collapsed by default; users wanted it e
 - Deployment: Pulled `origin/19.0` on prod (`/opt/odoo/odoo`), ran `sudo -u odoo ./venv/bin/python3 odoo-bin -c /etc/odoo/odoo.conf -d odoo_smb -u onlyoffice_odoo --stop-after-init`, restarted `odoo` service.
 - Status: Service healthy; browser may need cache/asset refresh. Module version unchanged (5.3.0); assets should load via upgrade.
 
+### [2025-12-22] - Chatter attach icon swapped to Flaticon PNG + topbar icon override (v5.3.4)
+- Added custom paperclip PNG (`static/src/img/attach_clip.png`) and CSS to size it; forced topbar paperclip (attachment counter) to use the same PNG via background override.
+- Manifest bumped to 5.3.4; chatter JS log now shows v5.3.4 for asset verification.
+- Ensured QWeb template is in `web.assets_qweb` and reran `-u onlyoffice_odoo` on prod followed by `systemctl restart odoo`.
+- Confirmed in UI: attachment panel opens by default, topbar paperclip icon shows Flaticon image.
+
 ---
 
 **Last Updated:** 2025-12-22
