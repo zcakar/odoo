@@ -30,6 +30,10 @@ patch(AttachmentList.prototype, {
     this.notification = useService("notification")
     this.actionService = useService("action")
   },
+  // Filter out snapshot attachments from the list
+  get filteredAttachments() {
+    return this.props.attachments.filter(att => !att.oo_is_snapshot)
+  },
   // eslint-disable-next-line sort-keys
   onlyofficeCanOpen(attachment) {
     const extension = (attachment.extension || "").toLowerCase()

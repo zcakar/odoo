@@ -7,7 +7,7 @@ import { Dropdown } from "@web/core/dropdown/dropdown";
 import { DropdownItem } from "@web/core/dropdown/dropdown_item";
 
 // Version marker for debugging asset loading in console.
-console.info("OnlyOffice chatter UX patch loaded (v5.3.9)");
+console.info("OnlyOffice chatter UX patch loaded (v5.3.10)");
 
 Chatter.defaultProps = {
     ...Chatter.defaultProps,

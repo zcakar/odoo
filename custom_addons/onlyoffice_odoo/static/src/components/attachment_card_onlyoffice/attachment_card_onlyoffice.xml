@@ -4,12 +4,9 @@
 <!-- -->
 <templates xml:space="preserve">
     <t t-inherit="mail.AttachmentList" t-inherit-mode="extension" owl="1">
-    <!-- Hide snapshot attachments by wrapping the entire container in a conditional -->
-    <xpath expr="//div[hasclass('o-mail-AttachmentContainer')]" position="before">
-      <t t-if="!attachment.oo_is_snapshot">
-    </xpath>
-    <xpath expr="//div[hasclass('o-mail-AttachmentContainer')]" position="after">
-      </t>
+    <!-- Replace the foreach to use filtered attachments -->
+    <xpath expr="//div[@t-foreach='props.attachments']" position="attributes">
+      <attribute name="t-foreach">filteredAttachments</attribute>
     </xpath>
     <xpath expr="//div[hasclass('o-mail-AttachmentButtons')]" position="inside">
       <div class="d-flex align-items-center gap-2 w-100 ms-2">
