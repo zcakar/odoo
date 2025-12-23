@@ -19,7 +19,7 @@
     <head>
         <meta charset="utf-8"/>
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-        <title t-esc="title or 'Sodoo'"/>
+        <title t-esc="title or 'SODOO'"/>
         <link type="image/x-icon" rel="shortcut icon" t-att-href="x_icon or '/web/static/img/sodoo-favicon.ico'"/>
         <script id="web.layout.odooscript" type="text/javascript">
             var odoo = {
@@ -89,7 +89,7 @@
             <a target="_blank"
                 t-attf-href="https://smb-hkt.com?utm_source=db&amp;utm_medium=#{_utm_medium}"
                 class="badge text-bg-light">
-                <img alt="Sodoo"
+                <img alt="SODOO"
                     src="/web/static/img/sodoo_logo_tiny.png"
                     width="62" height="20"
                     style="width: auto; height: 1em; vertical-align: baseline;"/>
@@ -125,7 +125,7 @@
                             <t t-if="not disable_database_manager">
                                 <a class="border-end pe-2 me-1" href="/web/database/manager">Manage Databases</a>
                             </t>
-                            <a href="https://www.odoo.com?utm_source=db&amp;utm_medium=auth" target="_blank">Powered by <span>Sodoo</span></a>
+                            <a href="https://smb-hkt.com?utm_source=db&amp;utm_medium=auth" target="_blank">Powered by <span>SODOO</span></a>
                             <div class="text-muted" style="font-size: 0.75rem; margin-top: 0.5rem;">
                                 <t t-esc="'v' + (request.env['ir.config_parameter'].sudo().get_param('sodoo.version', '19.0-SODOO-2025.12.23'))"/>
                             </div>
@@ -363,9 +363,9 @@
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
             </t>
             <div class="card">
-                <img t-attf-src="data:image/png;base64,{{odoo_icon}}" alt="Sodoo logo"/>
+                <img t-attf-src="data:image/png;base64,{{odoo_icon}}" alt="SODOO logo"/>
                 <h1>You are offline</h1>
-                <p>Check your network connection and come back here. Sodoo will load as soon as you're back online.</p>
+                <p>Check your network connection and come back here. SODOO will load as soon as you're back online.</p>
                 <button onclick="location.reload()">Check again</button>
             </div>
         </t>
