@@ -335,6 +335,7 @@ class Onlyoffice_Connector(http.Controller):
                         "image": odoo_url + "web/static/img/sodooc-favicon.svg",
                         "imageEmbedded": odoo_url + "web/static/img/sodooc-favicon.svg",
                         "url": odoo_url,
+                        "visible": True,
                     }
                 },
             },
@@ -512,6 +513,7 @@ class Onlyoffice_Connector(http.Controller):
                         "image": odoo_url + "web/static/img/sodooc-favicon.svg",
                         "imageEmbedded": odoo_url + "web/static/img/sodooc-favicon.svg",
                         "url": odoo_url,
+                        "visible": True,
                     }
                 },
             },
