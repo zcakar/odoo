@@ -330,7 +330,13 @@ class Onlyoffice_Connector(http.Controller):
             "editorConfig": {
                 "lang": request.env.user.lang,
                 "user": {"id": str(request.env.user.id), "name": request.env.user.name},
-                "customization": {},
+                "customization": {
+                    "logo": {
+                        "image": odoo_url + "web/static/img/sodooc-favicon.svg",
+                        "imageEmbedded": odoo_url + "web/static/img/sodooc-favicon.svg",
+                        "url": odoo_url,
+                    }
+                },
             },
         }
 
@@ -501,7 +507,13 @@ class Onlyoffice_Connector(http.Controller):
                 "mode": "view",
                 "lang": request.env.user.lang,
                 "user": {"id": str(request.env.user.id), "name": request.env.user.name},
-                "customization": {},
+                "customization": {
+                    "logo": {
+                        "image": odoo_url + "web/static/img/sodooc-favicon.svg",
+                        "imageEmbedded": odoo_url + "web/static/img/sodooc-favicon.svg",
+                        "url": odoo_url,
+                    }
+                },
             },
         }
 
