@@ -25,8 +25,8 @@ The `.ai/` directory provides:
 cp -r /path/to/odoo/.ai /path/to/new-project/.ai
 
 # Or download from GitHub
-git clone https://github.com/zcakar/odoo.git
-cp -r odoo/.ai your-new-project/.ai
+git clone https://github.com/zzafercakar/sodoo.git
+cp -r sodoo/odoo/.ai your-new-project/.ai
 ```
 
 ### Step 2: Adapt context.yaml to Your Project
@@ -407,10 +407,10 @@ mkdir -p .ai
 cd .ai
 
 # Download template files (or copy from existing project)
-curl -O https://raw.githubusercontent.com/zcakar/odoo/19.0/.ai/context.yaml
-curl -O https://raw.githubusercontent.com/zcakar/odoo/19.0/.ai/README.md
-curl -O https://raw.githubusercontent.com/zcakar/odoo/19.0/.ai/AI_AGENT_GUIDELINES.md
-curl -O https://raw.githubusercontent.com/zcakar/odoo/19.0/.ai/NEW_CHAT_TEMPLATE.md
+curl -O https://raw.githubusercontent.com/zzafercakar/odoo/19.0/.ai/context.yaml
+curl -O https://raw.githubusercontent.com/zzafercakar/odoo/19.0/.ai/README.md
+curl -O https://raw.githubusercontent.com/zzafercakar/odoo/19.0/.ai/AI_AGENT_GUIDELINES.md
+curl -O https://raw.githubusercontent.com/zzafercakar/odoo/19.0/.ai/NEW_CHAT_TEMPLATE.md
 
 # Edit context.yaml
 echo "✏️  Please edit .ai/context.yaml with your project details"
@@ -431,7 +431,7 @@ This template is open-source and can be adapted for any project.
 - Modified templates for specific tech stacks
 - Improvements to the documentation
 
-**Original Project:** [github.com/zcakar/odoo](https://github.com/zcakar/odoo)
+**Original Project:** [github.com/zzafercakar/sodoo](https://github.com/zzafercakar/sodoo)
 
 ---
 

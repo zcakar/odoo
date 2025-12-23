@@ -99,11 +99,14 @@ git:
 
   remotes:
     origin:
-      url: "https://github.com/zcakar/odoo"
-      purpose: "Personal fork"
+      url: "https://github.com/zzafercakar/odoo"
+      purpose: "SODOO fork - Odoo core with SODOOC integration"
     upstream:
       url: "https://github.com/odoo/odoo.git"
       purpose: "Official Odoo repository"
+    workspace:
+      url: "https://github.com/zzafercakar/sodoo"
+      purpose: "Complete SODOO workspace (includes odoo as submodule)"
 
   recent_commits:
     - hash: "e2afe488036"

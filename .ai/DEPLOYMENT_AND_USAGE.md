@@ -115,7 +115,7 @@ sudo apt install -y python3.10 python3-pip postgresql-16 nginx docker.io
 ```bash
 # Clone or copy Odoo
 cd /opt/odoo
-git clone https://github.com/zcakar/odoo.git
+git clone https://github.com/zzafercakar/odoo.git
 cd odoo
 git checkout 19.0
 

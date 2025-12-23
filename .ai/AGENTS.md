@@ -1,4 +1,4 @@
-# Agent Routing Policy (zcakar/odoo)
+# Agent Routing Policy (zzafercakar/sodoo)
 
 ## Default
 - Use OpenAI (Daily Driver) for: small code edits, bugfixes, unit tests, short scripts.

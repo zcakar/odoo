@@ -642,7 +642,8 @@ Source: [odoo.com/page/editions](https://www.odoo.com/page/editions) (fetched 20
 ### External Resources
 - [Odoo GitHub](https://github.com/odoo/odoo)
 - [OnlyOffice GitHub](https://github.com/ONLYOFFICE/onlyoffice_odoo)
-- [Project GitHub](https://github.com/zcakar/odoo)
+- [SODOO Workspace](https://github.com/zzafercakar/sodoo) - Complete workspace
+- [SODOO Odoo Fork](https://github.com/zzafercakar/odoo) - Odoo core with SODOOC
 
 ---
 
