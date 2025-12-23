@@ -14,7 +14,7 @@ export class OnlyofficePreview extends Component {
   setup() {
     this.title = "Preview - " + this.props.title
     this.url =
-      "/onlyoffice/preview" +
+      "/sodooc/preview" +
       `?url=${encodeURIComponent(this.props.url)}&` +
       `title=${encodeURIComponent(this.props.title)}`
 

@@ -75,7 +75,7 @@ export class FormGallery extends Component {
 
   async fetchLocales() {
     try {
-      const url = "/onlyoffice/oforms/locales"
+      const url = "/sodooc/oforms/locales"
       const response = await this.rpc(url)
 
       let localesData = []
@@ -101,7 +101,7 @@ export class FormGallery extends Component {
 
   async fetchCategoryTypes() {
     try {
-      const response = await this.rpc("/onlyoffice/oforms/category-types", { locale: this.state.locale.code })
+      const response = await this.rpc("/sodooc/oforms/category-types", { locale: this.state.locale.code })
       this.state.categories = response.data || []
       for (const categoryTypes of response.data) {
         await this.fetchSubcategories(categoryTypes.categoryId)
@@ -114,7 +114,7 @@ export class FormGallery extends Component {
   async fetchSubcategories(categoryId) {
     try {
       const category = this.state.categories.find((c) => c.categoryId === categoryId)
-      const response = await this.rpc("/onlyoffice/oforms/subcategories", {
+      const response = await this.rpc("/sodooc/oforms/subcategories", {
         category_type: category.type,
         locale: this.state.locale.code,
       })
@@ -143,7 +143,7 @@ export class FormGallery extends Component {
         params["filters[name_form][$containsi]"] = this.state.search
       }
 
-      const response = await this.rpc("/onlyoffice/oforms", { params: params })
+      const response = await this.rpc("/sodooc/oforms", { params: params })
 
       this.state.forms = response.data || []
 

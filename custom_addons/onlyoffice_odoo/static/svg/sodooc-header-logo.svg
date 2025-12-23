@@ -1,0 +1,17 @@
+<svg width="200" height="40" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg">
+  <!-- SODOOC Icon (küçük) -->
+  <g transform="translate(0, 0) scale(0.14)">
+    <!-- Üst yarı (YEŞİL) -->
+    <path d="M 10 53.33 C 10 29.4 29.4 10 53.33 10 L 226.67 10 C 250.6 10 270 29.4 270 53.33 L 270 143.5 L 10 143.5 Z" fill="#8BB955" />
+    <!-- Alt yarı (MAVİ) -->
+    <path d="M 10 143.5 L 270 143.5 L 270 226.67 C 270 250.6 250.6 270 226.67 270 L 53.33 270 C 29.4 270 10 250.6 10 226.67 Z" fill="#446995" />
+    <!-- Kutu stroke (TURUNCU) -->
+    <path d="M 10 53.33 C 10 29.4 29.4 10 53.33 10 L 226.67 10 C 250.6 10 270 29.4 270 53.33 L 270 226.67 C 270 250.6 250.6 270 226.67 270 L 53.33 270 C 29.4 270 10 250.6 10 226.67 Z" fill="none" stroke="#DD4814" stroke-width="13.75" />
+    <!-- Gri '>' işareti -->
+    <path d="M 110 95 L 170 143.5 L 110 192 L 110 170 L 145 143.5 L 110 117 Z" fill="#7F7F7F" transform="translate(143.5 143.5) scale(2) translate(-143.5 -143.5)" />
+  </g>
+  
+  <!-- SODOOC Text -->
+  <text x="50" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333333">SODOOC</text>
+</svg>
+

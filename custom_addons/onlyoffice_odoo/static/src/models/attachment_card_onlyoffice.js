@@ -120,6 +120,6 @@ patch(AttachmentList.prototype, {
       return this.actionService.doAction(action)
     }
     const accessTokenQuery = attachment.accessToken ? `?access_token=${attachment.accessToken}` : ""
-    window.open(`/onlyoffice/editor/${attachment.id}${accessTokenQuery}`, "_blank")
+    window.open(`/sodooc/editor/${attachment.id}${accessTokenQuery}`, "_blank")
   },
 })

@@ -27,7 +27,7 @@ export class DocumentsAction extends Component {
           args.attachment_id = attachment_id
           this.router.pushState({ attachment_id: attachment_id })
         }
-        const response = await this.rpc("/onlyoffice/editor/get_config", args)
+        const response = await this.rpc("/sodooc/editor/get_config", args)
         const config = JSON.parse(response.editorConfig)
         const theme = cookie.get("color_scheme")
         config.editorConfig.customization = {

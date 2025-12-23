@@ -91,9 +91,9 @@ def onlyoffice_request(url, method, opts=None):
 
 
 class Onlyoffice_Connector(http.Controller):
-    @http.route("/onlyoffice/editor/get_config", auth="user", methods=["POST"], type="json", csrf=False)
+    @http.route("/sodooc/editor/get_config", auth="user", methods=["POST"], type="json", csrf=False)
     def get_config(self, document_id=None, attachment_id=None, access_token=None):
-        _logger.info("POST /onlyoffice/editor/get_config - document: %s, attachment: %s", document_id, attachment_id)
+        _logger.info("POST /sodooc/editor/get_config - document: %s, attachment: %s", document_id, attachment_id)
         document = None
         if document_id:
             document = request.env["documents.document"].browse(int(document_id))
@@ -101,7 +101,7 @@ class Onlyoffice_Connector(http.Controller):
 
         attachment = self.get_attachment(attachment_id)
         if not attachment:
-            _logger.warning("POST /onlyoffice/editor/get_config - attachment not found: %s", attachment_id)
+            _logger.warning("POST /sodooc/editor/get_config - attachment not found: %s", attachment_id)
             return request.not_found()
 
         # Odoo 19.0 compatibility: validate_access -> _can_return_content
@@ -119,18 +119,18 @@ class Onlyoffice_Connector(http.Controller):
         can_read = attachment.check_access_rights("read", raise_exception=False) and file_utils.can_view(filename)
 
         if not can_read:
-            _logger.warning("POST /onlyoffice/editor/get_config - no read access: %s", attachment_id)
+            _logger.warning("POST /sodooc/editor/get_config - no read access: %s", attachment_id)
             raise Exception("cant read")
 
         can_write = attachment.check_access_rights("write", raise_exception=False) and file_utils.can_edit(filename)
 
         config = self.prepare_editor_values(attachment, access_token, can_write)
-        _logger.info("POST /onlyoffice/editor/get_config - success: %s", attachment_id)
+        _logger.info("POST /sodooc/editor/get_config - success: %s", attachment_id)
         return config
 
-    @http.route("/onlyoffice/file/content/test.txt", auth="public")
+    @http.route("/sodooc/file/content/test.txt", auth="public")
     def get_test_file(self):
-        _logger.info("GET /onlyoffice/file/content/test.txt")
+        _logger.info("GET /sodooc/file/content/test.txt")
         content = "test"
         headers = [
             ("Content-Length", len(content)),
@@ -140,12 +140,12 @@ class Onlyoffice_Connector(http.Controller):
         response = request.make_response(content, headers)
         return response
 
-    @http.route("/onlyoffice/file/content/<int:attachment_id>", auth="public")
+    @http.route("/sodooc/file/content/<int:attachment_id>", auth="public")
     def get_file_content(self, attachment_id, oo_security_token=None, access_token=None):
-        _logger.info("GET /onlyoffice/file/content/%s", attachment_id)
+        _logger.info("GET /sodooc/file/content/%s", attachment_id)
         attachment = self.get_attachment(attachment_id, self.get_user_from_token(oo_security_token))
         if not attachment:
-            _logger.warning("GET /onlyoffice/file/content/%s - attachment not found", attachment_id)
+            _logger.warning("GET /sodooc/file/content/%s - attachment not found", attachment_id)
             return request.not_found()
 
         # Odoo 19.0 compatibility: validate_access -> _can_return_content
@@ -158,7 +158,7 @@ class Onlyoffice_Connector(http.Controller):
                 token = token[len("Bearer ") :]
 
             if not token:
-                _logger.warning("GET /onlyoffice/file/content/%s - JWT token missing", attachment_id)
+                _logger.warning("GET /sodooc/file/content/%s - JWT token missing", attachment_id)
                 raise Exception("expected JWT")
 
             jwt_utils.decode_token(request.env, token)
@@ -167,15 +167,15 @@ class Onlyoffice_Connector(http.Controller):
 
         send_file_kwargs = {"as_attachment": True, "max_age": None}
 
-        _logger.info("GET /onlyoffice/file/content/%s - success", attachment_id)
+        _logger.info("GET /sodooc/file/content/%s - success", attachment_id)
         return stream.get_response(**send_file_kwargs)
 
-    @http.route("/onlyoffice/editor/<int:attachment_id>", auth="public", type="http", website=True)
+    @http.route("/sodooc/editor/<int:attachment_id>", auth="public", type="http", website=True)
     def render_editor(self, attachment_id, access_token=None):
-        _logger.info("GET /onlyoffice/editor/%s", attachment_id)
+        _logger.info("GET /sodooc/editor/%s", attachment_id)
         attachment = self.get_attachment(attachment_id)
         if not attachment:
-            _logger.warning("GET /onlyoffice/editor/%s - attachment not found", attachment_id)
+            _logger.warning("GET /sodooc/editor/%s - attachment not found", attachment_id)
             return request.not_found()
 
         # Odoo 19.0 compatibility: validate_access -> _can_return_content
@@ -192,19 +192,19 @@ class Onlyoffice_Connector(http.Controller):
         can_write = attachment.has_access("write") and file_utils.can_edit(filename)
 
         if not can_read:
-            _logger.warning("GET /onlyoffice/editor/%s - no read access", attachment_id)
+            _logger.warning("GET /sodooc/editor/%s - no read access", attachment_id)
             raise Exception("cant read")
 
-        _logger.info("GET /onlyoffice/editor/%s - success", attachment_id)
+        _logger.info("GET /sodooc/editor/%s - success", attachment_id)
         return request.render(
             "onlyoffice_odoo.onlyoffice_editor", self.prepare_editor_values(attachment, access_token, can_write)
         )
 
     @http.route(
-        "/onlyoffice/editor/callback/<int:attachment_id>", auth="public", methods=["POST"], type="http", csrf=False
+        "/sodooc/editor/callback/<int:attachment_id>", auth="public", methods=["POST"], type="http", csrf=False
     )
     def editor_callback(self, attachment_id, oo_security_token=None, access_token=None):
-        _logger.info("POST /onlyoffice/editor/callback/%s", attachment_id)
+        _logger.info("POST /sodooc/editor/callback/%s", attachment_id)
         response_json = {"error": 0}
 
         try:
@@ -212,7 +212,7 @@ class Onlyoffice_Connector(http.Controller):
             user = self.get_user_from_token(oo_security_token)
             attachment = self.get_attachment(attachment_id, user)
             if not attachment:
-                _logger.warning("POST /onlyoffice/editor/callback/%s - attachment not found", attachment_id)
+                _logger.warning("POST /sodooc/editor/callback/%s - attachment not found", attachment_id)
                 raise Exception("attachment not found")
 
             # Odoo 19.0 compatibility: validate_access -> _can_return_content
@@ -228,7 +228,7 @@ class Onlyoffice_Connector(http.Controller):
                         token = token[len("Bearer ") :]
 
                 if not token:
-                    _logger.warning("POST /onlyoffice/editor/callback/%s - JWT token missing", attachment_id)
+                    _logger.warning("POST /sodooc/editor/callback/%s - JWT token missing", attachment_id)
                     raise Exception("expected JWT")
 
                 body = jwt_utils.decode_token(request.env, token)
@@ -236,7 +236,7 @@ class Onlyoffice_Connector(http.Controller):
                     body = body["payload"]
 
             status = body["status"]
-            _logger.info("POST /onlyoffice/editor/callback/%s - status: %s", attachment_id, status)
+            _logger.info("POST /sodooc/editor/callback/%s - status: %s", attachment_id, status)
 
             if (status == 2) | (status == 3):  # mustsave, corrupted
                 attachment_version = attachment.oo_attachment_version or 1
@@ -275,10 +275,10 @@ class Onlyoffice_Connector(http.Controller):
 
                 attachment.sudo()._prune_old_versions(limit=10)
 
-                _logger.info("POST /onlyoffice/editor/callback/%s - file saved successfully", attachment_id)
+                _logger.info("POST /sodooc/editor/callback/%s - file saved successfully", attachment_id)
 
         except Exception as ex:
-            _logger.error("POST /onlyoffice/editor/callback/%s - error: %s", attachment_id, str(ex))
+            _logger.error("POST /sodooc/editor/callback/%s - error: %s", attachment_id, str(ex))
             response_json["error"] = 1
             response_json["message"] = http.serialize_exception(ex)
 
@@ -322,7 +322,7 @@ class Onlyoffice_Connector(http.Controller):
             "documentType": document_type,
             "document": {
                 "title": filename,
-                "url": odoo_url + "onlyoffice/file/content/" + path_part,
+                "url": odoo_url + "sodooc/file/content/" + path_part,
                 "fileType": file_utils.get_file_ext(filename),
                 "key": key,
                 "permissions": {},
@@ -335,7 +335,7 @@ class Onlyoffice_Connector(http.Controller):
         }
 
         if can_write:
-            root_config["editorConfig"]["callbackUrl"] = odoo_url + "onlyoffice/editor/callback/" + path_part
+            root_config["editorConfig"]["callbackUrl"] = odoo_url + "sodooc/editor/callback/" + path_part
 
         if attachment.res_model != "documents.document":
             root_config["editorConfig"]["mode"] = "edit" if can_write else "view"
@@ -466,13 +466,13 @@ class Onlyoffice_Connector(http.Controller):
             _logger.error("User has no read access rights to open this document")
             raise Forbidden() from e
 
-    @http.route("/onlyoffice/preview", type="http", auth="user")
+    @http.route("/sodooc/preview", type="http", auth="user")
     def preview(self, url, title):
-        _logger.info("GET /onlyoffice/preview - url: %s, title: %s", url, title)
+        _logger.info("GET /sodooc/preview - url: %s, title: %s", url, title)
         docserver_url = config_utils.get_doc_server_public_url(request.env)
         odoo_url = config_utils.get_base_or_odoo_url(request.env)
 
-        if url and url.startswith("/onlyoffice/file/content/"):
+        if url and url.startswith("/sodooc/file/content/"):
             internal_jwt_secret = config_utils.get_internal_jwt_secret(request.env)
             user_id = request.env.user.id
             security_token = jwt_utils.encode_payload(request.env, {"id": user_id}, internal_jwt_secret)
@@ -508,7 +508,7 @@ class Onlyoffice_Connector(http.Controller):
         if jwt_utils.is_jwt_enabled(request.env):
             root_config["token"] = jwt_utils.encode_payload(request.env, root_config)
 
-        _logger.info("GET /onlyoffice/preview - success")
+        _logger.info("GET /sodooc/preview - success")
         return request.render(
             "onlyoffice_odoo.onlyoffice_editor",
             {
@@ -541,7 +541,7 @@ class OnlyOfficeOFormsDocumentsController(http.Controller):
             _logger.error(f"API request failed to {url}: {str(e)}")
             raise UserError(f"Failed to connect to Forms API: {str(e)}") from e
 
-    @http.route("/onlyoffice/oforms/locales", type="json", auth="user")
+    @http.route("/sodooc/oforms/locales", type="json", auth="user")
     def get_oform_locales(self):
         url = self.OFORMS_URL
         endpoint = "i18n/locales"
@@ -557,7 +557,7 @@ class OnlyOfficeOFormsDocumentsController(http.Controller):
             ]
         }
 
-    @http.route("/onlyoffice/oforms/category-types", type="json", auth="user")
+    @http.route("/sodooc/oforms/category-types", type="json", auth="user")
     def get_category_types(self, locale="en"):
         url = self.OFORMS_URL
         endpoint = "menu-translations"
@@ -587,7 +587,7 @@ class OnlyOfficeOFormsDocumentsController(http.Controller):
 
         return {"data": categories}
 
-    @http.route("/onlyoffice/oforms/subcategories", type="json", auth="user")
+    @http.route("/sodooc/oforms/subcategories", type="json", auth="user")
     def get_subcategories(self, category_type, locale="en"):
         url = self.OFORMS_URL
         endpoint_map = {"categorie": "categories", "type": "types", "compilation": "compilations"}
@@ -621,7 +621,7 @@ class OnlyOfficeOFormsDocumentsController(http.Controller):
 
         return {"data": subcategories}
 
-    @http.route("/onlyoffice/oforms", type="json", auth="user")
+    @http.route("/sodooc/oforms", type="json", auth="user")
     def get_oforms(self, params=None, **kwargs):
         url = self.CMSOFORMS_URL
         if params is None:

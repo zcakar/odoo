@@ -41,7 +41,7 @@
     <t t-call="onlyoffice_odoo.onlyoffice_layout">
       <div id="doceditor" />
       <div id="error" class="w-25 m-auto my-5 py-5 d-flex flex-column d-none">
-        <img src="/onlyoffice_odoo/static/svg/logo.svg" alt="ONLYOFFICE logo" />
+        <img src="/onlyoffice_odoo/static/svg/sodooc-header-logo.svg" alt="SODOOC logo" />
         <div class="my-3 alert alert-danger">
           <p> SODOOC cannot be reached. Please contact admin. </p>
         </div>
