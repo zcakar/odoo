@@ -116,7 +116,7 @@ function pathFromActionState(state) {
 }
 
 export function startUrl() {
-    return isScopedApp() ? "scoped_app" : "odoo";
+    return isScopedApp() ? "scoped_app" : "sodoo";
 }
 
 /**
@@ -185,7 +185,7 @@ function urlToState(urlObj) {
 
     const [prefix, ...splitPath] = urlObj.pathname.split("/").filter(Boolean);
 
-    if (["odoo", "scoped_app"].includes(prefix)) {
+    if (["sodoo", "scoped_app"].includes(prefix)) {
         const actionParts = [...splitPath.entries()].filter(
             ([_, part]) => !isNumeric(part) && part !== "new"
         );
