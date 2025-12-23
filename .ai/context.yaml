@@ -811,6 +811,27 @@ metadata:
 # ============================================================================
 
 # ----------------------------------------------------------------------------
+# DOCUMENTATION RESOURCES
+# ----------------------------------------------------------------------------
+documentation:
+  official_odoo_docs:
+    url: "https://www.odoo.com/documentation/19.0/"
+    description: "Official Odoo 19.0 documentation - primary reference for development"
+    sections:
+      - "User Docs: Application usage and configuration guides"
+      - "Developer: Tutorials, how-to guides, framework reference, external APIs"
+      - "Install and Maintain: Installation, deployment, upgrades, Odoo.sh"
+      - "Contributing: Coding guidelines, documentation standards"
+    key_developer_sections:
+      - "Server framework 101: ORM, models, fields, security"
+      - "Web framework: Owl components, JavaScript, QWeb templates"
+      - "Reference: ORM API, data files, actions, views, controllers"
+      - "How-to guides: Custom reports, themes, localizations, upgrades"
+    notes:
+      - "Always consult official docs for API signatures and best practices"
+      - "Version-specific documentation (19.0) must be used for this project"
+
+# ----------------------------------------------------------------------------
 # BRANDING RULES
 # ----------------------------------------------------------------------------
 # Product branding and logo policy for the project. This is authoritative
@@ -818,18 +839,29 @@ metadata:
 # logo are recorded here and must be used consistently across docs, UIs,
 # and plugin assets.
 branding:
-  product_name: "SODO"
+  product_name: "SODOO"
+  tagline: "BEYOND SUPERUSER"
   official_logo: "sodoo-logo.svg"
-  logo_location: "/home/embed/Dev/ODOO/odoo/sodoo-logo.svg"
+  logo_location: "/home/embed/Dev/ODOO/logos/sodoo-logo.svg"
   secondary_assets:
     - name: "behind_mark"
       file: "sodoo-logo-behind.png"
-      location: "/home/embed/Dev/ODOO/odoo/sodoo-logo-behind.png"
+      location: "/home/embed/Dev/ODOO/logos/sodoo-logo-behind.png"
+    - name: "sodooc_logo"
+      file: "sodooc-logo.svg"
+      location: "/home/embed/Dev/ODOO/logos/sodooc-logo.svg"
+      description: "SODOOC - Office document editor branding (replaces ONLYOFFICE)"
+    - name: "sodooc_behind"
+      file: "sodooc-logo-behind.png"
+      location: "/home/embed/Dev/ODOO/logos/sodooc-logo-behind.png"
   policy_notes:
-    - "From this point forward, the project's product brand name is 'SODO'."
-    - "The canonical logo file is `sodoo-logo.svg` located at the project's root.
+    - "Product brand name is 'SODOO' (replaces all 'Odoo' references in UI)"
+    - "Office editor brand is 'SODOOC' (replaces all 'ONLYOFFICE' references)"
+    - "The canonical logo file is `sodoo-logo.svg` located at /logos/ directory.
       Use this SVG for all official branding (UI, README, website, plugin icons).
       Raster fallbacks (PNG) are acceptable for contexts that require them."
     - "AI agents must respect branding rules and update `.ai/` session files
       when new logo assets are added or branding decisions change."
+    - "All user-facing text must use SODOO instead of Odoo"
+    - "All ONLYOFFICE references in custom_addons/onlyoffice_odoo must use SODOOC"
 

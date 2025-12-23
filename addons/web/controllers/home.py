@@ -37,13 +37,26 @@ class Home(http.Controller):
     def index(self, s_action=None, db=None, **kw):
         if request.db and request.session.uid and not is_user_internal(request.session.uid):
             return request.redirect_query('/web/login_successful', query=request.params)
-        return request.redirect_query('/odoo', query=request.params)
+        return request.redirect_query('/sodoo', query=request.params)
+
+    # SODOO: Redirect old /odoo URLs to /sodoo
+    @http.route(['/odoo', '/odoo/<path:subpath>'], type='http', auth="none")
+    def redirect_odoo_to_sodoo(self, subpath=None, **kw):
+        """Redirect legacy /odoo URLs to /sodoo for SODOO rebranding"""
+        if subpath:
+            new_url = f'/sodoo/{subpath}'
+        else:
+            new_url = '/sodoo'
+        # Preserve query parameters
+        if request.httprequest.query_string:
+            new_url += '?' + request.httprequest.query_string.decode('utf-8')
+        return request.redirect(new_url, code=301)  # 301 = Permanent redirect
 
     def _web_client_readonly(self, rule, args):
         return False
 
     # ideally, this route should be `auth="user"` but that don't work in non-monodb mode.
-    @http.route(['/web', '/odoo', '/odoo/<path:subpath>', '/scoped_app/<path:subpath>'], type='http', auth="none", readonly=_web_client_readonly)
+    @http.route(['/web', '/sodoo', '/sodoo/<path:subpath>', '/scoped_app/<path:subpath>'], type='http', auth="none", readonly=_web_client_readonly)
     def web_client(self, s_action=None, **kw):
 
         # Ensure we have both a database and a user

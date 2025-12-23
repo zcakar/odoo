@@ -16,9 +16,10 @@ version_info = (19, 0, 0, FINAL, 0, '')
 series = serie = major_version = '.'.join(str(s) for s in version_info[:2])
 version = series + RELEASE_LEVELS_DISPLAY[version_info[3]] + str(version_info[4] or '') + version_info[5]
 
-product_name = 'Odoo'
-description = 'Odoo Server'
-long_desc = '''Odoo is a complete ERP and CRM. The main features are accounting (analytic
+product_name = 'Sodoo'
+description = 'Sodoo Server'
+sodoo_version = '19.0-SODOO-2025.12.23'  # SODOO branding version for debugging
+long_desc = '''Sodoo is a complete ERP and CRM. The main features are accounting (analytic
 and financial), stock management, sales and purchases management, tasks
 automation, marketing campaigns, help desk, POS, etc. Technical features include
 a distributed server, an object database, a dynamic GUI,
