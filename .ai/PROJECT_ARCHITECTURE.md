@@ -693,7 +693,147 @@ When to update this document:
 
 ---
 
-**Document Version:** 1.1.0
-**Last Updated:** 2025-12-22
+---
+
+## 🎨 Branding & Icon System (ZC-20251223)
+
+### Favicon ve İkon Mimarisi
+
+SODOO ve SODOOC markaları için tüm platformlarda tutarlı görsel kimlik sağlayan ikon sistemi.
+
+#### Kaynak Dosyalar (SVG)
+
+**Lokasyon:** `/home/embed/Dev/ODOO/logos/`
+
+```
+logos/
+├── sodoo-favicon.svg       # SODOO ana logo (turuncu, kalınlaştırılmış)
+├── sodooc-favicon.svg      # SODOOC ana logo (yeşil/mavi, kalınlaştırılmış)
+└── FAVICON-README.md       # Detaylı dokümantasyon
+```
+
+**Logo Özellikleri:**
+- Stroke genişliği: 13.75px (2x kalınlaştırılmış)
+- Ok işareti: scale(2) (2x büyütülmüş)
+- Format: SVG (vektörel, ölçeklenebilir)
+- Renk: SODOO (#DD4814 turuncu), SODOOC (#8BB955 yeşil + #446995 mavi)
+
+#### Platform-Specific İkonlar
+
+**Web Favicon:**
+```
+/opt/odoo/odoo/addons/web/static/img/
+├── sodoo-favicon.ico       # Multi-size (16-256px)
+├── sodoo-icon-16x16.png    # Tarayıcı sekmesi (küçük)
+├── sodoo-icon-32x32.png    # Tarayıcı sekmesi (orta)
+├── sodoo-icon-48x48.png    # Tarayıcı sekmesi (büyük)
+└── sodoo-icon-64x64.png    # Yüksek DPI ekranlar
+```
+
+**PWA (Progressive Web App):**
+```
+├── sodoo-icon-192x192.png  # PWA standart ikon
+└── sodoo-icon-512x512.png  # PWA yüksek çözünürlük
+```
+
+**iOS:**
+```
+├── sodoo-icon-ios.png      # 180x180 (Apple Touch Icon - ana)
+├── sodoo-icon-ios-120.png  # iPhone
+├── sodoo-icon-ios-152.png  # iPad
+└── sodoo-icon-ios-167.png  # iPad Pro
+```
+
+**Android:**
+```
+├── sodoo-new-72.png        # hdpi (72x72)
+├── sodoo-new-96.png        # xhdpi (96x96)
+├── sodoo-new-144.png       # xxhdpi (144x144)
+└── sodoo-new-192.png       # xxxhdpi (192x192)
+```
+
+#### Odoo Entegrasyonu
+
+**1. Web Template (webclient_templates.xml)**
+
+```xml
+<!-- Line 23: Favicon -->
+<link type="image/x-icon" rel="shortcut icon"
+      t-att-href="x_icon or '/web/static/img/sodoo-favicon.ico'"/>
+
+<!-- Line 282: Apple Touch Icon -->
+<link rel="apple-touch-icon"
+      href="/web/static/img/sodoo-icon-ios.png"/>
+```
+
+**2. PWA Manifest (webmanifest.py)**
+
+```python
+# Line 54-59: PWA Icons
+icon_sizes = ['192x192', '512x512']
+manifest['icons'] = [{
+    'src': '/web/static/img/sodoo-icon-%s.png' % size,
+    'sizes': size,
+    'type': 'image/png',
+} for size in icon_sizes]
+
+# Line 92: Offline Icon
+def _icon_path(self):
+    return 'web/static/img/sodoo-icon-192x192.png'
+```
+
+#### İkon Oluşturma Pipeline
+
+**Araçlar:**
+- Inkscape: SVG → PNG render (yüksek kalite)
+- Python PIL/Pillow: ICO oluşturma, resize
+- ImageMagick: PNG optimize
+
+**Workflow:**
+```bash
+# 1. SVG → PNG (Inkscape)
+inkscape logos/sodoo-favicon.svg \
+    --export-type=png \
+    --export-filename=sodoo-icon-192.png \
+    --export-width=192 \
+    --export-height=192 \
+    --export-background-opacity=0
+
+# 2. Multi-size ICO (Python PIL)
+from PIL import Image
+images = [Image.open(f'sodoo-{s}.png') for s in [16,32,48,64,128,256]]
+images[0].save('sodoo-favicon.ico', format='ICO',
+    sizes=[(s,s) for s in [16,32,48,64,128,256]],
+    append_images=images[1:])
+
+# 3. Sunucuya deployment
+sshpass -p 'smb' scp sodoo-*.png root@smb-hkt.com:/opt/odoo/odoo/addons/web/static/img/
+systemctl restart odoo
+```
+
+#### Best Practices
+
+**Tasarım:**
+- ✅ SVG kaynak dosyasından oluştur (kalite)
+- ✅ Şeffaf arka plan kullan (RGBA)
+- ✅ En-boy oranını koru
+- ✅ Minimum 512x512 boyutunda master dosya
+
+**Teknik:**
+- ✅ PNG optimize et (dosya boyutu)
+- ✅ Multi-size ICO oluştur (tarayıcı uyumluluğu)
+- ✅ Platform-specific boyutlara uy
+- ✅ Cache-busting için versiyon ekle (gerekirse)
+
+**Dokümantasyon:**
+- ✅ Tüm boyutları dokümante et
+- ✅ Kullanım alanlarını belirt
+- ✅ Oluşturma komutlarını kaydet
+- ✅ Deployment prosedürünü yaz
+
+---
+
+**Document Version:** 1.2.0
+**Last Updated:** 2025-12-23
 **Maintained By:** Project Team & AI Agents
 **Next Review:** When major architectural change occurs

@@ -5,7 +5,7 @@
 # across different chat sessions. Always reference this file at the start of
 # new conversations to maintain project continuity.
 #
-# Last Updated: 2025-12-22
+# Last Updated: 2025-12-23
 # ============================================================================
 
 project:
@@ -854,12 +854,44 @@ branding:
     - name: "sodooc_behind"
       file: "sodooc-logo-behind.png"
       location: "/home/embed/Dev/ODOO/logos/sodooc-logo-behind.png"
+  favicon_icons:  # ZC-20251223: Favicon ve İkon Sistemi
+    sodoo:
+      source: "/home/embed/Dev/ODOO/logos/sodoo-favicon.svg"
+      description: "SODOO favicon (turuncu, kalınlaştırılmış - stroke: 13.75px, ok: scale(2))"
+      formats:
+        ico: "sodoo-favicon.ico (multi-size: 16-256px)"
+        web: "sodoo-icon-{16,32,48,64}x{16,32,48,64}.png"
+        pwa: "sodoo-icon-{192,512}x{192,512}.png"
+        ios: "sodoo-icon-ios.png (180x180), sodoo-icon-ios-{120,152,167}.png"
+        android: "sodoo-new-{72,96,144,192}.png (hdpi→xxxhdpi)"
+      deployment: "/opt/odoo/odoo/addons/web/static/img/"
+      integration:
+        - "odoo/addons/web/views/webclient_templates.xml (line 23, 282)"
+        - "odoo/addons/web/controllers/webmanifest.py (line 54-59, 92)"
+    sodooc:
+      source: "/home/embed/Dev/ODOO/logos/sodooc-favicon.svg"
+      description: "SODOOC favicon (yeşil/mavi, kalınlaştırılmış)"
+      formats:
+        ico: "sodooc-favicon.ico (multi-size: 16-256px)"
+        web: "sodooc-icon-{16,32,48,64}x{16,32,48,64}.png"
+        pwa: "sodooc-icon-{192,512}x{192,512}.png"
+        ios: "sodooc-icon-ios.png (180x180), sodooc-icon-ios-{120,152,167}.png"
+        android: "sodooc-new-{72,96,144,192}.png (hdpi→xxxhdpi)"
+      deployment: "/opt/odoo/odoo/addons/web/static/img/"
+    tools:
+      - "Inkscape: SVG → PNG render (yüksek kalite, şeffaf arka plan)"
+      - "Python PIL/Pillow: ICO oluşturma, resize işlemleri"
+      - "ImageMagick: PNG optimize"
+    documentation: "/home/embed/Dev/ODOO/logos/FAVICON-README.md"
+
   policy_notes:
     - "Product brand name is 'SODOO' (replaces all 'Odoo' references in UI)"
     - "Office editor brand is 'SODOOC' (replaces all 'ONLYOFFICE' references)"
     - "The canonical logo file is `sodoo-logo.svg` located at /logos/ directory.
       Use this SVG for all official branding (UI, README, website, plugin icons).
       Raster fallbacks (PNG) are acceptable for contexts that require them."
+    - "Favicon system: All platform icons (Web, iOS, Android, PWA) generated from
+      sodoo-favicon.svg and sodooc-favicon.svg. See FAVICON-README.md for details."
     - "AI agents must respect branding rules and update `.ai/` session files
       when new logo assets are added or branding decisions change."
     - "All user-facing text must use SODOO instead of Odoo"

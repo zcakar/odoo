@@ -458,10 +458,97 @@ Session bitiminde:
 
 ---
 
-**Son Güncelleme:** 2025-12-16
-**Versiyon:** 1.0.0
-**Hazırlayan:** Claude Code
+## 🎓 Öğrenme Notları ve Best Practices
+
+### 1. Favicon ve İkon Yönetimi (ZC-20251223)
+
+**Öğrenilen:**
+- SVG kaynak dosyalarından tüm platform ikonlarını oluşturma pipeline'ı
+- Platform-specific boyut gereksinimleri (iOS, Android, PWA, Web)
+- Odoo web module'ünün ikon sistemi (`webclient_templates.xml`, `webmanifest.py`)
+
+**Best Practices:**
+```bash
+# SVG → PNG (Inkscape)
+inkscape source.svg --export-type=png --export-filename=output.png \
+    --export-width=192 --export-height=192 --export-background-opacity=0
+
+# Multi-size ICO (Python PIL)
+from PIL import Image
+images = [Image.open(f'icon-{s}.png') for s in [16,32,48,64,128,256]]
+images[0].save('favicon.ico', format='ICO',
+    sizes=[(s,s) for s in [16,32,48,64,128,256]],
+    append_images=images[1:])
+```
+
+**Platform Gereksinimleri:**
+- **iOS:** 180x180 (Apple Touch Icon - en önemli)
+- **Android:** 72, 96, 144, 192 (hdpi → xxxhdpi)
+- **PWA:** 192x192 + 512x512 (manifest.json)
+- **Web:** Multi-size ICO (16-256px)
+
+**Odoo Entegrasyonu:**
+- Favicon: `webclient_templates.xml` line 23 → `<link rel="shortcut icon">`
+- iOS: `webclient_templates.xml` line 282 → `<link rel="apple-touch-icon">`
+- PWA: `webmanifest.py` line 54-59 → `_get_webmanifest()` → `manifest['icons']`
+
+**Kritik Noktalar:**
+- ✅ Her zaman SVG kaynak dosyasından oluştur (kalite)
+- ✅ Şeffaf arka plan kullan (RGBA)
+- ✅ En-boy oranını koru
+- ✅ PNG optimize et (dosya boyutu)
+- ✅ Tüm boyutları dokümante et (`FAVICON-README.md`)
+
+### 2. Deployment ve Senkronizasyon
+
+**Öğrenilen:**
+- Lokal → Sunucu senkronizasyonu (sshpass + scp)
+- Odoo servis yeniden başlatma (`systemctl restart odoo`)
+- Cache temizleme gerekliliği (tarayıcı cache)
+
+**Best Practices:**
+```bash
+# Toplu dosya yükleme
+sshpass -p 'password' scp /local/path/*.png root@server:/remote/path/
+
+# Servis yeniden başlatma ve kontrol
+systemctl restart odoo && sleep 3 && systemctl is-active odoo
+```
+
+### 3. Dokümantasyon Formatı (ZC-YYYYMMDD)
+
+**Yeni Format:**
+- `ZC-20251223:` → Zafer Çakar - Yıl_Ay_Gün formatı
+- Her önemli değişiklik bu formatla başlamalı
+- CHANGELOG.md ve DEVELOPMENT_LOG.md'de tutarlı kullanım
+
+**Örnek:**
+```markdown
+## ZC-20251223: Favicon ve İkon Sistemi Yenileme
+
+### 🎨 Yapılan İşlemler
+...
+```
+
+---
+
+**Son Güncelleme:** 2025-12-23
+**Versiyon:** 1.1.0
+**Hazırlayan:** AI Agent (Augment)
 **Durum:** ✅ Aktif
+
 ### 5️⃣ Hata/Troubleshoot Kayıt Disiplini
 - Zaman kaybettiren hatalar (ör. URL/secret uyumsuzluğu, erişim engeli, log satırları) mutlaka `.ai/sessions/` ve `DEVELOPMENT_LOG` altında özetlenmeli; alınan yol, kök neden, kalıcı çözüm kaydedilmeli.
 - Aynı tür hatanın tekrarında önceki kayıtları kontrol etmeden deneme yapılmamalı.
+
+### 6️⃣ .ai/ Klasör Yönetimi
+- `.ai/` klasörü **her zaman Git repository root'unda** olmalı
+- Birden fazla `.ai/` klasörü varsa, **en güncel olanı** kullan
+- Üst klasördeki `.ai/` klasörünü sil, sadece `odoo/.ai/` kullan
+- `.ai/` klasörü **GitHub'a commit edilmeli** (proje hafızası)
+
+### 7️⃣ Sürekli Öğrenme ve Gelişim
+- Her session'da yeni öğrenilen best practice'leri `AI_AGENT_GUIDELINES.md` dosyasına ekle
+- Platform-specific bilgileri (iOS, Android, PWA) dokümante et
+- Araç kullanımı (Inkscape, PIL, ImageMagick) örneklerini kaydet
+- Odoo framework özelliklerini (template, controller, manifest) not al

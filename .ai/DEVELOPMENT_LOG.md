@@ -737,6 +737,133 @@ OnlyOffice chatter attachments panel was collapsed by default; users wanted it e
 
 ---
 
-**Last Updated:** 2025-12-22
+## ZC-20251223: Favicon ve İkon Sistemi Yenileme - Tüm Platformlar
+
+**Status:** ✅ Resolved
+
+**Context:**
+SODOO ve SODOOC logolarının kalınlaştırılmış versiyonları oluşturuldu (`logos/sodoo-favicon.svg`, `logos/sodooc-favicon.svg`). Bu yeni logoların tüm platformlarda (Web, iOS, Android, PWA) kullanılması gerekiyordu.
+
+**Problem:**
+- Mevcut favicon ve ikonlar eski, ince stroke'lu logolardan oluşturulmuştu
+- iOS, Android ve PWA için özel boyutlarda ikonlar eksikti
+- Tüm platformlar için tutarlı bir ikon seti yoktu
+- Dokümantasyon eksikti
+
+**Root Cause:**
+Logo tasarımı güncellendiğinde (stroke: 6.875px → 13.75px, ok: scale(2)), tüm platform ikonlarının yeniden oluşturulması gerekiyordu.
+
+**Solution:**
+
+### 1. SVG Kaynak Dosyaları Güncellendi
+- `logos/sodoo-favicon.svg` - Stroke genişliği 2x artırıldı (13.75px)
+- `logos/sodooc-favicon.svg` - Stroke genişliği 2x artırıldı (13.75px)
+- Ok işareti `scale(2)` ile 2x büyütüldü
+
+### 2. Tüm Platform İkonları Oluşturuldu
+
+**Araçlar:**
+- Inkscape: SVG → PNG render (yüksek kalite, şeffaf arka plan)
+- Python PIL/Pillow: ICO oluşturma, resize işlemleri
+- ImageMagick: PNG optimize
+
+**Oluşturulan Boyutlar:**
+
+**Web Favicon:**
+- Multi-size ICO: 16, 24, 32, 48, 64, 128, 256px
+- PNG: 16x16, 32x32, 48x48, 64x64
+
+**PWA (Progressive Web App):**
+- 192x192px (standart)
+- 512x512px (yüksek çözünürlük)
+
+**iOS:**
+- 180x180px (Apple Touch Icon - ana)
+- 120x120px (iPhone)
+- 152x152px (iPad)
+- 167x167px (iPad Pro)
+
+**Android:**
+- 72x72px (hdpi)
+- 96x96px (xhdpi)
+- 144x144px (xxhdpi)
+- 192x192px (xxxhdpi)
+
+### 3. Deployment
+
+**Lokal:**
+- Tüm ikonlar `/home/embed/Dev/ODOO/logos/` klasörüne kopyalandı
+- `logos/FAVICON-README.md` dokümantasyonu oluşturuldu
+
+**Sunucu:**
+- Tüm ikonlar `/opt/odoo/odoo/addons/web/static/img/` konumuna yüklendi
+- Odoo servisi yeniden başlatıldı
+
+### 4. Mevcut Entegrasyonlar Kontrol Edildi
+
+**Değişiklik Gerekmedi:**
+- `odoo/addons/web/views/webclient_templates.xml` (line 282)
+  - Apple Touch Icon: `sodoo-icon-ios.png` ✅
+- `odoo/addons/web/controllers/webmanifest.py` (line 54-59)
+  - PWA manifest: `sodoo-icon-192x192.png`, `sodoo-icon-512x512.png` ✅
+
+**Learning:**
+
+### 1. SVG → Multi-Platform Icon Pipeline
+```bash
+# Inkscape ile yüksek kalite PNG render
+inkscape source.svg \
+    --export-type=png \
+    --export-filename=output-192.png \
+    --export-width=192 \
+    --export-height=192 \
+    --export-background-opacity=0
+
+# Python PIL ile ICO oluşturma
+from PIL import Image
+images = [Image.open(f'icon-{s}.png') for s in [16,32,48,64,128,256]]
+images[0].save('favicon.ico', format='ICO', sizes=[(s,s) for s in sizes], append_images=images[1:])
+```
+
+### 2. Platform-Specific Requirements
+- **iOS:** 180x180 Apple Touch Icon (en önemli)
+- **Android:** 192x192 (xxxhdpi) en yüksek çözünürlük
+- **PWA:** 192x192 + 512x512 (manifest.json'da belirtilmeli)
+- **Web:** Multi-size ICO (16-256px) tarayıcı uyumluluğu için
+
+### 3. Odoo Web Module Icon System
+- Favicon: `webclient_templates.xml` → `<link rel="shortcut icon">`
+- iOS: `webclient_templates.xml` → `<link rel="apple-touch-icon">`
+- PWA: `webmanifest.py` → `_get_webmanifest()` → `manifest['icons']`
+- Offline: `webmanifest.py` → `_icon_path()` → base64 encoded
+
+### 4. Best Practices
+- ✅ Her zaman SVG kaynak dosyasından oluştur (kalite)
+- ✅ Şeffaf arka plan kullan (RGBA)
+- ✅ En-boy oranını koru
+- ✅ PNG optimize et (dosya boyutu)
+- ✅ Tüm boyutları dokümante et
+
+**Related Files:**
+- `logos/sodoo-favicon.svg` (kaynak)
+- `logos/sodooc-favicon.svg` (kaynak)
+- `logos/FAVICON-README.md` (dokümantasyon)
+- `odoo/addons/web/views/webclient_templates.xml` (line 23, 282)
+- `odoo/addons/web/controllers/webmanifest.py` (line 54-59, 92)
+
+**Tags:** `odoo-19`, `favicon`, `pwa`, `ios`, `android`, `branding`, `inkscape`, `deployment`
+
+**Dosya Boyutları:**
+- SODOO ICO: 505 bytes
+- SODOOC ICO: 507 bytes
+- SODOO 512x512: 12 KB
+- SODOOC 512x512: 16 KB
+
+**Sonuç:**
+Tüm platformlarda (Web, iOS, Android, PWA) yenilenmiş, kalınlaştırılmış logolar kullanılıyor. Kullanıcılar tarayıcı cache'ini temizledikten sonra yeni ikonları görecekler.
+
+---
+
+**Last Updated:** 2025-12-23
 **Maintained By:** AI Agent + Project Team
-**Version:** 1.0.1
+**Version:** 1.0.2
