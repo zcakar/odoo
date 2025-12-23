@@ -70,9 +70,9 @@ def onlyoffice_request(url, method, opts=None):
             "original_error": str(e),
         }
 
-        _logger.error("ONLYOFFICE request failed: %s", error_details)
+        _logger.error("SODOOC request failed: %s", error_details)
         raise requests.exceptions.RequestException(
-            f"ONLYOFFICE request failed to {method.upper()} {url}: {str(e)}"
+            f"SODOOC request failed to {method.upper()} {url}: {str(e)}"
         ) from e
 
     except Exception as e:
@@ -84,9 +84,9 @@ def onlyoffice_request(url, method, opts=None):
             "original_error": str(e),
         }
 
-        _logger.error("Unexpected error in ONLYOFFICE request: %s", error_details)
+        _logger.error("Unexpected error in SODOOC request: %s", error_details)
         raise requests.exceptions.RequestException(
-            f"Unexpected error in ONLYOFFICE request to {method.upper()} {url}: {str(e)}"
+            f"Unexpected error in SODOOC request to {method.upper()} {url}: {str(e)}"
         ) from e
 
 

@@ -10,11 +10,11 @@
     <field name="inherit_id" ref="base.res_config_settings_view_form" />
     <field name="arch" type="xml">
       <xpath expr="//form" position="inside">
-        <app data-string="ONLYOFFICE" string="ONLYOFFICE" name="onlyoffice_odoo" groups="base.group_system">
+        <app data-string="SODOOC" string="SODOOC" name="onlyoffice_odoo" groups="base.group_system">
           <block title="About">
             <setting
-              string="Welcome to ONLYOFFICE!"
-              help="This app enables creating, editing, and collaborating on fillable forms, office files, and attached documents in Odoo using ONLYOFFICE Docs."
+              string="Welcome to SODOOC!"
+              help="This app enables creating, editing, and collaborating on fillable forms, office files, and attached documents in Odoo using SODOOC Docs."
             >
               <a
                 href="https://api.onlyoffice.com/docs/docs-api/get-started/ready-to-use-connectors/odoo-integration/"
@@ -30,7 +30,7 @@
             </setting>
           </block>
           <block title="General Settings" name="onlyoffice_odoo">
-            <setting string="ONLYOFFICE Docs address">
+            <setting string="SODOOC Docs address">
               <field name="doc_server_public_url" />
             </setting>
             <br />
@@ -38,7 +38,7 @@
               <field name="doc_server_disable_certificate" />
             </setting>
             <br />
-            <setting string="ONLYOFFICE Docs secret key">
+            <setting string="SODOOC Docs secret key">
               <field name="doc_server_jwt_secret" password="True" />
             </setting>
             <br />
@@ -46,11 +46,11 @@
               <field name="doc_server_jwt_header" />
             </setting>
             <br />
-            <setting string="ONLYOFFICE Docs address for internal requests from the server">
+            <setting string="SODOOC Docs address for internal requests from the server">
               <field name="doc_server_odoo_url" />
             </setting>
             <br />
-            <setting string="Server address for internal requests from ONLYOFFICE Docs">
+            <setting string="Server address for internal requests from SODOOC Docs">
               <field name="doc_server_inner_url" />
             </setting>
             <br />
@@ -60,13 +60,13 @@
               </div>
               <div class="o_setting_right_pane">
                 <label class="o_form_label me-2" for="doc_server_demo">
-                  <span searchabletext="Connect to demo ONLYOFFICE Docs server">
-                    Connect to demo ONLYOFFICE Docs server
+                  <span searchabletext="Connect to demo SODOOC Docs server">
+                    Connect to demo SODOOC Docs server
                   </span>
                 </label>
                 <div class="o_widget o_widget_documentation_link d-inline">
                   <a
-                    title="ONLYOFFICE Templates requires a properly licensed Document Server connected with Odoo. Contact sales at sales@onlyoffice.com to acquire the proper license."
+                    title="SODOOC Templates requires a properly licensed Document Server connected with Odoo. Contact sales at sales@onlyoffice.com to acquire the proper license."
                     class="o_doc_link"
                   >
                     <i class="fa fa-question-circle" />

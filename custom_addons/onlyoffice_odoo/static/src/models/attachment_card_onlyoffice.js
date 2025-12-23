@@ -99,9 +99,9 @@ patch(AttachmentList.prototype, {
         const difference = Math.floor((today - demo.date) / (1000 * 60 * 60 * 24))
         if (difference > 30) {
           this.notification.add(
-            _t("The 30-day test period is over, you can no longer connect to demo ONLYOFFICE Docs server"),
+            _t("The 30-day test period is over, you can no longer connect to demo SODOOC Docs server"),
             {
-              title: _t("ONLYOFFICE Docs server"),
+              title: _t("SODOOC Docs server"),
               type: "warning",
             },
           )

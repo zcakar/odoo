@@ -1,9 +1,9 @@
 # pylint: disable=pointless-statement
 {
-    "name": "ONLYOFFICE",
+    "name": "SODOOC",
     "summary": "Edit and collaborate on office files within Odoo Documents.",
-    "description": "The ONLYOFFICE app allows users to edit and collaborate on office files within Odoo Documents using ONLYOFFICE Docs. You can work with text documents, spreadsheets, and presentations, co-author documents in real time using two co-editing modes (Fast and Strict), Track Changes, comments, and built-in chat.",  # noqa: E501
-    "author": "ONLYOFFICE",
+    "description": "The SODOOC app allows users to edit and collaborate on office files within Odoo Documents using SODOOC Docs. You can work with text documents, spreadsheets, and presentations, co-author documents in real time using two co-editing modes (Fast and Strict), Track Changes, comments, and built-in chat.",  # noqa: E501
+    "author": "SODOOC",
     "website": "https://github.com/ONLYOFFICE/onlyoffice_odoo",
     "category": "Productivity",
     "version": "5.3.10",

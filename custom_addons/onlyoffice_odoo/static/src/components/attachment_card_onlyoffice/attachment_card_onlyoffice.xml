@@ -13,7 +13,7 @@
         <span
           t-if="onlyofficeVersionLabel(attachment)"
           class="badge rounded-pill bg-secondary fw-semibold o-text-white"
-          title="ONLYOFFICE version"
+          title="SODOOC version"
         >
           <t t-esc="onlyofficeVersionLabel(attachment)" />
         </span>
@@ -21,9 +21,9 @@
           t-if="onlyofficeCanOpen(attachment)"
           t-on-click.stop="() => this.openOnlyoffice(attachment)"
           class="btn bg-500 flex-grow-1 o-p-1_5 d-flex justify-content-center align-items-center shadow-sm"
-          title="Edit in ONLYOFFICE"
+          title="Edit in SODOOC"
         >
-          <i class="fa fa-pencil o-text-white" role="img" aria-label="Edit in ONLYOFFICE"/>
+          <i class="fa fa-pencil o-text-white" role="img" aria-label="Edit in SODOOC"/>
         </button>
         <button
           t-if="onlyofficeVersionLabel(attachment)"

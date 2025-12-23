@@ -3,12 +3,12 @@
 <!-- (c) Copyright Ascensio System SIA 2024 -->
 <!-- -->
 <odoo>
-  <template id="onlyoffice_layout" name="ONLYOFFICE Editor">
+  <template id="onlyoffice_layout" name="SODOOC Editor">
     <html>
       <head>
         <meta charset="UTF-8" />
-        <title> ONLYOFFICE - <t t-out="docTitle" /> </title>
-        <link rel="icon" t-att-href="docIcon" type="image/x-icon" />
+        <title> SODOOC - <t t-out="docTitle" /> </title>
+        <link rel="icon" href="/web/static/img/sodooc-favicon.ico" type="image/x-icon" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <t t-call-assets="web.assets_frontend" t-js="false" />
         <style>
@@ -37,13 +37,13 @@
     </html>
   </template>
 
-  <template id="onlyoffice_editor" name="ONLYOFFICE Editor">
+  <template id="onlyoffice_editor" name="SODOOC Editor">
     <t t-call="onlyoffice_odoo.onlyoffice_layout">
       <div id="doceditor" />
       <div id="error" class="w-25 m-auto my-5 py-5 d-flex flex-column d-none">
         <img src="/onlyoffice_odoo/static/svg/logo.svg" alt="ONLYOFFICE logo" />
         <div class="my-3 alert alert-danger">
-          <p> ONLYOFFICE cannot be reached. Please contact admin. </p>
+          <p> SODOOC cannot be reached. Please contact admin. </p>
         </div>
       </div>
       <script type="text/javascript" t-att-src="docApiJS" />

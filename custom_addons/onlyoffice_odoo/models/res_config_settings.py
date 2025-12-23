@@ -15,7 +15,7 @@ class ResConfigSettings(models.TransientModel):
     doc_server_inner_url = fields.Char("Document Server Inner URL")
     doc_server_jwt_secret = fields.Char("Document Server JWT Secret")
     doc_server_jwt_header = fields.Char("Document Server JWT Header")
-    doc_server_demo = fields.Boolean("Connect to demo ONLYOFFICE Docs server")
+    doc_server_demo = fields.Boolean("Connect to demo SODOOC Docs server")
     doc_server_disable_certificate = fields.Boolean("Disable certificate verification")
     same_tab = fields.Boolean("Open file in the same tab")
 

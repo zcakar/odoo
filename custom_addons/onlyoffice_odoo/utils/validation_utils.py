@@ -66,7 +66,7 @@ def check_doc_serv_url(url, demo, disable_certificate):
     except ValidationError as e:
         get_message_error(str(e), demo)
     except Exception:
-        get_message_error("ONLYOFFICE cannot be reached", demo)
+        get_message_error("SODOOC cannot be reached", demo)
 
 
 def check_doc_serv_command_service(env, url, jwt_secret, jwt_header, disable_certificate, demo):

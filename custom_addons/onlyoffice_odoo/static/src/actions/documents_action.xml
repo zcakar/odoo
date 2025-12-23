@@ -4,7 +4,7 @@
     <html>
       <head>
         <meta charset="UTF-8" />
-        <title> ONLYOFFICE </title>
+        <title> SODOOC </title>
         <style>
           html, body {
             height: 100%;
@@ -14,9 +14,9 @@
       <body class="o-onlyoffice-documents">
         <div id="doceditor" />
         <div id="error" class="w-25 m-auto my-5 py-5 d-flex flex-column d-none">
-          <img src="/onlyoffice_odoo/static/svg/onlyoffice_logo.svg" alt="ONLYOFFICE logo" />
+          <img src="/onlyoffice_odoo/static/svg/onlyoffice_logo.svg" alt="SODOOC logo" />
           <div class="my-3 alert alert-danger">
-            <p> ONLYOFFICE cannot be reached. Please contact admin. </p>
+            <p> SODOOC cannot be reached. Please contact admin. </p>
           </div>
         </div>
       </body>

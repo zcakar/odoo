@@ -7,7 +7,7 @@ from odoo.addons.onlyoffice_odoo.utils import config_constants
 
 class OnlyOfficeTemplate(models.Model):
     _name = "onlyoffice.odoo"
-    _description = "ONLYOFFICE"
+    _description = "SODOOC"
 
     @api.model
     def get_demo(self):
