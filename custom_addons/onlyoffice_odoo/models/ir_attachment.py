@@ -125,6 +125,8 @@ class IrAttachment(models.Model):
 
     def create(self, vals):
         vals_list = vals if isinstance(vals, list) else [vals]
+        if not vals_list:
+            return self.env['ir.attachment']
         for payload in vals_list:
             payload.setdefault("oo_attachment_version", 1)
         records = super().create(vals_list if len(vals_list) > 1 else vals_list[0])
