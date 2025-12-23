@@ -5,15 +5,21 @@
 # across different chat sessions. Always reference this file at the start of
 # new conversations to maintain project continuity.
 #
-# Last Updated: 2025-12-23
+# Last Updated: 2025-12-24
 # ============================================================================
 
 project:
-  name: "Odoo Community Edition - SMB Implementation"
-  type: "ERP System"
+  name: "SODOO - Open Source ERP System"
+  type: "ERP System (Odoo 19.0 based)"
   version: "19.0"
   edition: "Community"
   status: "Active Development"
+
+  workspace:
+    primary_repo: "https://github.com/zzafercakar/sodoo"
+    description: "Complete SODOO workspace (private)"
+    structure: "Monorepo with odoo as submodule"
+    deployment_source: "This is the PRIMARY repo for all deployments"
 
 # ----------------------------------------------------------------------------
 # ENVIRONMENT & INFRASTRUCTURE

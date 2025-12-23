@@ -111,13 +111,16 @@ sudo apt update
 sudo apt install -y python3.10 python3-pip postgresql-16 nginx docker.io
 ```
 
-#### Step 2: Deploy Odoo
+#### Step 2: Deploy SODOO Workspace
 ```bash
-# Clone or copy Odoo
-cd /opt/odoo
-git clone https://github.com/zzafercakar/odoo.git
-cd odoo
+# Clone SODOO workspace (includes odoo as submodule)
+cd /opt
+git clone --recursive https://github.com/zzafercakar/sodoo.git
+cd sodoo/odoo
 git checkout 19.0
+
+# Initialize submodules if not done
+git submodule update --init --recursive
 
 # Create virtual environment
 python3 -m venv venv
@@ -127,6 +130,8 @@ source venv/bin/activate
 pip install -r requirements.txt
 pip install pyjwt
 ```
+
+**IMPORTANT:** Always deploy from `zzafercakar/sodoo` workspace repo, NOT from `zzafercakar/odoo` directly.
 
 #### Step 3: Configure Odoo
 ```bash
