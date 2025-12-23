@@ -231,7 +231,7 @@ function urlToState(urlObj) {
             state.actionStack = actions;
         }
         if (prefix === "scoped_app" && !isDisplayStandalone()) {
-            // make sure /scoped_app are redirected to /odoo when using the browser instead of the PWA
+            // make sure /scoped_app are redirected to /sodoo when using the browser instead of the PWA
             const url = browser.location.origin + router.stateToUrl(state);
             urlObj.href = url;
         }
@@ -322,13 +322,13 @@ browser.addEventListener("click", (ev) => {
         }
         if (
             browser.location.host === url.host &&
-            browser.location.pathname.startsWith("/odoo") &&
-            (["/web", "/odoo"].includes(url.pathname) || url.pathname.startsWith("/odoo/")) &&
+            browser.location.pathname.startsWith("/sodoo") &&
+            (["/web", "/sodoo"].includes(url.pathname) || url.pathname.startsWith("/sodoo/")) &&
             a.target !== "_blank"
         ) {
             ev.preventDefault();
             state = router.urlToState(url);
-            if (url.pathname.startsWith("/odoo") && url.hash) {
+            if (url.pathname.startsWith("/sodoo") && url.hash) {
                 browser.history.pushState({}, "", url.href);
             }
             new Promise((res) => setTimeout(res, 0)).then(() => routerBus.trigger("ROUTE_CHANGE"));
