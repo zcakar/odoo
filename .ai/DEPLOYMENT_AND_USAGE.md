@@ -99,7 +99,8 @@ Database: odoo_smb
 
 ### B. Production Environment (smb-hkt.com)
 
-**Location:** `/opt/odoo/odoo` on production server
+**Location:** `/opt/sodoo` on production server
+**GitHub Repo:** https://github.com/zzafercakar/sodoo
 
 #### Step 1: Initial Server Setup
 ```bash
@@ -116,18 +117,19 @@ sudo apt install -y python3.10 python3-pip postgresql-16 nginx docker.io
 # Clone SODOO workspace (includes odoo as submodule)
 cd /opt
 git clone --recursive https://github.com/zzafercakar/sodoo.git
-cd sodoo/odoo
+cd sodoo
+
+# Verify submodule
+cd odoo
 git checkout 19.0
+cd ..
 
-# Initialize submodules if not done
-git submodule update --init --recursive
-
-# Create virtual environment
+# Create virtual environment (in workspace root)
 python3 -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install -r requirements.txt
+pip install -r odoo/requirements.txt
 pip install pyjwt
 ```
 
@@ -136,13 +138,14 @@ pip install pyjwt
 #### Step 3: Configure Odoo
 ```bash
 # Copy and edit configuration
-sudo cp odoo.conf.example /etc/odoo/odoo.conf
+sudo mkdir -p /etc/odoo
+sudo cp odoo/odoo.conf.example /etc/odoo/odoo.conf
 sudo nano /etc/odoo/odoo.conf
 
 # Required settings:
 [options]
-db_name = odoo_smb
-addons_path = /opt/odoo/odoo/custom_addons,/opt/odoo/odoo/addons
+db_name = sodoo_smb
+addons_path = /opt/sodoo/custom_addons,/opt/sodoo/odoo/addons
 http_interface = 0.0.0.0  # CRITICAL for OnlyOffice
 logfile = /var/log/odoo/odoo.log
 proxy_mode = True
@@ -152,7 +155,7 @@ proxy_mode = True
 ```bash
 # Create PostgreSQL user and database
 sudo -u postgres createuser -s odoo
-sudo -u postgres createdb odoo_smb
+sudo -u postgres createdb sodoo_smb
 ```
 
 #### Step 5: Install OnlyOffice
@@ -183,14 +186,14 @@ sudo nano /etc/systemd/system/odoo.service
 **Service file content:**
 ```ini
 [Unit]
-Description=Odoo Community
+Description=SODOO - Odoo Community
 After=network.target postgresql.service
 
 [Service]
 Type=simple
 User=odoo
 Group=odoo
-ExecStart=/opt/odoo/odoo/venv/bin/python3 /opt/odoo/odoo/odoo-bin -c /etc/odoo/odoo.conf
+ExecStart=/opt/sodoo/venv/bin/python3 /opt/sodoo/odoo/odoo-bin -c /etc/odoo/odoo.conf
 StandardOutput=journal+console
 Restart=always
 

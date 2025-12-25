@@ -5,6 +5,9 @@
 **Status:** 🔄 In Progress - Almost Complete
 **AI Agent:** Claude Sonnet 4.5 (claude-code)
 
+> **⚠️ Historical Note (2025-12-25):** This session used the old path `/opt/odoo/odoo`.
+> Current production path is now `/opt/sodoo`. Commands should be adapted accordingly.
+
 ---
 
 ## 🎯 Session Goal

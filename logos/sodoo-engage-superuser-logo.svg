@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 450 150">
+  <g transform="translate(10,0)">
+    
+    <g font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="80">
+      <text x="0" y="90" fill="#DD4814">SO</text>
+      <text x="125" y="90" fill="#7F7F7F">&gt;</text>
+      <text x="177" y="90" fill="#DD4814">OO</text>
+    </g>
+
+    <text x="127" y="135" 
+          font-family="Arial, sans-serif" 
+          font-weight="bold"
+          font-size="21" 
+          fill="#7F7F7F" 
+          letter-spacing="1.2">ENGAGE SUPERUSER</text>
+  </g>
+</svg>

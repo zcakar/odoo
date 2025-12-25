@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 120" width="390" height="120">
+ <g transform="translate(10,0)">
+  <text x="0" y="90" font-family="Arial Black, Arial, sans-serif" font-size="80" font-weight="900" fill="#DD4814">SO</text>
+  
+  <text x="125" y="90" font-family="Arial Black, Arial, sans-serif" font-size="80" font-weight="900" fill="#7F7F7F">&gt;</text>
+  
+  <text x="177" y="90" font-family="Arial Black, Arial, sans-serif" font-size="80" font-weight="900" fill="#DD4814">O</text>
+  
+  <text x="247" y="90" font-family="Arial Black, Arial, sans-serif" font-size="80" font-weight="900" fill="#8BB955">O</text>
+  
+  <text x="317" y="90" font-family="Arial Black, Arial, sans-serif" font-size="80" font-weight="900" fill="#446995">&lt;</text>
+ </g>
+</svg>

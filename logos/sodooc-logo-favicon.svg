@@ -1,0 +1,47 @@
+<svg width="1018" height="1018"
+     viewBox="2784.5833 514.0833 721.8334 721.8334"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xml:space="preserve"
+     overflow="hidden">
+  <defs>
+    <filter id="fx0" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse">
+      <feComponentTransfer color-interpolation-filters="sRGB">
+        <feFuncR type="discrete" tableValues="0 0"/>
+        <feFuncG type="discrete" tableValues="0 0"/>
+        <feFuncB type="discrete" tableValues="0 0"/>
+        <feFuncA type="linear" slope="0.4" intercept="0"/>
+      </feComponentTransfer>
+      <feGaussianBlur stdDeviation="6.03129 6.03129"/>
+    </filter>
+
+    <linearGradient x1="3145.5" y1="537" x2="3145.5" y2="1213"
+                    gradientUnits="userSpaceOnUse" spreadMethod="reflect" id="fill2">
+      <stop offset="0" stop-color="#8BB955"/>
+      <stop offset="0.48" stop-color="#8BB955"/>
+      <stop offset="0.49" stop-color="#446995"/>
+      <stop offset="1" stop-color="#446995"/>
+    </linearGradient>
+
+    <!-- clip1 ve dış translate kaldırıldığı için clip3 mutlak koordinata taşındı: (339+2643, 301+383) -->
+    <clipPath id="clip3">
+      <rect x="2982" y="684" width="342" height="366"/>
+    </clipPath>
+  </defs>
+
+  <path d="M2808 649.658C2808 587.44 2858.37 537 2920.49 537L3370.51 537C3432.63 537 3483 587.44 3483 649.658L3483 1100.34C3483 1162.56 3432.63 1213 3370.51 1213L2920.49 1213C2858.37 1213 2808 1162.56 2808 1100.34Z"
+        stroke="#7F7F7F" stroke-width="45.8333" stroke-miterlimit="8"
+        fill="url(#fill2)" fill-rule="evenodd"/>
+
+  <g clip-path="url(#clip3)" filter="url(#fx0)" transform="translate(2642 382)">
+    <g>
+      <path d="M27.791-29.0776 320.369-150.45 320.369-226.831 27.791-348.417 27.791-257.019 205.602-188.49 27.791-119.925Z"
+            fill="#7F7F7F" transform="matrix(1 0 0 1 336.102 672)"/>
+    </g>
+  </g>
+
+  <text fill="#7F7F7F"
+        font-family="Arial Black,Arial Black_MSFontService,sans-serif"
+        font-weight="900" font-size="527"
+        transform="matrix(1 0 0 1 2971.75 1048)">&gt;</text>
+</svg>

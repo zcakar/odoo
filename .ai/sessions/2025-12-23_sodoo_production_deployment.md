@@ -1,8 +1,9 @@
 # SODOO Production Deployment - 2025-12-23
 
-**Server:** smb-hkt.com  
-**Task:** Deploy SODOO rebranding to production  
+**Server:** smb-hkt.com
+**Task:** Deploy SODOO rebranding to production
 **GitHub Commit:** 4edd9bda056
+**Note:** This session was before the path migration to `/opt/sodoo`. Current path is `/opt/sodoo`.
 
 ---
 
@@ -13,14 +14,15 @@
 ssh root@smb-hkt.com
 ```
 
-### 2. Navigate to Odoo Directory
+### 2. Navigate to SODOO Directory
 ```bash
-cd /opt/odoo/odoo
+cd /opt/sodoo
 ```
 
 ### 3. Pull Latest Changes from GitHub
 ```bash
-git pull origin 19.0
+git pull origin master
+cd odoo && git pull origin 19.0 && cd ..
 ```
 
 ### 4. Check Changes

@@ -1,11 +1,11 @@
 # ============================================================================
-# ODOO PROJECT CONTEXT - AI Memory File
+# SODOO PROJECT CONTEXT - AI Memory File
 # ============================================================================
 # This file provides persistent context for AI assistants (Claude, Codex, etc.)
 # across different chat sessions. Always reference this file at the start of
 # new conversations to maintain project continuity.
 #
-# Last Updated: 2025-12-24
+# Last Updated: 2025-12-25
 # ============================================================================
 
 project:
@@ -17,7 +17,7 @@ project:
 
   workspace:
     primary_repo: "https://github.com/zzafercakar/sodoo"
-    description: "Complete SODOO workspace (private)"
+    description: "Complete SODOO workspace"
     structure: "Monorepo with odoo as submodule"
     deployment_source: "This is the PRIMARY repo for all deployments"
 
@@ -34,16 +34,16 @@ environment:
     python:
       version: "3.10.12"
       path: "/usr/bin/python3"
-      virtual_env: ".venv"
+      virtual_env: "venv"
 
   database:
     engine: "PostgreSQL"
-    version: "16"  # Inferred from pgdata structure
+    version: "16"
     connection:
       host: "/tmp"  # Unix socket
       port: 5433
       user: "odoo"
-      name: "odoo_smb"
+      name: "sodoo_smb"
       password: "CONFIGURED_IN_ODOO_CONF"  # See odoo.conf (not in version control)
 
   web_server:
@@ -57,22 +57,38 @@ environment:
 # PROJECT STRUCTURE
 # ----------------------------------------------------------------------------
 paths:
-  root: "/home/embed/Dev/ODOO/odoo"
+  development:
+    workspace: "/home/embed/Dev/SODOO"
+    logos: "/home/embed/Dev/SODOO/logos"
+
+  production:
+    workspace: "/opt/sodoo"
+    logos: "/opt/sodoo/logos"
+    config: "/etc/odoo/odoo.conf"
+    venv: "/opt/sodoo/venv"
 
   core:
     odoo: "odoo/"
-    binary: "odoo-bin"
-    core_addons: "addons/"
+    binary: "odoo/odoo-bin"
+    core_addons: "odoo/addons/"
 
   custom:
     addons: "custom_addons/"
     modules:
-      - "onlyoffice_odoo"  # Office document editor integration
+      - "onlyoffice_odoo"  # Office document editor integration (SODOOC)
+
+  logos:
+    directory: "logos/"
+    main_logo: "logos/sodoo-logo.svg"
+    favicon_svg: "logos/sodoo-logo-favicon.svg"
+    favicon_ico: "logos/sodoo-favicon.ico"
+    sodooc_logo: "logos/sodooc-logo.svg"
+    sodooc_favicon: "logos/sodooc-favicon.ico"
 
   config:
     main: "odoo.conf"
     smb: "odoo.conf.smb"  # SMB-specific configuration
-    example: "odoo.conf.example"
+    example: "odoo/odoo.conf.example"
 
   logs:
     main: "odoo.log"

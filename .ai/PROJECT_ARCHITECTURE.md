@@ -65,7 +65,7 @@ Deploy and customize Odoo 19.0 Community Edition as a complete ERP solution for 
 - **Port:** 8069 (internal)
 - **Interface:** 0.0.0.0 (all interfaces - required for Docker callback)
 - **Process Manager:** systemd (odoo.service)
-- **Location:** `/opt/odoo/odoo/`
+- **Location:** `/opt/sodoo` (workspace root)
 
 **Responsibilities:**
 - Business logic execution
@@ -126,8 +126,8 @@ Odoo Request ──────────────────────�
 ## 📁 Project Structure
 
 ```
-/home/embed/Dev/ODOO/odoo/          # Development
-/opt/odoo/odoo/                      # Production
+/home/embed/Dev/SODOO/              # Development (workspace)
+/opt/sodoo/                          # Production (workspace)
 ├── .ai/                             # ⭐ AI Context & Documentation
 │   ├── context.yaml                 # Project state and config
 │   ├── README.md                    # Overview
@@ -138,9 +138,17 @@ Odoo Request ──────────────────────�
 │   ├── NEW_CHAT_TEMPLATE.md         # Session starter
 │   ├── ONLYOFFICE_PRODUCTION_CHECKLIST.md  # Deployment guide
 │   └── sessions/                    # Session logs
-│       └── 2025-12-16_*.md
+│       └── 2025-12-*.md
 │
-├── odoo/                            # Core Odoo framework
+├── logos/                           # ⭐ All branding assets
+│   ├── sodoo-logo.svg               # Main SODOO logo
+│   ├── sodoo-logo-favicon.svg       # Favicon source
+│   ├── sodoo-favicon.ico            # Multi-size ICO
+│   ├── sodoo-icon-*.png             # PNG icons (16-512px)
+│   ├── sodooc-*.svg/png/ico         # SODOOC variants
+│   └── ...
+│
+├── odoo/                            # Core Odoo framework (submodule)
 │   ├── addons/                      # Official Odoo modules
 │   │   ├── base/                    # Core module
 │   │   ├── sale/                    # Sales module
@@ -159,7 +167,7 @@ Odoo Request ──────────────────────�
 │   └── odoo-bin                     # Main executable
 │
 ├── custom_addons/                   # ⭐ Custom modules (OUR CODE)
-│   └── onlyoffice_odoo/             # OnlyOffice integration
+│   └── onlyoffice_odoo/             # OnlyOffice integration (SODOOC)
 │       ├── __init__.py
 │       ├── __manifest__.py          # Module metadata
 │       ├── controllers/
@@ -721,36 +729,25 @@ logos/
 
 #### Platform-Specific İkonlar
 
-**Web Favicon:**
+**Kaynak: logos/ Dizini (Tüm ikonlar buradan!)**
 ```
-/opt/odoo/odoo/addons/web/static/img/
+/opt/sodoo/logos/                    # Production
+/home/embed/Dev/SODOO/logos/         # Development
 ├── sodoo-favicon.ico       # Multi-size (16-256px)
 ├── sodoo-icon-16x16.png    # Tarayıcı sekmesi (küçük)
 ├── sodoo-icon-32x32.png    # Tarayıcı sekmesi (orta)
 ├── sodoo-icon-48x48.png    # Tarayıcı sekmesi (büyük)
-└── sodoo-icon-64x64.png    # Yüksek DPI ekranlar
-```
-
-**PWA (Progressive Web App):**
-```
-├── sodoo-icon-192x192.png  # PWA standart ikon
-└── sodoo-icon-512x512.png  # PWA yüksek çözünürlük
-```
-
-**iOS:**
-```
-├── sodoo-icon-ios.png      # 180x180 (Apple Touch Icon - ana)
+├── sodoo-icon-64x64.png    # Yüksek DPI ekranlar
+├── sodoo-icon-128x128.png  # App ikon
+├── sodoo-icon-192x192.png  # PWA standart
+├── sodoo-icon-256x256.png  # PWA/App
+├── sodoo-icon-512x512.png  # PWA yüksek çözünürlük
 ├── sodoo-icon-ios-120.png  # iPhone
 ├── sodoo-icon-ios-152.png  # iPad
-└── sodoo-icon-ios-167.png  # iPad Pro
-```
-
-**Android:**
-```
-├── sodoo-new-72.png        # hdpi (72x72)
-├── sodoo-new-96.png        # xhdpi (96x96)
-├── sodoo-new-144.png       # xxhdpi (144x144)
-└── sodoo-new-192.png       # xxxhdpi (192x192)
+├── sodoo-icon-ios-167.png  # iPad Pro
+├── sodoo-icon-ios-180.png  # iPhone Retina
+├── sodooc-favicon.ico      # SODOOC multi-size ICO
+└── sodooc-icon-*.png       # SODOOC PNG ikonları
 ```
 
 #### Odoo Entegrasyonu
@@ -792,24 +789,37 @@ def _icon_path(self):
 
 **Workflow:**
 ```bash
-# 1. SVG → PNG (Inkscape)
-inkscape logos/sodoo-favicon.svg \
+cd /opt/sodoo/logos   # Production
+# veya: cd /home/embed/Dev/SODOO/logos   # Development
+
+# 1. SVG → PNG (Inkscape) - tüm boyutlar
+for size in 16 32 48 64 128 192 256 512; do
+  inkscape sodoo-logo-favicon.svg \
     --export-type=png \
-    --export-filename=sodoo-icon-192.png \
-    --export-width=192 \
-    --export-height=192 \
-    --export-background-opacity=0
+    --export-filename=sodoo-icon-${size}x${size}.png \
+    -w $size -h $size
+done
 
-# 2. Multi-size ICO (Python PIL)
-from PIL import Image
-images = [Image.open(f'sodoo-{s}.png') for s in [16,32,48,64,128,256]]
-images[0].save('sodoo-favicon.ico', format='ICO',
-    sizes=[(s,s) for s in [16,32,48,64,128,256]],
-    append_images=images[1:])
+# 2. iOS boyutları
+for size in 120 152 167 180; do
+  inkscape sodoo-logo-favicon.svg \
+    --export-type=png \
+    --export-filename=sodoo-icon-ios-${size}.png \
+    -w $size -h $size
+done
 
-# 3. Sunucuya deployment
-sshpass -p 'smb' scp sodoo-*.png root@smb-hkt.com:/opt/odoo/odoo/addons/web/static/img/
-systemctl restart odoo
+# 3. Multi-size ICO (ImageMagick convert)
+convert sodoo-icon-16x16.png sodoo-icon-32x32.png sodoo-icon-48x48.png \
+        sodoo-icon-64x64.png sodoo-icon-128x128.png sodoo-icon-256x256.png \
+        sodoo-favicon.ico
+
+# 4. Git'e commit
+git add *.ico *.png
+git commit -m "chore: Update favicon icons"
+git push origin master
+
+# 5. Production'a deployment
+ssh root@smb-hkt.com "cd /opt/sodoo && git pull origin master && systemctl restart odoo"
 ```
 
 #### Best Practices

@@ -104,7 +104,7 @@ scp onlyoffice_module.tar.gz root@smb-hkt.com:/tmp/
 **Production'da:**
 ```bash
 # Extract
-cd /opt/odoo/odoo
+cd /opt/sodoo
 sudo tar -xzf /tmp/onlyoffice_module.tar.gz
 
 # Ownership düzelt
@@ -117,19 +117,19 @@ sudo chown -R odoo:odoo custom_addons/onlyoffice_odoo
 
 ```bash
 # 1. views/res_config_settings_views.xml (satır 117)
-sudo nano /opt/odoo/odoo/custom_addons/onlyoffice_odoo/views/res_config_settings_views.xml
+sudo nano /opt/sodoo/custom_addons/onlyoffice_odoo/views/res_config_settings_views.xml
 
 # Satır 117'de:
 # <field name="target">current</field>  ✅ (inline değil!)
 
 # 2. views/attachment_card_onlyoffice.xml
-sudo nano /opt/odoo/odoo/custom_addons/onlyoffice_odoo/views/attachment_card_onlyoffice.xml
+sudo nano /opt/sodoo/custom_addons/onlyoffice_odoo/views/attachment_card_onlyoffice.xml
 
 # XPath şu şekilde olmalı:
 # <xpath expr="//div[hasclass('o-mail-AttachmentButtons')]" position="inside">  ✅
 
 # 3. controllers/controllers.py (satır ~179)
-sudo nano /opt/odoo/odoo/custom_addons/onlyoffice_odoo/controllers/controllers.py
+sudo nano /opt/sodoo/custom_addons/onlyoffice_odoo/controllers/controllers.py
 
 # Şu satır olmalı:
 # attachment._can_return_content(access_token=access_token)  ✅
@@ -140,8 +140,8 @@ sudo nano /opt/odoo/odoo/custom_addons/onlyoffice_odoo/controllers/controllers.p
 
 ```bash
 # Production venv'i aktifleştir
-cd /opt/odoo/odoo
-source venv/bin/activate  # veya source .venv/bin/activate
+cd /opt/sodoo
+source venv/bin/activate
 
 # PyJWT kur
 pip install pyjwt
@@ -157,7 +157,7 @@ sudo nano /etc/odoo/odoo.conf
 ```ini
 [options]
 ...
-addons_path = /opt/odoo/odoo/odoo/addons,/opt/odoo/odoo/custom_addons
+addons_path = /opt/sodoo/custom_addons,/opt/sodoo/odoo/addons
 ...
 # OnlyOffice callback'leri için (Nginx arkasında ise)
 http_interface = 0.0.0.0
@@ -175,10 +175,10 @@ http_interface = 0.0.0.0
 sudo systemctl stop odoo
 
 # Modülü kur
-cd /opt/odoo/odoo
-sudo -u odoo /opt/odoo/odoo/venv/bin/python3 odoo-bin \
+cd /opt/sodoo
+sudo -u odoo /opt/sodoo/venv/bin/python3 odoo/odoo-bin \
   -c /etc/odoo/odoo.conf \
-  -d odoo_smb \
+  -d sodoo_smb \
   -i onlyoffice_odoo \
   --stop-after-init
 
@@ -291,14 +291,14 @@ sudo docker exec onlyoffice-documentserver \
 sudo tail -100 /var/log/odoo/odoo.log | grep -i error
 
 # validate_access hatası varsa:
-sudo nano /opt/odoo/odoo/custom_addons/onlyoffice_odoo/controllers/controllers.py
+sudo nano /opt/sodoo/custom_addons/onlyoffice_odoo/controllers/controllers.py
 # Satır 179'u kontrol et: _can_return_content() olmalı
 
 # Modülü güncelle
 sudo systemctl stop odoo
-sudo -u odoo /opt/odoo/odoo/venv/bin/python3 odoo-bin \
+sudo -u odoo /opt/sodoo/venv/bin/python3 odoo/odoo-bin \
   -c /etc/odoo/odoo.conf \
-  -d odoo_smb \
+  -d sodoo_smb \
   -u onlyoffice_odoo \
   --stop-after-init
 sudo systemctl start odoo
@@ -310,7 +310,7 @@ sudo systemctl start odoo
 
 **Çözüm:**
 ```bash
-sudo nano /opt/odoo/odoo/custom_addons/onlyoffice_odoo/views/attachment_card_onlyoffice.xml
+sudo nano /opt/sodoo/custom_addons/onlyoffice_odoo/views/attachment_card_onlyoffice.xml
 
 # XPath kontrol: o-mail-AttachmentButtons olmalı
 ```

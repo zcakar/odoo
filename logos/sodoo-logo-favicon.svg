@@ -1,0 +1,36 @@
+<svg width="1018" height="1018"
+     viewBox="3155.5833 628.0833 721.8334 721.8334"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink"
+     xml:space="preserve"
+     overflow="hidden">
+  <defs>
+    <filter id="fx0" x="-10%" y="-10%" width="120%" height="120%" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse">
+      <feComponentTransfer color-interpolation-filters="sRGB">
+        <feFuncR type="discrete" tableValues="0 0"/>
+        <feFuncG type="discrete" tableValues="0 0"/>
+        <feFuncB type="discrete" tableValues="0 0"/>
+        <feFuncA type="linear" slope="0.4" intercept="0"/>
+      </feComponentTransfer>
+      <feGaussianBlur stdDeviation="6.03129 6.03129"/>
+    </filter>
+
+    <!-- Önceki translate/clip1 kaldırıldığı için clip2 mutlak koordinata taşındı -->
+    <clipPath id="clip2">
+      <rect x="3356" y="798" width="339" height="366"/>
+    </clipPath>
+  </defs>
+
+  <path d="M3179 763.658C3179 701.44 3229.37 651 3291.49 651L3741.51 651C3803.64 651 3854 701.44 3854 763.658L3854 1214.34C3854 1276.56 3803.64 1327 3741.51 1327L3291.49 1327C3229.37 1327 3179 1276.56 3179 1214.34Z"
+        stroke="#7F7F7F" stroke-width="45.8333" stroke-miterlimit="8" fill="#DD4814" fill-rule="evenodd"/>
+
+  <g clip-path="url(#clip2)" filter="url(#fx0)" transform="translate(3012 496)">
+    <g>
+      <path d="M27.791-29.0776 320.369-150.45 320.369-226.831 27.791-348.417 27.791-257.019 205.602-188.49 27.791-119.925Z"
+            fill="#7F7F7F" transform="matrix(1 0 0 1 336.838 672)"/>
+    </g>
+  </g>
+
+  <text fill="#7F7F7F" font-family="Arial Black,Arial Black_MSFontService,sans-serif" font-weight="900" font-size="527"
+        transform="matrix(1 0 0 1 3342.49 1162)">&gt;</text>
+</svg>
